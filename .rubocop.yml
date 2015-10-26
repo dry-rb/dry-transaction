@@ -1,0 +1,31 @@
+Metrics/LineLength:
+  Max: 120
+  Exclude:
+    - spec/**/*.rb
+Style/AndOr:
+  Enabled: false
+Style/BlockDelimiters:
+  EnforcedStyle: semantic
+  IgnoredMethods:
+    # Defaults:
+    - lambda
+    - proc
+    - it
+    # Ours:
+    - specify
+    - match
+    - CallSheet
+    - Success
+    - Failure
+Style/Lambda:
+  Enabled: false
+Style/LambdaCall:
+  Enabled: false
+Style/SignalException:
+  Enabled: false
+Style/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+Style/StabbyLambdaParentheses:
+  Enabled: false
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
