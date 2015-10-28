@@ -1,6 +1,6 @@
 # Call Sheet
 
-Business transaction DSL. Call Sheet provides a simple way to define a complex business transaction that includes processing by many different objects. It makes error handling a primary concern by using a “[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/)” approach for capturing and returning errors from any step in the transaction.
+Call Sheet is a business transaction DSL. It provides a simple way to define a complex business transaction that includes processing by many different objects. It makes error handling a primary concern by using a “[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/)” approach for capturing and returning errors from any step in the transaction.
 
 Call Sheet is based on the following ideas, drawn mostly from [Transflow](http://github.com/solnic/transflow):
 
@@ -15,13 +15,15 @@ Call Sheet is based on the following ideas, drawn mostly from [Transflow](http:/
 
 ## Why?
 
-If your business transaction is sufficiently complex to require independent modelling, then each of its steps likely provides its own meaningful behaviour. Requiring these steps to be independent operations and directly addressable via container means that they can be tested in isolation and easily reused throughout your application. Keeping the business transaction to a high-level, declarative series of steps ensures it’s easy to understand at a glance.
+Requiring a business transaction's steps to exist as independent operations directly addressable voa a container means that they can be tested in isolation and easily reused throughout your application. Following from this, keeping the business transaction to a series of high-level, declarative steps ensures that it's easy to understand at a glance.
 
-The output of each step and the overall transaction itself is wrapped in [Deterministic](https://github.com/pzol/deterministic) `Result` objects (either `Success(s)` or `Failure(f)`). These allow the steps to be chained together and ensures that processing stops in the case of a failure. Returning a `Result` also ensures that error handling can remain a primary concern while keeping your application logic tidy and readable. Wrapping the step output also means that you can work with a wide variety of operations within your application – they don’t need to return a `Result` already.
+The output of each step is wrapped in a [Deterministic](https://github.com/pzol/deterministic) `Result` object (either `Success(s)` or `Failure(f)`). This allows the steps to be chained together and ensures that processing stops in the case of a failure. Returning a `Result` from the overall transaction also allows for error handling to remain a primary concern without it getting in the way of tidy, straightforward operation logic. Wrapping the step output also means that you can work with a wide variety of operations within your application – they don’t need to return a `Result` already.
 
-## Synopsis
+## Usage
 
-All you need to use Call Sheet is a container of operations that respond to `#call(input)`. Each operation is integrated into the business transaction via one of the following steps:
+All you need to use Call Sheet is a container of operations that respond to `#call(input)`. The operations will be resolved from the container via `#[]`. The examples below use a plain Hash for simplicity, but for a larger app you may like to consider something like [dry-container](https://github.com/dryrb/dry-container).
+
+Each operation is integrated into your business transaction through one of the following step adapters:
 
 * `map` – any output is considered successful and returned as `Success(output)`
 * `try` – the operation may raise an exception in an error case. This is caught and returned as `Failure(exception)`. The output is otherwise returned as `Success(output)`.
@@ -33,7 +35,7 @@ DB = []
 
 container = {
   process:  -> input { {name: input["name"], email: input["email"]} },
-  validate: -> input { input[:email].nil? ? raise "not valid" : input },
+  validate: -> input { input[:email].nil? ? raise("not valid") : input },
   persist:  -> input { DB << input and true }
 }
 
@@ -78,7 +80,7 @@ DB = []
 
 container = {
   process:  -> input { {name: input["name"], email: input["email"]} },
-  validate: -> allowed, input { input[:email].include?(allowed) ? raise "not allowed" : input },
+  validate: -> allowed, input { input[:email].include?(allowed) ? raise("not allowed") : input },
   persist:  -> input { DB << input and true }
 }
 
@@ -98,19 +100,19 @@ save_user.call(input, validate: ["smith.com"])
 
 ### Working with a larger container
 
-In practice, your container object won’t be a trivial collection of generically named operations. You can keep your transaction step names simple by using the `with:` option to provide the identifiers for the operations within your container:
+In practice, your container won’t be a trivial collection of generically named operations. You can keep your transaction step names simple by using the `with:` option to provide the identifiers for the operations within your container:
 
 ```ruby
 save_user = CallSheet(container: large_whole_app_container) do
   map :process, with: "attributes.user"
   try :validate, with: "validations.user"
-  tee :persist, with: "persistance.commands.update_update"
+  tee :persist, with: "persistance.commands.update_user"
 end
 ```
 
 ### Using inline procs
 
-You can inject some very small pieces of custom behavior into your transaction using inline procs and a `raw` step. This can be helpful if you want to provide a special failure case based on the output of a previous step.
+You can inject small pieces of custom behavior into your transaction using inline procs and a `raw` step. This can be helpful if you want to provide a special failure case based on the output of a previous step.
 
 ```ruby
 update_user = CallSheet(container: container) do
@@ -121,7 +123,7 @@ update_user = CallSheet(container: container) do
 end
 ```
 
-A `raw` step can also be used if the operation in your container already returns a `Result`, and therefore doesn’t need any special handling.
+A `raw` step can also be used if the operation in your container already returns a `Result` and therefore doesn’t need any special handling.
 
 ## Installation
 
