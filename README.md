@@ -1,4 +1,8 @@
+[gem]: https://rubygems.org/gems/call_sheet
+
 # Call Sheet
+
+[![Gem Version](https://img.shields.io/gem/v/call_sheet.svg)][gem]
 
 Call Sheet is a business transaction DSL. It provides a simple way to define a complex business transaction that includes processing by many different objects. It makes error handling a primary concern by using a “[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/)” approach for capturing and returning errors from any step in the transaction.
 
