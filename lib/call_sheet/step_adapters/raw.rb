@@ -6,6 +6,7 @@ module CallSheet
       end
     end
 
+    register :step, Raw
     register :raw, Raw
   end
 end
