@@ -34,7 +34,7 @@ Each operation is integrated into your business transaction through one of the f
 * `map` – any output is considered successful and returned as `Success(output)`
 * `try` – the operation may raise an exception in an error case. This is caught and returned as `Failure(exception)`. The output is otherwise returned as `Success(output)`.
 * `tee` – the operation interacts with some external system and has no meaningful output. The original input is passed through and returned as `Success(input)`.
-* `raw` – the operation already returns its own `Result` object, and needs no special handling.
+* `raw` or `step` – the operation already returns its own `Result` object, and needs no special handling.
 
 ```ruby
 DB = []
