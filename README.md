@@ -116,19 +116,6 @@ save_user = CallSheet(container: large_whole_app_container) do
 end
 ```
 
-### Using inline procs
-
-You can inject small pieces of custom behavior into your transaction using inline procs and a `raw` step. This can be helpful if you want to provide a special failure case based on the output of a previous step.
-
-```ruby
-update_user = CallSheet(container: container) do
-  map :find_user
-  raw :check_locked, with: -> input { input.locked? ? Failure("Cannot update locked user") : Success(input) }
-  try :validate
-  tee :persist
-end
-```
-
 A `raw` step can also be used if the operation in your container already returns a `Result` and therefore doesn’t need any special handling.
 
 ## Installation

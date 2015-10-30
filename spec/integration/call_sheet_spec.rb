@@ -1,7 +1,10 @@
 RSpec.describe CallSheet do
+  include Deterministic::Prelude::Result
+
   let(:call_sheet) {
     CallSheet(container: container) do
       map :process
+      raw :verify
       try :validate
       tee :persist
     end
@@ -10,6 +13,7 @@ RSpec.describe CallSheet do
   let(:container) {
     {
       process:  -> input { {name: input["name"], email: input["email"]} },
+      verify:   -> input { Success(input) },
       validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
       persist:  -> input { Test::DB << input and true }
     }

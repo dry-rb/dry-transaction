@@ -25,7 +25,7 @@ module CallSheet
 
     StepAdapters.each do |adapter_name, adapter_class|
       define_method adapter_name do |step_name, options = {}|
-        operation = options[:with].is_a?(Proc) ? options[:with] : container[options.fetch(:with, step_name)]
+        operation = container[options.fetch(:with, step_name)]
         steps << Step.new(step_name, adapter_class.new(operation, options))
       end
     end
