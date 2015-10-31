@@ -11,10 +11,16 @@ module CallSheet
   class DSL
     include Deterministic::Prelude::Result
 
-    attr_reader :options # are we actually doing anything with this besides passing the container?
+    # @api private
+    attr_reader :options
+
+    # @api private
     attr_reader :container
+
+    # @api private
     attr_reader :steps
 
+    # @api private
     def initialize(options, &block)
       @options = options
       @container = options.fetch(:container)
@@ -30,6 +36,7 @@ module CallSheet
       end
     end
 
+    # @api private
     def call
       Transaction.new(steps)
     end

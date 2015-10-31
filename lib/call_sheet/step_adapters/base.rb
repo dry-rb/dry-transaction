@@ -1,5 +1,6 @@
 module CallSheet
   module StepAdapters
+    # @api private
     class Base
       include Deterministic::Prelude::Result
 

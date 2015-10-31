@@ -1,2 +1,4 @@
+/.yardoc
+/doc
 /coverage
 /spec/examples.txt

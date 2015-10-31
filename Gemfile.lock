@@ -46,6 +46,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     wisper (1.6.1)
+    yard (0.8.7.6)
 
 PLATFORMS
   ruby
@@ -57,6 +58,7 @@ DEPENDENCIES
   rspec (~> 3.3.0)
   rubocop (~> 0.34.2)
   simplecov (~> 0.10.0)
+  yard
 
 BUNDLED WITH
    1.10.6

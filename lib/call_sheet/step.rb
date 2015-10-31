@@ -2,6 +2,7 @@ require "wisper"
 require "call_sheet/step_failure"
 
 module CallSheet
+  # @api private
   class Step
     include Deterministic::Prelude::Result
     include Wisper::Publisher

@@ -1,5 +1,6 @@
 module CallSheet
   module StepAdapters
+    # @api private
     class Raw < Base
       def call(*args, input)
         operation.call(input, *args)

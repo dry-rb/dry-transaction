@@ -2,13 +2,16 @@ module CallSheet
   class Transaction
     include Deterministic::Prelude::Result
 
+    # @api private
     attr_reader :steps
     private :steps
 
+    # @api private
     def initialize(steps)
       @steps = steps
     end
 
+    # @api public
     def call(input, options = {})
       assert_valid_options(options)
       assert_options_satisfy_step_arity(options)
@@ -18,6 +21,7 @@ module CallSheet
     end
     alias_method :[], :call
 
+    # @api public
     def subscribe(listeners)
       if listeners.is_a?(Hash)
         listeners.each do |step_name, listener|

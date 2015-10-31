@@ -32,3 +32,8 @@ Style/StabbyLambdaParentheses:
   Enabled: false
 Style/StringLiterals:
   EnforcedStyle: double_quotes
+
+# Specific exclusions
+Style/MethodName:
+  Exclude:
+    - lib/call_sheet.rb
