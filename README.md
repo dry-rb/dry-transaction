@@ -96,7 +96,7 @@ save_user = CallSheet(container: container) do
   tee :persist
 end
 
-input = {name: "Jane", email: "jane@doe.com"}
+input = {"name" => "Jane", "email" => "jane@doe.com"}
 save_user.call(input, validate: ["doe.com"])
 # => Success({:name=>"Jane", :email=>"jane@doe.com"})
 
