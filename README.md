@@ -41,13 +41,13 @@ DB = []
 
 container = {
   process:  -> input { {name: input["name"], email: input["email"]} },
-  validate: -> input { input[:email].nil? ? raise("not valid") : input },
+  validate: -> input { input[:email].nil? ? raise(ValidationFailure, "not valid") : input },
   persist:  -> input { DB << input and true }
 }
 
 save_user = CallSheet(container: container) do
   map :process
-  try :validate
+  try :validate, catch: ValidationFailure
   tee :persist
 end
 
@@ -86,13 +86,13 @@ DB = []
 
 container = {
   process:  -> input { {name: input["name"], email: input["email"]} },
-  validate: -> allowed, input { input[:email].include?(allowed) ? raise("not allowed") : input },
+  validate: -> allowed, input { input[:email].include?(allowed) ? raise(ValidationFailure, "not allowed") : input },
   persist:  -> input { DB << input and true }
 }
 
 save_user = CallSheet(container: container) do
   map :process
-  try :validate
+  try :validate, catch: ValidationFailure
   tee :persist
 end
 
@@ -111,7 +111,7 @@ In practice, your container won’t be a trivial collection of generically named
 ```ruby
 save_user = CallSheet(container: large_whole_app_container) do
   map :process, with: "attributes.user"
-  try :validate, with: "validations.user"
+  try :validate, with: "validations.user", catch: ValidationFailure
   tee :persist, with: "persistance.commands.update_user"
 end
 ```
