@@ -4,7 +4,7 @@ RSpec.describe "Passing additional arguments to step operations" do
   let(:call_sheet) {
     CallSheet(container: container) do
       map :process
-      try :validate
+      try :validate, catch: Test::NotValidError
       tee :persist
     end
   }

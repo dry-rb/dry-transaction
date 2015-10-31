@@ -5,7 +5,7 @@ RSpec.describe CallSheet do
     CallSheet(container: container) do
       map :process
       raw :verify
-      try :validate
+      try :validate, catch: Test::NotValidError
       tee :persist
     end
   }
@@ -85,6 +85,28 @@ RSpec.describe CallSheet do
       end
 
       expect(match).to eq "Matched validate failure"
+    end
+  end
+
+  context "failed in a raw step" do
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+    let(:run_call_sheet) { call_sheet.call(input) }
+
+    before do
+      container[:verify] = -> input { Failure("raw failure") }
+    end
+
+    it "does not run subsequent operations" do
+      run_call_sheet
+      expect(Test::DB).to be_empty
+    end
+
+    it "returns a failure" do
+      expect(run_call_sheet).to be_failure
+    end
+
+    it "returns the failing value from the operation" do
+      expect(run_call_sheet.value).to eq "raw failure"
     end
   end
 end
