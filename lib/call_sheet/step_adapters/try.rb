@@ -7,11 +7,9 @@ module CallSheet
       end
 
       def call(*args, input)
-        begin
-          Success(operation.call(*args, input))
-        rescue *Array(options[:catch]) => e
-          Failure(e)
-        end
+        Success(operation.call(*args, input))
+      rescue *Array(options[:catch]) => e
+        Failure(e)
       end
     end
 
