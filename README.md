@@ -79,7 +79,7 @@ You can use guard expressions like `where { f == :step_name }` in the failure ma
 
 ### Passing additional step arguments
 
-Additional arguments for step operations can be passed at the time of calling your transaction. Provide these arguments as an array, and they’ll be [splatted](https://endofline.wordpress.com/2011/01/21/the-strange-ruby-splat/) into the front of the operation’s arguments. This effectively means that transactions can support operations with any sort of `#call(*args, input)` interface.
+Additional arguments for step operations can be passed at the time of calling your transaction. Provide these arguments as an array, and they’ll be [splatted](https://endofline.wordpress.com/2011/01/21/the-strange-ruby-splat/) into the front of the operation’s arguments. This means that transactions can effectively support operations with any sort of `#call(*args, input)` interface.
 
 ```ruby
 DB = []
