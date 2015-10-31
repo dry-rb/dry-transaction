@@ -1,7 +1,8 @@
-Metrics/LineLength:
-  Max: 120
+AllCops:
   Exclude:
     - spec/**/*.rb
+Metrics/LineLength:
+  Max: 140
 Style/AndOr:
   Enabled: false
 Style/BlockDelimiters:
@@ -20,6 +21,8 @@ Style/BlockDelimiters:
 Style/Lambda:
   Enabled: false
 Style/LambdaCall:
+  Enabled: false
+Style/MultilineBlockChain:
   Enabled: false
 Style/SignalException:
   Enabled: false
