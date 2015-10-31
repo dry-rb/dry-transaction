@@ -1,8 +1,10 @@
+require "wisper"
 require "call_sheet/step_failure"
 
 module CallSheet
   class Step
     include Deterministic::Prelude::Result
+    include Wisper::Publisher
 
     attr_reader :step_name
     attr_reader :operation
@@ -19,8 +21,16 @@ module CallSheet
     end
 
     def call(input)
-      result = operation.call(*(call_args << input))
-      result.map_err { |v| Failure(StepFailure.new(step_name, v)) }
+      args = (call_args << input)
+      result = operation.call(*args)
+
+      result.map { |value|
+        broadcast :"#{step_name}_success", value
+        Success(value)
+      }.map_err { |value|
+        broadcast :"#{step_name}_failure", *args, value
+        Failure(StepFailure.new(step_name, value))
+      }
     end
 
     def arity

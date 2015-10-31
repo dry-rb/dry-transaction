@@ -10,7 +10,7 @@
     ```
 
     This makes the step's failure conditions more explicit and ensures that unexpected exceptions bubble up and halt the program as usual.
-
+* Support subscriptions to step success and failure events.
 
 # 0.1.0 / 2015-10-28
 

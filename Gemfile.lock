@@ -3,6 +3,7 @@ PATH
   specs:
     call_sheet (0.1.0)
       deterministic (>= 0.15.3)
+      wisper (>= 1.6.0)
 
 GEM
   remote: https://rubygems.org/
@@ -44,6 +45,7 @@ GEM
       json (~> 1.8)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
+    wisper (1.6.1)
 
 PLATFORMS
   ruby
