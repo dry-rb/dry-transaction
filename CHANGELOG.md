@@ -2,6 +2,7 @@
 
 * Use Kleisli’s `Either` monad for wrapping the result value instead of Determinstic’s `Result`.
 * Add built-in, expressive result matching via a block passed to `#call`.
+* Fixed a bug in which the input object could be modified over multiple calls.
 
 # 0.2.0 / 2015-11-02
 

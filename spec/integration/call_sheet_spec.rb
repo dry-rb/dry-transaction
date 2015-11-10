@@ -38,6 +38,14 @@ RSpec.describe CallSheet do
       expect(call_sheet.call(input).value).to eq(name: "Jane", email: "jane@doe.com")
     end
 
+    it "can be called multiple times to the same effect" do
+      call_sheet.call(input)
+      call_sheet.call(input)
+
+      expect(Test::DB[0]).to eq(name: "Jane", email: "jane@doe.com")
+      expect(Test::DB[1]).to eq(name: "Jane", email: "jane@doe.com")
+    end
+
     it "supports matching on success" do
       results = []
 

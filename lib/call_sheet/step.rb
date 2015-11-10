@@ -21,7 +21,7 @@ module CallSheet
     end
 
     def call(input)
-      args = (call_args << input)
+      args = (call_args.dup << input)
       result = operation.call(*args)
 
       result.fmap { |value|
