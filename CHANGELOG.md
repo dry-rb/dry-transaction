@@ -1,4 +1,4 @@
-# 0.3.0 / Unreleased
+# 0.3.0 / 2015-11-11
 
 * Use Kleisli’s `Either` monad for wrapping the result value instead of Determinstic’s `Result`.
 * Add built-in, expressive result matching via a block passed to `#call`.
