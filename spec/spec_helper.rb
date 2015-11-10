@@ -1,6 +1,8 @@
 require "simplecov"
-SimpleCov.start
 SimpleCov.minimum_coverage 100
+SimpleCov.start do
+  add_filter "/spec/"
+end
 
 require "call_sheet"
 
