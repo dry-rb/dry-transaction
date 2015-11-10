@@ -1,6 +1,4 @@
 RSpec.describe CallSheet do
-  include Deterministic::Prelude::Result
-
   let(:call_sheet) {
     CallSheet(container: container) do
       map :process
@@ -13,7 +11,7 @@ RSpec.describe CallSheet do
   let(:container) {
     {
       process:  -> input { {name: input["name"], email: input["email"]} },
-      verify:   -> input { Success(input) },
+      verify:   -> input { Right(input) },
       validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
       persist:  -> input { Test::DB << input and true }
     }
@@ -26,87 +24,112 @@ RSpec.describe CallSheet do
 
   context "successful" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
-    let(:run_call_sheet) { call_sheet.call(input) }
 
     it "calls the operations" do
-      run_call_sheet
+      call_sheet.call(input)
       expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
     end
 
     it "returns a success" do
-      expect(run_call_sheet).to be_success
+      expect(call_sheet.call(input)).to be_a Kleisli::Either::Right
     end
 
     it "wraps the result of the final operation" do
-      expect(run_call_sheet.value).to eq(name: "Jane", email: "jane@doe.com")
+      expect(call_sheet.call(input).value).to eq(name: "Jane", email: "jane@doe.com")
     end
 
-    it "supports pattern matching on success" do
-      match = run_call_sheet.match do
-        Success(s) { "Matched on success" }
-        Failure(_) {}
+    it "supports matching on success" do
+      results = []
+
+      call_sheet.call(input) do |m|
+        m.success do |value|
+          results << "success for #{value[:email]}"
+        end
       end
 
-      expect(match).to eq "Matched on success"
+      expect(results.first).to eq "success for jane@doe.com"
     end
   end
 
   context "failed in a try step" do
     let(:input) { {"name" => "Jane"} }
-    let(:run_call_sheet) { call_sheet.call(input) }
 
     it "does not run subsequent operations" do
-      run_call_sheet
+      call_sheet.call(input)
       expect(Test::DB).to be_empty
     end
 
     it "returns a failure" do
-      expect(run_call_sheet).to be_failure
+      expect(call_sheet.call(input)).to be_a Kleisli::Either::Left
     end
 
     it "wraps the result of the failing operation" do
-      expect(run_call_sheet.value).to be_a Test::NotValidError
+      expect(call_sheet.call(input).value).to be_a Test::NotValidError
     end
 
-    it "supports pattern matching on failure" do
-      match = run_call_sheet.match do
-        Success(_) {}
-        Failure(f) { "Matched on failure" }
+    it "supports matching on failure" do
+      results = []
+
+      call_sheet.call(input) do |m|
+        m.failure do |f|
+          results << "Failed: #{f.value}"
+        end
       end
 
-      expect(match).to eq "Matched on failure"
+      expect(results.first).to eq "Failed: email required"
     end
 
-    it "supports pattern matching on specific step failures" do
-      match = run_call_sheet.match do
-        Success(_) {}
-        Failure(f, where { f == :validate }) { "Matched validate failure" }
-        Failure(_) {}
+    it "supports matching on specific step failures" do
+      results = []
+
+      call_sheet.call(input) do |m|
+        m.failure do |f|
+          f.on :validate do |v|
+            results << "Validation failure: #{v}"
+          end
+        end
       end
 
-      expect(match).to eq "Matched validate failure"
+      expect(results.first).to eq "Validation failure: email required"
+    end
+
+    it "supports matching on un-named step failures" do
+      results = []
+
+      call_sheet.call(input) do |m|
+        m.failure do |f|
+          f.on :some_other_step do |v|
+            results << "Some other step failure"
+          end
+
+          f.otherwise do |v|
+            results << "Catch-all failure: #{v}"
+          end
+        end
+      end
+
+      expect(results.first).to eq "Catch-all failure: email required"
     end
   end
 
   context "failed in a raw step" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
-    let(:run_call_sheet) { call_sheet.call(input) }
 
     before do
-      container[:verify] = -> input { Failure("raw failure") }
+      container[:verify] = -> input { Left("raw failure") }
     end
 
     it "does not run subsequent operations" do
-      run_call_sheet
+      call_sheet.call(input)
       expect(Test::DB).to be_empty
     end
 
     it "returns a failure" do
-      expect(run_call_sheet).to be_failure
+      expect(call_sheet.call(input)).to be_a Kleisli::Either::Left
     end
 
     it "returns the failing value from the operation" do
-      expect(run_call_sheet.value).to eq "raw failure"
+      expect(call_sheet.call(input).value).to eq "raw failure"
     end
   end
 end

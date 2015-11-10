@@ -1,5 +1,7 @@
 module CallSheet
   class StepFailure < BasicObject
+    attr_reader :__step_name
+
     def initialize(step_name, object)
       @__step_name = step_name
       @__object = object
@@ -10,7 +12,7 @@ module CallSheet
     end
 
     def ==(other)
-      @__step_name == other || @__object == other
+      @__object == other
     end
   end
 end

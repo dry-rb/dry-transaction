@@ -2,8 +2,6 @@ module CallSheet
   module StepAdapters
     # @api private
     class Base
-      include Deterministic::Prelude::Result
-
       attr_reader :operation
       attr_reader :options
 

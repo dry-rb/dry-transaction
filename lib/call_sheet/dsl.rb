@@ -9,8 +9,6 @@ require "call_sheet/transaction"
 
 module CallSheet
   class DSL
-    include Deterministic::Prelude::Result
-
     # @api private
     attr_reader :options
 

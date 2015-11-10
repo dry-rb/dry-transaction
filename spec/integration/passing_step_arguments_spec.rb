@@ -28,7 +28,7 @@ RSpec.describe "Passing additional arguments to step operations" do
     let(:step_options) { {validate: ["doe.com"]} }
 
     it "passes the arguments and calls the operations successfully" do
-      expect(run_call_sheet).to be_success
+      expect(run_call_sheet).to be_a Kleisli::Either::Right
     end
   end
 

@@ -1,4 +1,4 @@
-require "deterministic"
+require "kleisli"
 require "call_sheet/version"
 require "call_sheet/dsl"
 

@@ -4,7 +4,6 @@ require "call_sheet/step_failure"
 module CallSheet
   # @api private
   class Step
-    include Deterministic::Prelude::Result
     include Wisper::Publisher
 
     attr_reader :step_name
@@ -25,12 +24,12 @@ module CallSheet
       args = (call_args << input)
       result = operation.call(*args)
 
-      result.map { |value|
+      result.fmap { |value|
         broadcast :"#{step_name}_success", value
-        Success(value)
-      }.map_err { |value|
+        value
+      }.or { |value|
         broadcast :"#{step_name}_failure", *args, value
-        Failure(StepFailure.new(step_name, value))
+        Left(StepFailure.new(step_name, value))
       }
     end
 

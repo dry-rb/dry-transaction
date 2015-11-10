@@ -25,7 +25,7 @@ Call Sheet is based on the following ideas, drawn mostly from [Transflow](http:/
 
 Requiring a business transaction's steps to exist as independent operations directly addressable voa a container means that they can be tested in isolation and easily reused throughout your application. Following from this, keeping the business transaction to a series of high-level, declarative steps ensures that it's easy to understand at a glance.
 
-The output of each step is wrapped in a [Deterministic](https://github.com/pzol/deterministic) `Result` object (either `Success(s)` or `Failure(f)`). This allows the steps to be chained together and ensures that processing stops in the case of a failure. Returning a `Result` from the overall transaction also allows for error handling to remain a primary concern without it getting in the way of tidy, straightforward operation logic. Wrapping the step output also means that you can work with a wide variety of operations within your application – they don’t need to return a `Result` already.
+The output of each step is wrapped in a [Kleisli](https://github.com/txus/kleisli) `Either` object (`Right` for success or `Left` for failure). This allows the steps to be chained together and ensures that processing stops in the case of a failure. Returning an `Either` from the overall transaction also allows for error handling to remain a primary concern without it getting in the way of tidy, straightforward operation logic. Wrapping the step output also means that you can work with a wide variety of operations within your application – they don’t need to return an `Either` already.
 
 ## Usage
 
@@ -33,10 +33,10 @@ All you need to use Call Sheet is a container of operations that respond to `#ca
 
 Each operation is integrated into your business transaction through one of the following step adapters:
 
-* `map` – any output is considered successful and returned as `Success(output)`
-* `try` – the operation may raise an exception in an error case. This is caught and returned as `Failure(exception)`. The output is otherwise returned as `Success(output)`.
-* `tee` – the operation interacts with some external system and has no meaningful output. The original input is passed through and returned as `Success(input)`.
-* `raw` or `step` – the operation already returns its own `Result` object, and needs no special handling.
+* `map` – any output is considered successful and returned as `Right(output)`
+* `try` – the operation may raise an exception in an error case. This is caught and returned as `Left(exception)`. The output is otherwise returned as `Right(output)`.
+* `tee` – the operation interacts with some external system and has no meaningful output. The original input is passed through and returned as `Right(input)`.
+* `raw` or `step` – the operation already returns its own `Either` object, and needs no special handling.
 
 ```ruby
 DB = []
@@ -54,30 +54,32 @@ save_user = CallSheet(container: container) do
 end
 
 save_user.call("name" => "Jane", "email" => "jane@doe.com")
-# => Success({:name=>"Jane", :email=>"jane@doe.com"})
+# => Right({:name=>"Jane", :email=>"jane@doe.com"})
 
 DB
 # => [{:name=>"Jane", :email=>"jane@doe.com"}]
 ```
 
-Each transaction returns a `Success(s)` or `Failure(f)` result. You can handle these different results with Deterministic’s [pattern matching](https://github.com/pzol/deterministic#pattern-matching):
+Each transaction returns a result value wrapped in a `Left` or `Right` object. You can handle these different results (including errors arising from particular steps) with a match block:
 
 ```ruby
-save_user.call(name: "Jane", email: "jane@doe.com").match do
-  Success(s) do
+save_user.call(name: "Jane", email: "jane@doe.com") do |m|
+  m.success do
     puts "Succeeded!"
   end
-  Failure(f, where { f == :validate }) do |errors|
-    # In a more realistic example, you’d loop through a list of messages in `errors`.
-    puts "Couldn’t save this user. Please provide an email address."
-  end
-  Failure(f) do
-    puts "Couldn’t save this user."
+
+  m.failure do |f|
+    f.on :validate do |errors|
+      # In a more realistic example, you’d loop through a list of messages in `errors`.
+      puts "Couldn’t save this user. Please provide an email address."
+    end
+
+    f.otherwise do |error|
+      puts "Couldn’t save this user."
+    end
   end
 end
 ```
-
-You can use guard expressions like `where { f == :step_name }` in the failure matches to catch failures that arise from particular steps in your transaction.
 
 ### Passing additional step arguments
 
@@ -100,10 +102,10 @@ end
 
 input = {"name" => "Jane", "email" => "jane@doe.com"}
 save_user.call(input, validate: ["doe.com"])
-# => Success({:name=>"Jane", :email=>"jane@doe.com"})
+# => Right({:name=>"Jane", :email=>"jane@doe.com"})
 
 save_user.call(input, validate: ["smith.com"])
-# => Failure("not allowed")
+# => Left("not allowed")
 ```
 
 ### Subscribing to step notifications
@@ -149,7 +151,7 @@ save_user = CallSheet(container: large_whole_app_container) do
 end
 ```
 
-A `raw` step can also be used if the operation in your container already returns a `Result` and therefore doesn’t need any special handling.
+A `raw` step (also aliased as `step`) can be used if the operation in your container already returns an `Either` and therefore doesn’t need any special handling.
 
 ## Installation
 
@@ -169,7 +171,7 @@ Bug reports and pull requests are welcome on [GitHub](http://github.com/icelab/c
 
 Call Sheet is developed and maintained by [Icelab](http://icelab.com.au/).
 
-Call Sheet’s error handling is based on Scott Wlaschin’s [Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/), found via Zohaib Rauf’s [Railway Oriented Programming in Elixir](http://zohaib.me/railway-programming-pattern-in-elixir/) blog post. Call Sheet’s behavior as a business transaction library draws heavy inspiration from Piotr Solnica’s [Transflow](http://github.com/solnic/transflow) and Gilbert B Garza’s [Solid Use Case](https://github.com/mindeavor/solid_use_case). Piotr Zolnierek’s [Deterministic](https://github.com/pzol/deterministic) gem makes working with functional programming patterns in Ruby fun and easy. Thank you all!
+Call Sheet’s error handling is based on Scott Wlaschin’s [Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/), found via Zohaib Rauf’s [Railway Oriented Programming in Elixir](http://zohaib.me/railway-programming-pattern-in-elixir/) blog post. Call Sheet’s behavior as a business transaction library draws heavy inspiration from Piotr Solnica’s [Transflow](http://github.com/solnic/transflow) and Gilbert B Garza’s [Solid Use Case](https://github.com/mindeavor/solid_use_case). Josep M. Bach’s [Kleisli](https://github.com/txus/kleisli) gem makes functional programming patterns in Ruby accessible and fun. Thank you all!
 
 ## License
 

@@ -8,9 +8,9 @@ module CallSheet
       end
 
       def call(*args, input)
-        Success(operation.call(*args, input))
+        Right(operation.call(*args, input))
       rescue *Array(options[:catch]) => e
-        Failure(e)
+        Left(e)
       end
     end
 

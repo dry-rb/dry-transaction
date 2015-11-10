@@ -1,7 +1,7 @@
+require "call_sheet/result_matcher"
+
 module CallSheet
   class Transaction
-    include Deterministic::Prelude::Result
-
     # @api private
     attr_reader :steps
     private :steps
@@ -12,12 +12,15 @@ module CallSheet
     end
 
     # @api public
-    def call(input, options = {})
+    def call(input, options = {}, &block)
       assert_valid_options(options)
       assert_options_satisfy_step_arity(options)
 
       steps = steps_with_options_applied(options)
-      steps.inject(Success(input), :>>)
+      result = steps.inject(Right(input), :>>)
+
+      block.call ResultMatcher.new(result) if block
+      result
     end
     alias_method :[], :call
 

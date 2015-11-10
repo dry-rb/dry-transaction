@@ -1,3 +1,8 @@
+# 0.3.0 / Unreleased
+
+* Use Kleisli’s `Either` monad for wrapping the result value instead of Determinstic’s `Result`.
+* Add built-in, expressive result matching via a block passed to `#call`.
+
 # 0.2.0 / 2015-11-02
 
 * Added support for subscriptions to step success and failure events.

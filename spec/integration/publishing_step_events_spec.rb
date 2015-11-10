@@ -1,6 +1,4 @@
 RSpec.describe "publishing step events" do
-  include Deterministic::Prelude::Result
-
   let(:call_sheet) {
     CallSheet(container: container) do
       map :process
@@ -12,7 +10,7 @@ RSpec.describe "publishing step events" do
   let(:container) {
     {
       process:  -> input { {name: input["name"]} },
-      verify:   -> input { input[:name].to_s != "" ? Success(input) : Failure("no name") },
+      verify:   -> input { input[:name].to_s != "" ? Right(input) : Left("no name") },
       persist:  -> input { Test::DB << input and true }
     }
   }

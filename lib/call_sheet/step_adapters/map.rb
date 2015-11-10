@@ -3,7 +3,7 @@ module CallSheet
     # @api private
     class Map < Base
       def call(*args, input)
-        Success(operation.call(input, *args))
+        Right(operation.call(input, *args))
       end
     end
 

@@ -4,7 +4,7 @@ module CallSheet
     class Tee < Base
       def call(*args, input)
         operation.call(*args, input)
-        Success(input)
+        Right(input)
       end
     end
 
