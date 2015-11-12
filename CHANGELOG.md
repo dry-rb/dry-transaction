@@ -1,3 +1,7 @@
+# 0.3.1 / 2015-11-12
+
+* Remove deterministic gem dependency
+
 # 0.3.0 / 2015-11-11
 
 * Use Kleisli’s `Either` monad for wrapping the result value instead of Determinstic’s `Result`.
