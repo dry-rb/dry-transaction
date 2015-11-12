@@ -15,7 +15,6 @@ Gem::Specification.new do |spec|
   spec.files = Dir["README.md", "LICENSE.md", "Gemfile*", "Rakefile", "lib/**/*", "spec/**/*"]
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency "deterministic", ">= 0.15.3"
   spec.add_runtime_dependency "kleisli"
   spec.add_runtime_dependency "wisper", ">= 1.6.0"
 
