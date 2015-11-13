@@ -1,3 +1,7 @@
+# 0.3.2 / 2015-11-13
+
+* Fixed a bug where additional step arguments were passed in the wrong order for `map` and `raw` steps.
+
 # 0.3.1 / 2015-11-12
 
 * Remove deterministic gem dependency
