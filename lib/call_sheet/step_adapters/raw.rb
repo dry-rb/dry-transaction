@@ -3,7 +3,7 @@ module CallSheet
     # @api private
     class Raw < Base
       def call(*args, input)
-        operation.call(input, *args)
+        operation.call(*args, input)
       end
     end
 
