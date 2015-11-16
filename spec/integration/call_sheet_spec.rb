@@ -79,8 +79,8 @@ RSpec.describe CallSheet do
       results = []
 
       call_sheet.call(input) do |m|
-        m.failure do |f|
-          results << "Failed: #{f.value}"
+        m.failure do |value|
+          results << "Failed: #{value}"
         end
       end
 
@@ -91,10 +91,8 @@ RSpec.describe CallSheet do
       results = []
 
       call_sheet.call(input) do |m|
-        m.failure do |f|
-          f.on :validate do |v|
-            results << "Validation failure: #{v}"
-          end
+        m.failure :validate do |value|
+          results << "Validation failure: #{value}"
         end
       end
 
@@ -105,14 +103,12 @@ RSpec.describe CallSheet do
       results = []
 
       call_sheet.call(input) do |m|
-        m.failure do |f|
-          f.on :some_other_step do |v|
-            results << "Some other step failure"
-          end
+        m.failure :some_other_step do |value|
+          results << "Some other step failure"
+        end
 
-          f.otherwise do |v|
-            results << "Catch-all failure: #{v}"
-          end
+        m.failure do |value|
+          results << "Catch-all failure: #{value}"
         end
       end
 

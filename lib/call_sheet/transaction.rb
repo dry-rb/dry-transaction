@@ -19,8 +19,11 @@ module CallSheet
       steps = steps_with_options_applied(options)
       result = steps.inject(Right(input), :>>)
 
-      block.call ResultMatcher.new(result) if block
-      result
+      if block
+        block.call(ResultMatcher.new(result))
+      else
+        result
+      end
     end
     alias_method :[], :call
 
