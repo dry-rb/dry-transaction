@@ -21,7 +21,7 @@ module CallSheet
     # @api private
     def initialize(options, &block)
       @options = options
-      @container = options.fetch(:container)
+      @container = options[:container]
       @steps = []
 
       instance_exec(&block)
@@ -29,7 +29,8 @@ module CallSheet
 
     StepAdapters.each do |adapter_name, adapter_class|
       define_method adapter_name do |step_name, options = {}|
-        operation = container[options.fetch(:with, step_name)]
+        operation_value = options.fetch(:with, step_name)
+        operation = operation_value.respond_to?(:call) ? operation_value : container[operation_value]
         steps << Step.new(step_name, adapter_class.new(operation, options))
       end
     end
