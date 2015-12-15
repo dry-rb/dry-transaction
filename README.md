@@ -44,19 +44,20 @@ container = {
   persist:  -> input { DB << input and true }
 }
 ```
-An operation has to respond to `#call(input)`.
+Each operation has to respond to `#call(input)`.
 
 Note that we use a hash here for simplicity, for larger apps you may like to consider something like [dry-container](https://github.com/dryrb/dry-container).
 
 ### Call Sheet
 
-To integrate your operations into your business transaction, you define a _call sheet_.
+To integrate your operations into a specific business transaction, you define a _call sheet_.
 
 ```ruby
 save_user = CallSheet(container: container) do
-  map :process
-  try :validate, catch: ValidationFailure
-  tee :persist
+  # adapter :operation_name
+  map       :process
+  try       :validate, catch: ValidationFailure
+  tee       :persist
 end
 ```
 
