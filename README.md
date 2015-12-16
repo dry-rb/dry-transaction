@@ -4,6 +4,8 @@
 
 # Call Sheet
 
+[![Join the chat at https://gitter.im/icelab/call_sheet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/icelab/call_sheet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Gem Version](https://img.shields.io/gem/v/call_sheet.svg)][gem]
 [![Code Climate](https://img.shields.io/codeclimate/github/icelab/call_sheet.svg)][code_climate]
 [![API Documentation Coverage](http://inch-ci.org/github/icelab/call_sheet.svg)][inch]
