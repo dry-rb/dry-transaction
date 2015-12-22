@@ -36,7 +36,7 @@ module CallSheet
 
     # @api private
     def call
-      Transaction.new(steps)
+      Transaction.new(steps, options)
     end
   end
 end

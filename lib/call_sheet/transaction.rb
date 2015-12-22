@@ -4,19 +4,22 @@ module CallSheet
   class Transaction
     # @api private
     attr_reader :steps
-    private :steps
 
     # @api private
-    def initialize(steps)
+    attr_reader :options
+
+    # @api private
+    def initialize(steps, options)
       @steps = steps
+      @options = options
     end
 
     # @api public
-    def call(input, options = {}, &block)
-      assert_valid_options(options)
-      assert_options_satisfy_step_arity(options)
+    def call(input, call_options = {}, &block)
+      assert_valid_options(call_options)
+      assert_options_satisfy_step_arity(call_options)
 
-      steps = steps_with_options_applied(options)
+      steps = steps_with_options_applied(call_options)
       result = steps.inject(Right(input), :>>)
 
       if block
@@ -40,6 +43,31 @@ module CallSheet
       end
 
       self
+    end
+
+    # @api public
+    def +(other)
+      self.class.new(steps + other.steps, options)
+    end
+
+    # @api public
+    def insert(insert_options, &block)
+      insertion_step = insert_options.fetch(:before) { insert_options.fetch(:after) }
+      unless steps.map(&:step_name).include?(insertion_step)
+        raise ArgumentError, "+#{insertion_step}+ is not a valid step name"
+      end
+
+      insert_after = !!insert_options.fetch(:after, false)
+      insertion_index = steps.index { |step| step.step_name == insertion_step } + (insert_after ? 1 : 0)
+
+      new_transaction = DSL.new(options, &block).call
+
+      self.class.new(steps.dup.insert(insertion_index, *new_transaction.steps), options)
+    end
+
+    # @api public
+    def remove(*removed_steps)
+      self.class.new(steps.reject { |step| removed_steps.include?(step.step_name) }, options)
     end
 
     private
