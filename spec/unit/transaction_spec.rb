@@ -3,7 +3,6 @@ RSpec.describe CallSheet::Transaction do
     {
       upcase: -> input { input.upcase },
       reverse: -> input { input.reverse },
-      remove_odd_words: -> input { input.split(" ").each_with_index.reject { |_, i| i.odd? }.map(&:first).join(" ") },
       exclaim_all: -> input { input.split(" ").map { |str| str + "!" }.join(" ") },
     }
   }
@@ -16,13 +15,13 @@ RSpec.describe CallSheet::Transaction do
     }
     let(:other_transaction) {
       CallSheet(container: container) do
-        map :remove_odd_words
+        map :exclaim_all
       end
     }
     let!(:new_transaction) { initial_transaction + other_transaction }
 
     it "appends the transaction" do
-      expect(new_transaction.call("the quick brown fox").right).to eq "THE BROWN"
+      expect(new_transaction.call("the quick brown fox").right).to eq "THE! QUICK! BROWN! FOX!"
     end
 
     it "leaves the original transaction unmodified" do
@@ -34,19 +33,19 @@ RSpec.describe CallSheet::Transaction do
     let(:initial_transaction) {
       CallSheet(container: container) do
         map :upcase
-        map :remove_odd_words
+        map :exclaim_all
         map :reverse
       end
     }
 
-    let!(:new_transaction) { initial_transaction.remove(:remove_odd_words, :reverse) }
+    let!(:new_transaction) { initial_transaction.remove(:exclaim_all, :reverse) }
 
     it "removes the specified steps" do
       expect(new_transaction.call("the quick brown fox").right).to eq "THE QUICK BROWN FOX"
     end
 
     it "leaves the original transaction unmodified" do
-      expect(initial_transaction.call("the quick brown fox").right).to eq "NWORB EHT"
+      expect(initial_transaction.call("the quick brown fox").right).to eq "!XOF !NWORB !KCIUQ !EHT"
     end
   end
 
