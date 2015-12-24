@@ -64,8 +64,8 @@ module CallSheet
     end
 
     # @api public
-    def remove(*removed_steps)
-      self.class.new(steps.reject { |step| removed_steps.include?(step.step_name) })
+    def remove(*steps_to_remove)
+      self.class.new(steps.reject { |step| steps_to_remove.include?(step.step_name) })
     end
 
     private
