@@ -6,20 +6,16 @@ module CallSheet
     attr_reader :steps
 
     # @api private
-    attr_reader :options
-
-    # @api private
-    def initialize(steps, options)
+    def initialize(steps)
       @steps = steps
-      @options = options
     end
 
     # @api public
-    def call(input, call_options = {}, &block)
-      assert_valid_options(call_options)
-      assert_options_satisfy_step_arity(call_options)
+    def call(input, options = {}, &block)
+      assert_valid_options(options)
+      assert_options_satisfy_step_arity(options)
 
-      steps = steps_with_options_applied(call_options)
+      steps = steps_with_options_applied(options)
       result = steps.inject(Right(input), :>>)
 
       if block
@@ -47,27 +43,29 @@ module CallSheet
 
     # @api public
     def +(other)
-      self.class.new(steps + other.steps, options)
+      self.class.new(steps + other.steps)
     end
 
     # @api public
-    def insert(insert_options, &block)
-      insertion_step = insert_options.fetch(:before) { insert_options.fetch(:after) }
+    def insert(other = nil, before: nil, after: nil, **options, &block)
+      unless other || block
+        raise ArgumentError, "a transaction must be provided or defined in a block"
+      end
+
+      insertion_step = before || after
       unless steps.map(&:step_name).include?(insertion_step)
         raise ArgumentError, "+#{insertion_step}+ is not a valid step name"
       end
 
-      insert_after = !!insert_options.fetch(:after, false)
-      insertion_index = steps.index { |step| step.step_name == insertion_step } + (insert_after ? 1 : 0)
+      other ||= DSL.new(**options, &block).call
+      index = steps.index { |step| step.step_name == insertion_step } + (!!after ? 1 : 0)
 
-      new_transaction = DSL.new(options, &block).call
-
-      self.class.new(steps.dup.insert(insertion_index, *new_transaction.steps), options)
+      self.class.new(steps.dup.insert(index, *other.steps))
     end
 
     # @api public
     def remove(*removed_steps)
-      self.class.new(steps.reject { |step| removed_steps.include?(step.step_name) }, options)
+      self.class.new(steps.reject { |step| removed_steps.include?(step.step_name) })
     end
 
     private

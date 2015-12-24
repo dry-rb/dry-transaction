@@ -58,9 +58,38 @@ RSpec.describe CallSheet::Transaction do
       end
     }
 
+    it "accepts a transaction passed as an argument" do
+      other_transaction = CallSheet(container: container) do
+        map :exclaim_all
+      end
+      new_transaction = initial_transaction.insert(other_transaction, before: :reverse)
+
+      expect(new_transaction.call("the quick brown fox").right).to eq "!XOF !NWORB !KCIUQ !EHT"
+    end
+
+    it "accepts a transaction defined in a block" do
+      new_transaction = initial_transaction.insert(before: :reverse, container: container) do
+        map :exclaim_all
+      end
+
+      expect(new_transaction.call("the quick brown fox").right).to eq "!XOF !NWORB !KCIUQ !EHT"
+    end
+
+    it "raises an argument error if a transaction is neither passed nor defined" do
+      expect { initial_transaction.insert(before: :reverse) }.to raise_error(ArgumentError)
+    end
+
+    it "raises an argument error if an invalid step name is provided" do
+      expect {
+        initial_transaction.insert(before: :non_existent, container: container) do
+          map :exclaim_all
+        end
+      }.to raise_error(ArgumentError)
+    end
+
     context "before" do
       let!(:new_transaction) {
-        initial_transaction.insert(before: :reverse) do
+        initial_transaction.insert(before: :reverse, container: container) do
           map :exclaim_all
         end
       }
@@ -76,7 +105,7 @@ RSpec.describe CallSheet::Transaction do
 
     context "after" do
       let!(:new_transaction) {
-        initial_transaction.insert(after: :reverse) do
+        initial_transaction.insert(after: :reverse, container: container) do
           map :exclaim_all
         end
       }
