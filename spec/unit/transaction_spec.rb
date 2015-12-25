@@ -57,7 +57,7 @@ RSpec.describe CallSheet::Transaction do
       end
       new_transaction = initial_transaction.append(other_transaction)
 
-      expect(new_transaction.call("the quick brown fox").right).to eq "THE! QUICK! BROWN! FOX!"
+      expect(new_transaction.call("hello world").right).to eq "HELLO! WORLD!"
     end
 
     it "accepts a transaction defined in a block" do
@@ -65,7 +65,7 @@ RSpec.describe CallSheet::Transaction do
         map :exclaim_all
       end
 
-      expect(new_transaction.call("the quick brown fox").right).to eq "THE! QUICK! BROWN! FOX!"
+      expect(new_transaction.call("hello world").right).to eq "HELLO! WORLD!"
     end
 
     it "raises an argument error if a transaction is neither passed nor defined" do
@@ -77,7 +77,7 @@ RSpec.describe CallSheet::Transaction do
         map :exclaim_all
       end
 
-      expect(initial_transaction.call("the quick brown fox").right).to eq "THE QUICK BROWN FOX"
+      expect(initial_transaction.call("hello world").right).to eq "HELLO WORLD"
     end
   end
 
@@ -90,14 +90,14 @@ RSpec.describe CallSheet::Transaction do
       end
     }
 
-    let!(:new_transaction) { initial_transaction.remove(:exclaim_all, :reverse) }
-
     it "removes the specified steps" do
-      expect(new_transaction.call("the quick brown fox").right).to eq "THE QUICK BROWN FOX"
+      new_transaction = initial_transaction.remove(:exclaim_all, :reverse)
+      expect(new_transaction.call("hello world").right).to eq "HELLO WORLD"
     end
 
     it "leaves the original transaction unmodified" do
-      expect(initial_transaction.call("the quick brown fox").right).to eq "!XOF !NWORB !KCIUQ !EHT"
+      new_transaction = initial_transaction.remove(:exclaim_all, :reverse)
+      expect(initial_transaction.call("hello world").right).to eq "!DLROW !OLLEH"
     end
   end
 
@@ -115,7 +115,7 @@ RSpec.describe CallSheet::Transaction do
       end
       new_transaction = initial_transaction.insert(other_transaction, before: :reverse)
 
-      expect(new_transaction.call("the quick brown fox").right).to eq "!XOF !NWORB !KCIUQ !EHT"
+      expect(new_transaction.call("hello world").right).to eq "!DLROW !OLLEH"
     end
 
     it "accepts a transaction defined in a block" do
@@ -123,7 +123,7 @@ RSpec.describe CallSheet::Transaction do
         map :exclaim_all
       end
 
-      expect(new_transaction.call("the quick brown fox").right).to eq "!XOF !NWORB !KCIUQ !EHT"
+      expect(new_transaction.call("hello world").right).to eq "!DLROW !OLLEH"
     end
 
     it "raises an argument error if a transaction is neither passed nor defined" do
@@ -146,11 +146,11 @@ RSpec.describe CallSheet::Transaction do
       }
 
       it "inserts the new steps before the specified one" do
-        expect(new_transaction.call("the quick brown fox").right).to eq "!XOF !NWORB !KCIUQ !EHT"
+        expect(new_transaction.call("hello world").right).to eq "!DLROW !OLLEH"
       end
 
       it "leaves the original transaction unmodified" do
-        expect(initial_transaction.call("the quick brown fox").right).to eq "XOF NWORB KCIUQ EHT"
+        expect(initial_transaction.call("hello world").right).to eq "DLROW OLLEH"
       end
     end
 
@@ -162,11 +162,11 @@ RSpec.describe CallSheet::Transaction do
       }
 
       it "inserts the new steps after the specified one" do
-        expect(new_transaction.call("the quick brown fox").right).to eq "XOF! NWORB! KCIUQ! EHT!"
+        expect(new_transaction.call("hello world").right).to eq "DLROW! OLLEH!"
       end
 
       it "leaves the original transaction unmodified" do
-        expect(initial_transaction.call("the quick brown fox").right).to eq "XOF NWORB KCIUQ EHT"
+        expect(initial_transaction.call("hello world").right).to eq "DLROW OLLEH"
       end
     end
   end
