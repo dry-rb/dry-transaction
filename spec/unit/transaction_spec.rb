@@ -7,24 +7,76 @@ RSpec.describe CallSheet::Transaction do
     }
   }
 
-  describe "#+" do
+  describe "#prepend" do
+    let(:initial_transaction) {
+      CallSheet(container: container) do
+        map :exclaim_all
+      end
+    }
+
+    it "prepends the transaction" do
+      other_transaction = CallSheet(container: container) do
+        map :reverse
+      end
+      new_transaction = initial_transaction.prepend(other_transaction)
+
+      expect(new_transaction.call("hello world").right).to eq "dlrow! olleh!"
+    end
+
+    it "accepts a transaction defined in a block" do
+      new_transaction = initial_transaction.prepend(container: container) do
+        map :reverse
+      end
+
+      expect(new_transaction.call("hello world").right).to eq "dlrow! olleh!"
+    end
+
+    it "raises an argument error if a transaction is neither passed nor defined" do
+      expect { initial_transaction.prepend }.to raise_error(ArgumentError)
+    end
+
+    it "leaves the original transaction unmodified" do
+      new_transaction = initial_transaction.prepend(container: container) do
+        map :reverse
+      end
+
+      expect(initial_transaction.call("the quick brown fox").right).to eq "the! quick! brown! fox!"
+    end
+  end
+
+  describe "#append" do
     let(:initial_transaction) {
       CallSheet(container: container) do
         map :upcase
       end
     }
-    let(:other_transaction) {
-      CallSheet(container: container) do
-        map :exclaim_all
-      end
-    }
-    let!(:new_transaction) { initial_transaction + other_transaction }
 
     it "appends the transaction" do
+      other_transaction = CallSheet(container: container) do
+        map :exclaim_all
+      end
+      new_transaction = initial_transaction.append(other_transaction)
+
       expect(new_transaction.call("the quick brown fox").right).to eq "THE! QUICK! BROWN! FOX!"
     end
 
+    it "accepts a transaction defined in a block" do
+      new_transaction = initial_transaction.append(container: container) do
+        map :exclaim_all
+      end
+
+      expect(new_transaction.call("the quick brown fox").right).to eq "THE! QUICK! BROWN! FOX!"
+    end
+
+    it "raises an argument error if a transaction is neither passed nor defined" do
+      expect { initial_transaction.insert(before: :reverse) }.to raise_error(ArgumentError)
+    end
+
     it "leaves the original transaction unmodified" do
+      new_transaction = initial_transaction.append(container: container) do
+        map :exclaim_all
+      end
+
       expect(initial_transaction.call("the quick brown fox").right).to eq "THE QUICK BROWN FOX"
     end
   end

@@ -42,22 +42,27 @@ module CallSheet
     end
 
     # @api public
-    def +(other)
+    def prepend(other = nil, **options, &block)
+      other = accept_or_build_transaction(other, **options, &block)
+
+      self.class.new(other.steps + steps)
+    end
+
+    # @api public
+    def append(other = nil, **options, &block)
+      other = accept_or_build_transaction(other, **options, &block)
+
       self.class.new(steps + other.steps)
     end
 
     # @api public
     def insert(other = nil, before: nil, after: nil, **options, &block)
-      unless other || block
-        raise ArgumentError, "a transaction must be provided or defined in a block"
-      end
-
       insertion_step = before || after
       unless steps.map(&:step_name).include?(insertion_step)
         raise ArgumentError, "+#{insertion_step}+ is not a valid step name"
       end
 
-      other ||= DSL.new(**options, &block).call
+      other = accept_or_build_transaction(other, **options, &block)
       index = steps.index { |step| step.step_name == insertion_step } + (!!after ? 1 : 0)
 
       self.class.new(steps.dup.insert(index, *other.steps))
@@ -97,6 +102,14 @@ module CallSheet
           step
         end
       }
+    end
+
+    def accept_or_build_transaction(other_transaction = nil, **options, &block)
+      unless other_transaction || block
+        raise ArgumentError, "a transaction must be provided or defined in a block"
+      end
+
+      other_transaction || DSL.new(**options, &block).call
     end
   end
 end
