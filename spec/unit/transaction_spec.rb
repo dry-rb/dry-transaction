@@ -47,25 +47,25 @@ RSpec.describe CallSheet::Transaction do
   describe "#append" do
     let(:initial_transaction) {
       CallSheet(container: container) do
-        map :upcase
+        map :exclaim_all
       end
     }
 
     it "appends the transaction" do
       other_transaction = CallSheet(container: container) do
-        map :exclaim_all
+        map :reverse
       end
       new_transaction = initial_transaction.append(other_transaction)
 
-      expect(new_transaction.call("hello world").right).to eq "HELLO! WORLD!"
+      expect(new_transaction.call("hello world").right).to eq "!dlrow !olleh"
     end
 
     it "accepts a transaction defined in a block" do
       new_transaction = initial_transaction.append(container: container) do
-        map :exclaim_all
+        map :reverse
       end
 
-      expect(new_transaction.call("hello world").right).to eq "HELLO! WORLD!"
+      expect(new_transaction.call("hello world").right).to eq "!dlrow !olleh"
     end
 
     it "raises an argument error if a transaction is neither passed nor defined" do
@@ -74,10 +74,10 @@ RSpec.describe CallSheet::Transaction do
 
     it "leaves the original transaction unmodified" do
       new_transaction = initial_transaction.append(container: container) do
-        map :exclaim_all
+        map :reverse
       end
 
-      expect(initial_transaction.call("hello world").right).to eq "HELLO WORLD"
+      expect(initial_transaction.call("hello world").right).to eq "hello! world!"
     end
   end
 
