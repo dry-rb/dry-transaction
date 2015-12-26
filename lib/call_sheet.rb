@@ -18,7 +18,7 @@ require "call_sheet/dsl"
 # A step is successful when it returns a [Kleisli](kleisli) `Right` object
 # wrapping its output value. A step is a failure when it returns a `Left`
 # object.  If your operations already return a `Right` or `Left`, they can be
-# added to your operation as plain `step` or `raw` steps.
+# added to your operation as plain `step` steps.
 #
 # If your operations don't already return `Right` or `Left`, then they can be
 # added to the transaction with the following steps:
