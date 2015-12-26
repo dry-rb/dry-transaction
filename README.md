@@ -24,11 +24,11 @@ Call Sheet is based on the following ideas, drawn mostly from [Transflow](http:/
 
 ## Why?
 
-Requiring a business transaction's steps to exist as independent operations directly addressable voa a container means that they can be tested in isolation and easily reused throughout your application. Following from this, keeping the business transaction to a series of high-level, declarative steps ensures that it's easy to understand at a glance.
+Requiring a business transaction's steps to exist as independent operations directly addressable via a container means that they can be tested in isolation and easily reused throughout your application. Following from this, keeping the business transaction to a series of high-level, declarative steps ensures that it's easy to understand at a glance.
 
 The output of each step is wrapped in a [Kleisli](https://github.com/txus/kleisli) `Either` object (`Right` for success or `Left` for failure). This allows the steps to be chained together and ensures that processing stops in the case of a failure. Returning an `Either` from the overall transaction also allows for error handling to remain a primary concern without it getting in the way of tidy, straightforward operation logic. Wrapping the step output also means that you can work with a wide variety of operations within your application – they don’t need to return an `Either` already.
 
-## Usage
+## Synopsis
 
 All you need to use Call Sheet is a container of operations that respond to `#call(input)`. The operations will be resolved from the container via `#[]`. The examples below use a plain Hash for simplicity, but for a larger app you may like to consider something like [dry-container](https://github.com/dryrb/dry-container).
 
