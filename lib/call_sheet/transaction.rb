@@ -11,6 +11,33 @@ module CallSheet
       @steps = steps
     end
 
+    # Run the transaction.
+    #
+    # Each operation will be called in the order it was specified, with its
+    # output passed as input to the next operation. Operations will only be
+    # called if the previous step was a success.
+    #
+    # If any of the operations require extra arguments beyond the main input
+    # e.g. with a signature like `#call(something_else, input)`, then you must
+    # pass the extra arguments as arrays for each step in the options hash.
+    #
+    # @example Running a transaction
+    #   my_transaction.call(some_input)
+    #
+    # @example Running a transaction with extra step arguments
+    #   my_transaction.call(some_input, step_name: [extra_argument])
+    #
+    # The return value will be the output from the last operation, wrapped in
+    # a [Kleisli](kleisli) `Either` object, a `Right` for a successful
+    # transaction or a `Left` for a failed transaction.
+    #
+    # [kleisli]: https://rubygems.org/gems/kleisli
+    #
+    # @param input
+    # @param options [Hash] extra step arguments
+    #
+    # @return [Right, Left] output from the final step
+    #
     # @api public
     def call(input, options = {}, &block)
       assert_valid_options(options)
@@ -27,6 +54,31 @@ module CallSheet
     end
     alias_method :[], :call
 
+    # Subscribe to notifications from steps.
+    #
+    # When each step completes, it will send a `[step_name]_success` or
+    # `[step_name]_failure` message to any subscribers.
+    #
+    # For example, if you had a step called `persist`, then it would send
+    # either `persist_success` or `persist_failure` messages to subscribers
+    # after the operation completes.
+    #
+    # Pass a single object to subscribe to notifications from all steps, or
+    # pass a hash with step names as keys to subscribe to notifications from
+    # specific steps.
+    #
+    # @example Subscribing to notifications from all steps
+    #   my_transaction.subscribe(my_listener)
+    #
+    # @example Subscribing to notifications from specific steps
+    #   my_transaction.subscirbe(some_step: my_listener, another_step: another_listener)
+    #
+    # Notifications are implemented using the [Wisper](wisper) gem.
+    #
+    # [wisper]: https://rubygems.org/gems/wisper
+    #
+    # @param listeners [Object, Hash{Symbol => Object}] the listener object or hash of steps and listeners
+    #
     # @api public
     def subscribe(listeners)
       if listeners.is_a?(Hash)
