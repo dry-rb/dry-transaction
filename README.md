@@ -1,10 +1,9 @@
+[gitter]: https://gitter.im/icelab/call_sheet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 [gem]: https://rubygems.org/gems/call_sheet
 [code_climate]: https://codeclimate.com/github/icelab/call_sheet
 [inch]: http://inch-ci.org/github/icelab/call_sheet
 
-# Call Sheet
-
-[![Join the chat at https://gitter.im/icelab/call_sheet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/icelab/call_sheet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Call Sheet [![Join the chat at https://gitter.im/icelab/call_sheet](https://badges.gitter.im/Join%20Chat.svg)](gitter)
 
 [![Gem Version](https://img.shields.io/gem/v/call_sheet.svg)][gem]
 [![Code Climate](https://img.shields.io/codeclimate/github/icelab/call_sheet.svg)][code_climate]
