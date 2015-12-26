@@ -180,6 +180,10 @@ gem "call_sheet"
 
 Run `bundle` to install the gem.
 
+## Documentation
+
+View the [full API documentation](http://www.rubydoc.info/github/icelab/call_sheet) on RubyDoc.info.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on [GitHub](http://github.com/icelab/call_sheet).
