@@ -4,7 +4,7 @@
 
 # 0.3.1 / 2015-11-12
 
-* Remove deterministic gem dependency
+* Removed deterministic gem dependency
 
 # 0.3.0 / 2015-11-11
 
