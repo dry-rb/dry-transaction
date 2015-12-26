@@ -24,47 +24,50 @@ Call Sheet is based on the following ideas, drawn mostly from [Transflow](http:/
 
 ## Why?
 
-Requiring a business transaction's steps to exist as independent operations directly addressable via a container means that they can be tested in isolation and easily reused throughout your application. Following from this, keeping the business transaction to a series of high-level, declarative steps ensures that it's easy to understand at a glance.
+Requiring a business transaction’s steps to exist as independent operations directly addressable via a container means that they can be tested in isolation and easily reused throughout your application. Following from this, keeping the business transaction to a series of high-level, declarative steps ensures that it’s easy to understand at a glance.
 
 The output of each step is wrapped in a [Kleisli](https://github.com/txus/kleisli) `Either` object (`Right` for success or `Left` for failure). This allows the steps to be chained together and ensures that processing stops in the case of a failure. Returning an `Either` from the overall transaction also allows for error handling to remain a primary concern without it getting in the way of tidy, straightforward operation logic. Wrapping the step output also means that you can work with a wide variety of operations within your application – they don’t need to return an `Either` already.
 
-## Synopsis
-
-Invoking a _call sheet_ requires two things: a container that contains available operations. And the actual call sheet that configures which operations to run, and the order.
-
+## Usage
 
 ### Container
 
-The container groups arbitray operations, and could be a plain hash.
+All you need to use Call Sheet is a container to hold your application’s operations. Each operation must respond to `#call(input)`.
+
+The operations will be resolved from the container via `#[]`. For our examples, we’ll use a plain hash:
 
 ```ruby
 container = {
-  # name:   -> operation
   process:  -> input { {name: input["name"], email: input["email"]} },
   validate: -> input { input[:email].nil? ? raise(ValidationFailure, "not valid") : input },
   persist:  -> input { DB << input and true }
 }
 ```
-Each operation has to respond to `#call(input)`.
 
-Note that we use a hash here for simplicity, for larger apps you may like to consider something like [dry-container](https://github.com/dryrb/dry-container).
+For larger apps, you may like to consider something like [dry-container](https://github.com/dryrb/dry-container).
 
-### Call Sheet
+### Defining a transaction
 
-To integrate your operations into a specific business transaction, you define a _call sheet_.
+Define a transaction to bring your opererations together:
 
 ```ruby
 save_user = CallSheet(container: container) do
-  # adapter :operation_name
-  map       :process
-  try       :validate, catch: ValidationFailure
-  tee       :persist
+  map :process
+  try :validate, catch: ValidationFailure
+  tee :persist
 end
 ```
 
-In a call sheet, you reference operations from your container using _adapter_ methods.
+Operations are formed into steps using _step adapters._ Step adapters wrap the output of your operations to make them easy to integrate into a transaction. The following adapters are available:
 
-When invoking the call sheet, these operations will be called in the specified order.
+* `step` – the operation already returns an `Either` object (`Right(output)` for success and `Left(output)` for failure), and needs no special handling.
+* `map` – any output is considered successful and returned as `Right(output)`
+* `try` – the operation may raise an exception in an error case. This is caught and returned as `Left(exception)`. The output is otherwise returned as `Right(output)`.
+* `tee` – the operation interacts with some external system and has no meaningful output. The original input is passed through and returned as `Right(input)`.
+
+### Calling a transaction
+
+Calling a transaction will run its operations in their specified order, with the output of each operation becoming the input for the next.
 
 ```ruby
 DB = []
@@ -76,22 +79,7 @@ DB
 # => [{:name=>"Jane", :email=>"jane@doe.com"}]
 ```
 
-As a result, all three user operations `:process`, `:validate` and `:persist` will be called. Their result is interpreted by the adapter that you specified in the call sheet.
-
-A full invocation of a call sheet is called _transaction_.
-
-### Adapter
-
-The following adapters to plug operations into the sheet are available.
-
-* `map` – any output is considered successful and returned as `Right(output)`
-* `try` – the operation may raise an exception in an error case. This is caught and returned as `Left(exception)`. The output is otherwise returned as `Right(output)`.
-* `tee` – the operation interacts with some external system and has no meaningful output. The original input is passed through and returned as `Right(input)`.
-* `raw` or `step` – the operation already returns its own `Either` object, and needs no special handling.
-
-## Transaction Execution
-
-Each transaction returns a result value wrapped in a `Left` or `Right` object. You can handle these different results (including errors arising from particular steps) with a match block:
+Each transaction returns a result value wrapped in a `Left` or `Right` object (based on the output of its final step). You can handle these results (including errors arising from particular steps) with a match block:
 
 ```ruby
 save_user.call(name: "Jane", email: "jane@doe.com") do |m|
