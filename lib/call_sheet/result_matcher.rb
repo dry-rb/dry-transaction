@@ -16,8 +16,8 @@ module CallSheet
     def failure(step_name = nil, &block)
       return output unless result.is_a?(Kleisli::Either::Left)
 
-      @output = if step_name.nil? || step_name == result.value.__step_name
-        block.call(result.value)
+      if step_name.nil? || step_name == result.value.__step_name
+        @output = block.call(result.value)
       end
     end
   end
