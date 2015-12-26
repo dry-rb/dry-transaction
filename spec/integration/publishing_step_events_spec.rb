@@ -2,7 +2,7 @@ RSpec.describe "publishing step events" do
   let(:call_sheet) {
     CallSheet(container: container) do
       map :process
-      raw :verify
+      step :verify
       tee :persist
     end
   }

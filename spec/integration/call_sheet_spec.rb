@@ -2,7 +2,7 @@ RSpec.describe CallSheet do
   let(:call_sheet) {
     CallSheet(container: container) do
       map :process
-      raw :verify
+      step :verify
       try :validate, catch: Test::NotValidError
       tee :persist
     end
