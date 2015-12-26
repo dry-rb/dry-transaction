@@ -1,3 +1,8 @@
+# 0.4.0 / 2015-12-26
+
+* Added `Transaction#append`, `#prepend`, `#insert` and `#remove` for modifying existing transactions and returning new copies.
+* Removed `raw` step adapter name - `step` should be used instead.
+
 # 0.3.2 / 2015-11-13
 
 * Fixed a bug where additional step arguments were passed in the wrong order for `map` and `raw` steps.
