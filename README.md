@@ -170,8 +170,6 @@ save_user = CallSheet(container: large_whole_app_container) do
 end
 ```
 
-A `raw` step (also aliased as `step`) can be used if the operation in your container already returns an `Either` and therefore doesn’t need any special handling.
-
 ## Installation
 
 Add this line to your application’s `Gemfile`:
