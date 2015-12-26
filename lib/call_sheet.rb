@@ -15,22 +15,21 @@ require "call_sheet/dsl"
 # transaction, with its output is passed as the input to the next operation.
 # Operations will only be called if the previous step was a success.
 #
-# A step is successful when it returns a `Success` object (from the
-# [Deterministic](deterministic) gem) wrapping its output value. A step is a
-# failure when it returns a `Failure` object.  If your operations already
-# return a `Success` or `Failure`, they can be added to your operation as
-# plain `step` or `raw` steps.
+# A step is successful when it returns a [Kleisli](kleisli) `Right` object
+# wrapping its output value. A step is a failure when it returns a `Left`
+# object.  If your operations already return a `Right` or `Left`, they can be
+# added to your operation as plain `step` or `raw` steps.
 #
-# If your operations don't already return `Success` or `Failure`, then they
-# can be added to the transaction with the following steps:
+# If your operations don't already return `Right` or `Left`, then they can be
+# added to the transaction with the following steps:
 #
-# * `map` --- wrap the output of the operation in a `Success`
-# * `try` --- wrap the output of the operation in a `Success`, unless a certain
-#   exception is raised, which will be caught and returned as a `Failure`.
+# * `map` --- wrap the output of the operation in a `Right`
+# * `try` --- wrap the output of the operation in a `Right`, unless a certain
+#   exception is raised, which will be caught and returned as a `Left`.
 # * `tee` --- ignore the output of the operation and pass through its original
-#   input as a `Sucess`.
+#   input as a `Right`.
 #
-# [deterministic]: https://github.com/pzol/deterministic
+# [kleisli]: https://rubygems.org/gems/kleisli
 #
 # @example
 #   container = {do_first: some_obj, do_second: some_obj}
