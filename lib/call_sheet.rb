@@ -42,7 +42,7 @@ require "call_sheet/dsl"
 #
 #   my_transaction.call(some_input)
 #
-# @param [Hash] options the options hash
+# @param options [Hash] the options hash
 # @option options [#[]] :container the operations container
 #
 # @return [CallSheet::Transaction] the transaction object
