@@ -158,6 +158,10 @@ NOTIFICATIONS
 
 This pub/sub mechanism is provided by the [Wisper](https://github.com/krisleech/wisper) gem. You can subscribe to specific steps using the `#subscribe(step_name: listener)` API, or subscribe to all steps via `#subscribe(listener)`.
 
+### Extending transactions
+
+You can extend existing transactions by inserting or removing steps. See the [API docs](http://www.rubydoc.info/github/icelab/call_sheet/CallSheet/Transaction) for more information.
+
 ### Working with a larger container
 
 In practice, your container won’t be a trivial collection of generically named operations. You can keep your transaction step names simple by using the `with:` option to provide the identifiers for the operations within your container:
