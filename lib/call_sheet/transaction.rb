@@ -76,7 +76,8 @@ module CallSheet
     #
     # [wisper]: https://rubygems.org/gems/wisper
     #
-    # @param listeners [Object, Hash{Symbol => Object}] the listener object or hash of steps and listeners
+    # @param listeners [Object, Hash{Symbol => Object}] the listener object or
+    #     hash of steps and listeners
     #
     # @api public
     def subscribe(listeners)
@@ -93,7 +94,8 @@ module CallSheet
       self
     end
 
-    # Return a transaction with the steps from the provided transaction prepended onto the beginning of the steps in `self`.
+    # Return a transaction with the steps from the provided transaction
+    # prepended onto the beginning of the steps in `self`.
     #
     # @example Prepend an existing transaction
     #   my_transaction = CallSheet(container: container) do
@@ -117,8 +119,11 @@ module CallSheet
     #     step :another
     #   end
     #
-    # @param other [CallSheet::Transaction] the transaction to prepend. Optional if you will define a transaction inline via a block.
-    # @param options [Hash] the options hash for defining a transaction inline via a block. Optional if the transaction is passed directly as `other`.
+    # @param other [CallSheet::Transaction] the transaction to prepend.
+    #     Optional if you will define a transaction inline via a block.
+    # @param options [Hash] the options hash for defining a transaction inline
+    #     via a block. Optional if the transaction is passed directly as
+    #     `other`.
     # @option options [#[]] :container the operations container
     #
     # @return [CallSheet::Transaction] the modified transaction object
@@ -130,7 +135,8 @@ module CallSheet
       self.class.new(other.steps + steps)
     end
 
-    # Return a transaction with the steps from the provided transaction appended onto the end of the steps in `self`.
+    # Return a transaction with the steps from the provided transaction
+    # appended onto the end of the steps in `self`.
     #
     # @example Append an existing transaction
     #   my_transaction = CallSheet(container: container) do
@@ -154,8 +160,11 @@ module CallSheet
     #     step :another
     #   end
     #
-    # @param other [CallSheet::Transaction] the transaction to append. Optional if you will define a transaction inline via a block.
-    # @param options [Hash] the options hash for defining a transaction inline via a block. Optional if the transaction is passed directly as `other`.
+    # @param other [CallSheet::Transaction] the transaction to append.
+    #     Optional if you will define a transaction inline via a block.
+    # @param options [Hash] the options hash for defining a transaction inline
+    #     via a block. Optional if the transaction is passed directly as
+    #     `other`.
     # @option options [#[]] :container the operations container
     #
     # @return [CallSheet::Transaction] the modified transaction object
@@ -167,7 +176,8 @@ module CallSheet
       self.class.new(steps + other.steps)
     end
 
-    # Return a transaction with the steps from the provided transaction inserted into a specific place among the steps in `self`.
+    # Return a transaction with the steps from the provided transaction
+    # inserted into a specific place among the steps in `self`.
     #
     # Transactions can be inserted either before or after a named step.
     #
@@ -193,10 +203,15 @@ module CallSheet
     #     step :another
     #   end
     #
-    # @param other [CallSheet::Transaction] the transaction to append. Optional if you will define a transaction inline via a block.
-    # @param before [Symbol] the name of the step before which the transaction should be inserted (provide either this or `after`)
-    # @param after [Symbol] the name of the step after which the transaction should be inserted (provide either this or `before`)
-    # @param options [Hash] the options hash for defining a transaction inline via a block. Optional if the transaction is passed directly as `other`.
+    # @param other [CallSheet::Transaction] the transaction to append.
+    #     Optional if you will define a transaction inline via a block.
+    # @param before [Symbol] the name of the step before which the transaction
+    #     should be inserted (provide either this or `after`)
+    # @param after [Symbol] the name of the step after which the transaction
+    #     should be inserted (provide either this or `before`)
+    # @param options [Hash] the options hash for defining a transaction inline
+    #     via a block. Optional if the transaction is passed directly as
+    #     `other`.
     # @option options [#[]] :container the operations container
     #
     # @return [CallSheet::Transaction] the modified transaction object
