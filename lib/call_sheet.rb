@@ -12,7 +12,7 @@ require "call_sheet/dsl"
 # `#call(*args, input)`.
 #
 # Each operation will be called in the order it was specified in your
-# transaction, with its output is passed as the intput to the next operation.
+# transaction, with its output is passed as the input to the next operation.
 # Operations will only be called if the previous step was a success.
 #
 # A step is successful when it returns a `Success` object (from the
