@@ -83,19 +83,17 @@ Each transaction returns a result value wrapped in a `Left` or `Right` object (b
 
 ```ruby
 save_user.call(name: "Jane", email: "jane@doe.com") do |m|
-  m.success do
+  m.success do |value|
     puts "Succeeded!"
   end
 
-  m.failure do |f|
-    f.on :validate do |errors|
-      # In a more realistic example, you’d loop through a list of messages in `errors`.
-      puts "Couldn’t save this user. Please provide an email address."
-    end
+  m.failure :validate do |error|
+    # In a more realistic example, you’d loop through a list of messages in `errors`.
+    puts "Please provide an email address."
+  end
 
-    f.otherwise do |error|
-      puts "Couldn’t save this user."
-    end
+  m.failure do |error|
+    puts "Couldn’t save this user."
   end
 end
 ```
