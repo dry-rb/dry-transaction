@@ -198,4 +198,4 @@ Call Sheet’s error handling is based on Scott Wlaschin’s [Railway Oriented P
 
 ## License
 
-Copyright © 2015 [Icelab](http://icelab.com.au/). Call Sheet is free software, and may be redistributed under the terms specified in the [license](LICENSE.md).
+Copyright © 2015-2016 [Icelab](http://icelab.com.au/). Call Sheet is free software, and may be redistributed under the terms specified in the [license](LICENSE.md).
