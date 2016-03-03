@@ -136,4 +136,16 @@ RSpec.describe CallSheet do
       expect(call_sheet.call(input).value).to eq "raw failure"
     end
   end
+
+  context "with a malformed step" do
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+
+    before do
+      container[:verify] = -> input { true }
+    end
+
+    it "complains about the result's type mismatch" do
+      expect { call_sheet.call(input) }.to raise_error(ArgumentError)
+    end
+  end
 end
