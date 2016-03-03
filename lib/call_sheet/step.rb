@@ -23,7 +23,9 @@ module CallSheet
     def call(input)
       args = call_args + [input]
       result = operation.call(*args)
-
+      unless result.class.ancestors.include? Kleisli::Either
+        raise ArgumentError.new "Step result mismatch, either Right or Left was expected but #{result.class} was returned"
+      end
       result.fmap { |value|
         broadcast :"#{step_name}_success", value
         value
