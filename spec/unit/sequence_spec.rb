@@ -1,4 +1,4 @@
-RSpec.describe CallSheet::Transaction do
+RSpec.describe Dry::Transaction::Sequence do
   subject(:container) {
     {
       upcase: -> input { input.upcase },
@@ -9,13 +9,13 @@ RSpec.describe CallSheet::Transaction do
 
   describe "#prepend" do
     let(:initial_transaction) {
-      CallSheet(container: container) do
+      Dry.Transaction(container: container) do
         map :exclaim_all
       end
     }
 
     it "prepends the transaction" do
-      other_transaction = CallSheet(container: container) do
+      other_transaction = Dry.Transaction(container: container) do
         map :reverse
       end
       new_transaction = initial_transaction.prepend(other_transaction)
@@ -46,13 +46,13 @@ RSpec.describe CallSheet::Transaction do
 
   describe "#append" do
     let(:initial_transaction) {
-      CallSheet(container: container) do
+      Dry.Transaction(container: container) do
         map :exclaim_all
       end
     }
 
     it "appends the transaction" do
-      other_transaction = CallSheet(container: container) do
+      other_transaction = Dry.Transaction(container: container) do
         map :reverse
       end
       new_transaction = initial_transaction.append(other_transaction)
@@ -83,7 +83,7 @@ RSpec.describe CallSheet::Transaction do
 
   describe "#remove" do
     let(:initial_transaction) {
-      CallSheet(container: container) do
+      Dry.Transaction(container: container) do
         map :upcase
         map :exclaim_all
         map :reverse
@@ -103,14 +103,14 @@ RSpec.describe CallSheet::Transaction do
 
   describe "#insert" do
     let(:initial_transaction) {
-      CallSheet(container: container) do
+      Dry.Transaction(container: container) do
         map :upcase
         map :reverse
       end
     }
 
     it "accepts a transaction passed as an argument" do
-      other_transaction = CallSheet(container: container) do
+      other_transaction = Dry.Transaction(container: container) do
         map :exclaim_all
       end
       new_transaction = initial_transaction.insert(other_transaction, before: :reverse)

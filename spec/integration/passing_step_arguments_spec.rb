@@ -1,8 +1,8 @@
 RSpec.describe "Passing additional arguments to step operations" do
-  let(:run_call_sheet) { call_sheet.call(input, step_options) }
+  let(:call_transaction) { transaction.call(input, step_options) }
 
-  let(:call_sheet) {
-    CallSheet(container: container) do
+  let(:transaction) {
+    Dry.Transaction(container: container) do
       map :process
       try :validate, catch: Test::NotValidError
       tee :persist
@@ -28,7 +28,7 @@ RSpec.describe "Passing additional arguments to step operations" do
     let(:step_options) { {validate: ["doe.com"]} }
 
     it "passes the arguments and calls the operations successfully" do
-      expect(run_call_sheet).to be_a Kleisli::Either::Right
+      expect(call_transaction).to be_a Kleisli::Either::Right
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe "Passing additional arguments to step operations" do
     let(:step_options) { {} }
 
     it "raises an ArgumentError" do
-      expect { run_call_sheet }.to raise_error(ArgumentError)
+      expect { call_transaction }.to raise_error(ArgumentError)
     end
   end
 
@@ -44,7 +44,7 @@ RSpec.describe "Passing additional arguments to step operations" do
     let(:step_options) { {validate: ["doe.com"], bogus: ["not matching any step"]} }
 
     it "raises an ArgumentError" do
-      expect { run_call_sheet }.to raise_error(ArgumentError)
+      expect { call_transaction }.to raise_error(ArgumentError)
     end
   end
 end

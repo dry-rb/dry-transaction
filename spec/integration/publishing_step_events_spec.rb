@@ -1,6 +1,6 @@
 RSpec.describe "publishing step events" do
-  let(:call_sheet) {
-    CallSheet(container: container) do
+  let(:transaction) {
+    Dry.Transaction(container: container) do
       map :process
       step :verify
       tee :persist
@@ -23,11 +23,11 @@ RSpec.describe "publishing step events" do
 
   context "subscribing to all step events" do
     before do
-      call_sheet.subscribe(subscriber)
+      transaction.subscribe(subscriber)
     end
 
     specify "subscriber receives success events" do
-      call_sheet.call("name" => "Jane")
+      transaction.call("name" => "Jane")
 
       expect(subscriber).to have_received(:process_success).with(name: "Jane")
       expect(subscriber).to have_received(:verify_success).with(name: "Jane")
@@ -35,7 +35,7 @@ RSpec.describe "publishing step events" do
     end
 
     specify "subsriber receives success events for passing steps, a failure event for the failing step, and no subsequent events" do
-      call_sheet.call("name" => "")
+      transaction.call("name" => "")
 
       expect(subscriber).to have_received(:process_success).with(name: "")
       expect(subscriber).to have_received(:verify_failure).with({name: ""}, "no name")
@@ -45,11 +45,11 @@ RSpec.describe "publishing step events" do
 
   context "subscribing to particular step events" do
     before do
-      call_sheet.subscribe(verify: subscriber)
+      transaction.subscribe(verify: subscriber)
     end
 
     specify "subscriber receives success event for the specified step" do
-      call_sheet.call("name" => "Jane")
+      transaction.call("name" => "Jane")
 
       expect(subscriber).to have_received(:verify_success).with(name: "Jane")
       expect(subscriber).not_to have_received(:process_success)
@@ -57,7 +57,7 @@ RSpec.describe "publishing step events" do
     end
 
     specify "subscriber receives failure event for the specified step" do
-      call_sheet.call("name" => "")
+      transaction.call("name" => "")
 
       expect(subscriber).to have_received(:verify_failure).with({name: ""}, "no name")
     end

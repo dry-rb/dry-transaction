@@ -1,16 +1,16 @@
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "call_sheet/version"
+require "dry/transaction/version"
 
 Gem::Specification.new do |spec|
-  spec.name     = "call_sheet"
-  spec.version  = CallSheet::VERSION
+  spec.name     = "dry-transaction"
+  spec.version  = Dry::Transaction::VERSION
   spec.authors  = ["Tim Riley"]
   spec.email    = ["tim@icelab.com.au"]
   spec.license  = "MIT"
 
   spec.summary  = "Business Transaction Flow DSL"
-  spec.homepage = "https://github.com/icelab/call_sheet"
+  spec.homepage = "https://github.com/dry-rb/dry-transaction"
 
   spec.files = Dir["README.md", "LICENSE.md", "Gemfile*", "Rakefile", "lib/**/*", "spec/**/*"]
   spec.require_paths = ["lib"]

@@ -1,17 +1,17 @@
-[gitter]: https://gitter.im/icelab/call_sheet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-[gem]: https://rubygems.org/gems/call_sheet
-[code_climate]: https://codeclimate.com/github/icelab/call_sheet
-[inch]: http://inch-ci.org/github/icelab/call_sheet
+[gitter]: https://gitter.im/dry-rb/chat
+[gem]: https://rubygems.org/gems/dry-transaction
+[code_climate]: https://codeclimate.com/github/dry-rb/dry-transaction
+[inch]: http://inch-ci.org/github/dry-rb/dry-transaction
 
-# Call Sheet [![Join the chat at https://gitter.im/icelab/call_sheet](https://badges.gitter.im/Join%20Chat.svg)](gitter)
+# dry-transaction [![Join the chat at https://gitter.im/dry-rb/chat](https://badges.gitter.im/Join%20Chat.svg)](gitter)
 
-[![Gem Version](https://img.shields.io/gem/v/call_sheet.svg)][gem]
-[![Code Climate](https://img.shields.io/codeclimate/github/icelab/call_sheet.svg)][code_climate]
-[![API Documentation Coverage](http://inch-ci.org/github/icelab/call_sheet.svg)][inch]
+[![Gem Version](https://img.shields.io/gem/v/dry-transaction.svg)][gem]
+[![Code Climate](https://img.shields.io/codeclimate/github/dry-rb/dry-transaction.svg)][code_climate]
+[![API Documentation Coverage](http://inch-ci.org/github/dry-rb/dry-transaction.svg)][inch]
 
-Call Sheet is a business transaction DSL. It provides a simple way to define a complex business transaction that includes processing by many different objects. It makes error handling a primary concern by using a “[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/)” approach for capturing and returning errors from any step in the transaction.
+dry-transaction is a business transaction DSL. It provides a simple way to define a complex business transaction that includes processing by many different objects. It makes error handling a primary concern by using a “[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/)” approach for capturing and returning errors from any step in the transaction.
 
-Call Sheet is based on the following ideas, drawn mostly from [Transflow](http://github.com/solnic/transflow):
+dry-transaction is based on the following ideas:
 
 * A business transaction is a series of operations where each can fail and stop processing.
 * A business transaction resolves its dependencies using an external container object and it doesn’t know any details about the individual operation objects except their identifiers.
@@ -32,7 +32,7 @@ The output of each step is wrapped in a [Kleisli](https://github.com/txus/kleisl
 
 ### Container
 
-All you need to use Call Sheet is a container to hold your application’s operations. Each operation must respond to `#call(input)`.
+All you need to use dry-transaction is a container to hold your application’s operations. Each operation must respond to `#call(input)`.
 
 The operations will be resolved from the container via `#[]`. For our examples, we’ll use a plain hash:
 
@@ -51,7 +51,7 @@ For larger apps, you may like to consider something like [dry-container](https:/
 Define a transaction to bring your opererations together:
 
 ```ruby
-save_user = CallSheet(container: container) do
+save_user = Dry.Transaction(container: container) do
   map :process
   try :validate, catch: ValidationFailure
   tee :persist
@@ -111,7 +111,7 @@ container = {
   persist:  -> input { DB << input and true }
 }
 
-save_user = CallSheet(container: container) do
+save_user = Dry.Transaction(container: container) do
   map :process
   try :validate, catch: ValidationFailure
   tee :persist
@@ -158,14 +158,14 @@ This pub/sub mechanism is provided by the [Wisper](https://github.com/krisleech/
 
 ### Extending transactions
 
-You can extend existing transactions by inserting or removing steps. See the [API docs](http://www.rubydoc.info/github/icelab/call_sheet/CallSheet/Transaction) for more information.
+You can extend existing transactions by inserting or removing steps. See the [API docs](http://www.rubydoc.info/github/dry-rb/dry-transaction/Dry/Transaction/Sequence) for more information.
 
 ### Working with a larger container
 
 In practice, your container won’t be a trivial collection of generically named operations. You can keep your transaction step names simple by using the `with:` option to provide the identifiers for the operations within your container:
 
 ```ruby
-save_user = CallSheet(container: large_whole_app_container) do
+save_user = Dry.Transaction(container: large_whole_app_container) do
   map :process, with: "attributes.user"
   try :validate, with: "validations.user", catch: ValidationFailure
   tee :persist, with: "persistance.commands.update_user"
@@ -177,25 +177,25 @@ end
 Add this line to your application’s `Gemfile`:
 
 ```ruby
-gem "call_sheet"
+gem "dry-transaction"
 ```
 
 Run `bundle` to install the gem.
 
 ## Documentation
 
-View the [full API documentation](http://www.rubydoc.info/github/icelab/call_sheet) on RubyDoc.info.
+View the [full API documentation](http://www.rubydoc.info/github/dry-rb/dry-transaction) on RubyDoc.info.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on [GitHub](http://github.com/icelab/call_sheet).
+Bug reports and pull requests are welcome on [GitHub](http://github.com/dry-rb/dry-transaction).
 
 ## Credits
 
-Call Sheet is developed and maintained by [Icelab](http://icelab.com.au/).
+dry-transaction is developed and maintained by [Icelab](http://icelab.com.au/).
 
-Call Sheet’s error handling is based on Scott Wlaschin’s [Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/), found via Zohaib Rauf’s [Railway Oriented Programming in Elixir](http://zohaib.me/railway-programming-pattern-in-elixir/) blog post. Call Sheet’s behavior as a business transaction library draws heavy inspiration from Piotr Solnica’s [Transflow](http://github.com/solnic/transflow) and Gilbert B Garza’s [Solid Use Case](https://github.com/mindeavor/solid_use_case). Josep M. Bach’s [Kleisli](https://github.com/txus/kleisli) gem makes functional programming patterns in Ruby accessible and fun. Thank you all!
+dry-transaction’s error handling is based on Scott Wlaschin’s [Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/), found via Zohaib Rauf’s [Railway Oriented Programming in Elixir](http://zohaib.me/railway-programming-pattern-in-elixir/) blog post. dry-transaction’s behavior as a business transaction library draws heavy inspiration from Piotr Solnica’s [Transflow](http://github.com/solnic/transflow) and Gilbert B Garza’s [Solid Use Case](https://github.com/mindeavor/solid_use_case). Josep M. Bach’s [Kleisli](https://github.com/txus/kleisli) gem makes functional programming patterns in Ruby accessible and fun. Thank you all!
 
 ## License
 
-Copyright © 2015-2016 [Icelab](http://icelab.com.au/). Call Sheet is free software, and may be redistributed under the terms specified in the [license](LICENSE.md).
+Copyright © 2015-2016 [Icelab](http://icelab.com.au/). dry-transaction is free software, and may be redistributed under the terms specified in the [license](LICENSE.md).
