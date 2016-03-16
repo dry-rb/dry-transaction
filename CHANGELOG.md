@@ -1,3 +1,8 @@
+# 0.5.0 / 2016-03-16
+
+* Renamed gem to `dry-transaction`
+* Transactions are now defined via `Dry.Transaction(options)`
+
 # 0.4.0 / 2015-12-26
 
 * Added `Transaction#append`, `#prepend`, `#insert` and `#remove` for modifying existing transactions and returning new copies.
