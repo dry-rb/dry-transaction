@@ -1,14 +1,14 @@
 module Dry
   module Transaction
-    module StepAdapters
+    class StepAdapters
       # @api private
-      class Map < Base
-        def call(*args, input)
-          Right(operation.call(*args, input))
+      class Map
+        def call(step, *args, input)
+          Right(step.operation.call(*args, input))
         end
       end
 
-      register :map, Map
+      register :map, Map.new
     end
   end
 end

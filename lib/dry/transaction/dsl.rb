@@ -1,41 +1,39 @@
 require "dry/transaction/step"
 require "dry/transaction/step_adapters"
-require "dry/transaction/step_adapters/base"
-require "dry/transaction/step_adapters/map"
-require "dry/transaction/step_adapters/raw"
-require "dry/transaction/step_adapters/tee"
-require "dry/transaction/step_adapters/try"
 require "dry/transaction/sequence"
 
 module Dry
   module Transaction
+    # @api private
     class DSL
-      # @api private
-      attr_reader :options
-
-      # @api private
       attr_reader :container
-
-      # @api private
+      attr_reader :step_adapters
       attr_reader :steps
 
-      # @api private
       def initialize(options, &block)
-        @options = options
         @container = options.fetch(:container)
+        @step_adapters = options.fetch(:step_adapters, StepAdapters)
         @steps = []
 
-        instance_exec(&block)
+        instance_eval(&block)
       end
 
-      StepAdapters.each do |adapter_name, adapter_class|
-        define_method adapter_name do |step_name, options = {}|
-          operation = container[options.fetch(:with, step_name)]
-          steps << Step.new(step_name, adapter_class.new(operation, options))
-        end
+      def respond_to_missing?(method_name)
+        step_adapters.key?(method_name)
       end
 
-      # @api private
+      def method_missing(method_name, *args)
+        return super unless step_adapters.key?(method_name)
+
+        step_adapter = step_adapters[method_name]
+        step_name = args.first
+        options = args.last.is_a?(Hash) ? args.last : {}
+        operation_name = options.delete(:with) || step_name
+        operation = container[operation_name]
+
+        steps << Step.new(step_adapter, step_name, operation_name, operation, options)
+      end
+
       def call
         Sequence.new(steps)
       end
