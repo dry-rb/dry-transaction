@@ -72,7 +72,7 @@ module Dry
       #   my_transaction.subscribe(my_listener)
       #
       # @example Subscribing to notifications from specific steps
-      #   my_transaction.subscirbe(some_step: my_listener, another_step: another_listener)
+      #   my_transaction.subscribe(some_step: my_listener, another_step: another_listener)
       #
       # Notifications are implemented using the [Wisper](wisper) gem.
       #
