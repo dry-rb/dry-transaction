@@ -136,4 +136,16 @@ RSpec.describe "Transactions" do
       expect(transaction.call(input).value).to eq "raw failure"
     end
   end
+
+  context "non-confirming raw step result" do
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+
+    before do
+      container[:verify] = -> input { "failure" }
+    end
+
+    it "raises an exception" do
+      expect { transaction.call(input) }.to raise_error(ArgumentError)
+    end
+  end
 end
