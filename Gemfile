@@ -4,4 +4,10 @@ gemspec
 
 group :test do
   gem "codeclimate-test-reporter", require: nil
+  gem "byebug", platform: :mri
+end
+
+group :tools do
+  gem "pry"
+  gem "dry-container"
 end

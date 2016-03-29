@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "pry"
+require "byebug"
+require "dry-transaction"
+require "dry-container"
+
+Pry.start
