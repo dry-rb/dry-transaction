@@ -1,3 +1,16 @@
+# 0.6.0 / 2016-04-06
+
+## Added
+
+* Allow custom step adapters to be supplied via a container of adapters being passed as a `step_adapters:` option to `Dry.Transaction` (timriley)
+* Raise a meaningful error if a `step` step returns a non-`Either` object (davidpelaez)
+
+## Internal
+
+* Change the step adapter API so more step-related information remains available at the time of the step being called (timriley)
+
+[Compare v0.5.0...v0.6.0](https://github.com/dryrb/dry-transaction/compare/v0.5.0...v0.6.0)
+
 # 0.5.0 / 2016-03-16
 
 * Renamed gem to `dry-transaction`
