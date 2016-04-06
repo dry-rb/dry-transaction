@@ -9,7 +9,7 @@
 
 * Change the step adapter API so more step-related information remains available at the time of the step being called (timriley)
 
-[Compare v0.5.0...v0.6.0](https://github.com/dryrb/dry-transaction/compare/v0.5.0...v0.6.0)
+[Compare v0.5.0...v0.6.0](https://github.com/dry-rb/dry-transaction/compare/v0.5.0...v0.6.0)
 
 # 0.5.0 / 2016-03-16
 
