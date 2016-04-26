@@ -12,6 +12,10 @@ module Dry
         @__object.send(name, *args, &block)
       end
 
+      def respond_to_missing?(*args)
+        @__object.respond_to?(*args)
+      end
+
       def ==(other)
         @__object == other
       end
