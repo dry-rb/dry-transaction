@@ -135,6 +135,12 @@ RSpec.describe "Transactions" do
     it "returns the failing value from the operation" do
       expect(transaction.call(input).value).to eq "raw failure"
     end
+
+    it "returns an object that quacks like expected" do
+      result = transaction.call(input).value
+
+      expect(Array(result)).to eq(['raw failure'])
+    end
   end
 
   context "non-confirming raw step result" do
