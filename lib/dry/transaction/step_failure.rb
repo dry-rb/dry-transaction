@@ -12,8 +12,8 @@ module Dry
         @__object.public_send(name, *args, &block)
       end
 
-      def respond_to_missing?(*args)
-        @__object.respond_to?(*args)
+      def respond_to_missing?(name, include_private = false)
+        @__object.respond_to?(name, include_private)
       end
 
       def ==(other)
