@@ -9,7 +9,7 @@ module Dry
       end
 
       def method_missing(name, *args, &block)
-        @__object.send(name, *args, &block)
+        @__object.public_send(name, *args, &block)
       end
 
       def respond_to_missing?(*args)

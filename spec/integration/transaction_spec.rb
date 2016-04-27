@@ -141,6 +141,12 @@ RSpec.describe "Transactions" do
 
       expect(Array(result)).to eq(['raw failure'])
     end
+
+    it "does not allow to call private methods on the result accidently" do
+      result = transaction.call(input).value
+
+      expect { result.print('') }.to raise_error(NoMethodError)
+    end
   end
 
   context "non-confirming raw step result" do
