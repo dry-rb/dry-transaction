@@ -3,6 +3,8 @@ require "dry/transaction/result_matcher"
 module Dry
   module Transaction
     class Sequence
+      include Dry::Monads::Either::Mixin
+
       # @api private
       attr_reader :steps
 
@@ -29,10 +31,10 @@ module Dry
       #   my_transaction.call(some_input, step_name: [extra_argument])
       #
       # The return value will be the output from the last operation, wrapped
-      # in a [Kleisli](kleisli) `Either` object, a `Right` for a successful
+      # in a [dry-monads](dry-monads) `Either` object, a `Right` for a successful
       # transaction or a `Left` for a failed transaction.
       #
-      # [kleisli]: https://rubygems.org/gems/kleisli
+      # [dry-monads]: https://rubygems.org/gems/dry-monads
       #
       # @param input
       # @param options [Hash] extra step arguments
@@ -45,7 +47,7 @@ module Dry
         assert_options_satisfy_step_arity(options)
 
         steps = steps_with_options_applied(options)
-        result = steps.inject(Right(input), :>>)
+        result = steps.inject(Right(input), :bind)
 
         if block
           block.call(ResultMatcher.new(result))

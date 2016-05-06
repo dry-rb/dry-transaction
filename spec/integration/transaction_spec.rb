@@ -31,7 +31,7 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a success" do
-      expect(transaction.call(input)).to be_a Kleisli::Either::Right
+      expect(transaction.call(input)).to be_a Dry::Monads::Either::Right
     end
 
     it "wraps the result of the final operation" do
@@ -68,7 +68,7 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a failure" do
-      expect(transaction.call(input)).to be_a Kleisli::Either::Left
+      expect(transaction.call(input)).to be_a Dry::Monads::Either::Left
     end
 
     it "wraps the result of the failing operation" do
@@ -129,7 +129,7 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a failure" do
-      expect(transaction.call(input)).to be_a Kleisli::Either::Left
+      expect(transaction.call(input)).to be_a Dry::Monads::Either::Left
     end
 
     it "returns the failing value from the operation" do

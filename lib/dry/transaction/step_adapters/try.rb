@@ -3,6 +3,8 @@ module Dry
     class StepAdapters
       # @api private
       class Try
+        include Dry::Monads::Either::Mixin
+
         def call(step, *args, input)
           unless step.options[:catch]
             raise ArgumentError, "+try+ steps require one or more exception classes provided via +catch:+"

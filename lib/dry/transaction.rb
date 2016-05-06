@@ -1,4 +1,4 @@
-require "kleisli"
+require "dry/monads/either"
 require "dry/transaction/version"
 require "dry/transaction/dsl"
 
@@ -16,7 +16,7 @@ module Dry
   # transaction, with its output is passed as the input to the next operation.
   # Operations will only be called if the previous step was a success.
   #
-  # A step is successful when it returns a [Kleisli](kleisli) `Right` object
+  # A step is successful when it returns a [dry-monads](dry-monads) `Right` object
   # wrapping its output value. A step is a failure when it returns a `Left`
   # object.  If your operations already return a `Right` or `Left`, they can be
   # added to your operation as plain `step` steps.
@@ -30,7 +30,7 @@ module Dry
   # * `tee` --- ignore the output of the operation and pass through its original
   #   input as a `Right`.
   #
-  # [kleisli]: https://rubygems.org/gems/kleisli
+  # [dry-monads]: https://rubygems.org/gems/dry-monads
   #
   # @example
   #   container = {do_first: some_obj, do_second: some_obj}
