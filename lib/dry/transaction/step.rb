@@ -6,6 +6,7 @@ module Dry
     # @api private
     class Step
       include Wisper::Publisher
+      include Dry::Monads::Either::Mixin
 
       attr_reader :step_adapter
       attr_reader :step_name

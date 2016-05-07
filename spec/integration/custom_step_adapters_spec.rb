@@ -21,6 +21,8 @@ RSpec.describe "Custom step adapters" do
 
     module Test
       class CustomStepAdapters < Dry::Transaction::StepAdapters
+        extend Dry::Monads::Either::Mixin
+
         register :enqueue, -> step, *args, input {
           Test::QUEUE << step.operation.call(*args, input)
           Right(input)
