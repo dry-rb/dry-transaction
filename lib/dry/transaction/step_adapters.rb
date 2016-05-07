@@ -4,7 +4,6 @@ module Dry
   module Transaction
     class StepAdapters
       extend Dry::Container::Mixin
-      extend Dry::Monads::Either::Mixin
     end
   end
 end
