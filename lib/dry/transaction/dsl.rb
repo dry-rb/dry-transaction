@@ -5,7 +5,7 @@ require "dry/transaction/sequence"
 module Dry
   module Transaction
     # @api private
-    class DSL
+    class DSL < BasicObject
       attr_reader :container
       attr_reader :step_adapters
       attr_reader :steps
@@ -27,7 +27,7 @@ module Dry
 
         step_adapter = step_adapters[method_name]
         step_name = args.first
-        options = args.last.is_a?(Hash) ? args.last : {}
+        options = args.last.is_a?(::Hash) ? args.last : {}
         operation_name = options.delete(:with) || step_name
         operation = container[operation_name]
 
