@@ -36,7 +36,7 @@ RSpec.describe Dry::Transaction::Sequence do
     end
 
     it "leaves the original transaction unmodified" do
-      new_transaction = initial_transaction.prepend(container: container) do
+      _new_transaction = initial_transaction.prepend(container: container) do
         map :reverse
       end
 
@@ -73,7 +73,7 @@ RSpec.describe Dry::Transaction::Sequence do
     end
 
     it "leaves the original transaction unmodified" do
-      new_transaction = initial_transaction.append(container: container) do
+      _new_transaction = initial_transaction.append(container: container) do
         map :reverse
       end
 
@@ -96,7 +96,7 @@ RSpec.describe Dry::Transaction::Sequence do
     end
 
     it "leaves the original transaction unmodified" do
-      new_transaction = initial_transaction.remove(:exclaim_all, :reverse)
+      _new_transaction = initial_transaction.remove(:exclaim_all, :reverse)
       expect(initial_transaction.call("hello world").right).to eq "!DLROW !OLLEH"
     end
   end
