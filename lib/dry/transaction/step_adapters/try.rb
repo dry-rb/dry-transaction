@@ -12,6 +12,7 @@ module Dry
 
           Right(step.operation.call(*args, input))
         rescue *Array(step.options[:catch]) => e
+          e = step.options[:raise].new(e.message) if step.options[:raise]
           Left(e)
         end
       end
