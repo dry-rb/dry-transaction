@@ -1,3 +1,18 @@
+# 0.7.0 / 2016-06-06
+
+## Added
+
+* `try` steps support a `:raise` option, so a caught exception can be re-raised as a different (more domain-specific) exception (mrbongiolo)
+
+## Changed
+
+* Use dry-monads (e.g. `Dry::Monads::Either::Right`) instead of kleisli (`Kleisli::Either::Right`) (flash-gordon)
+
+## Fixed
+
+* Add `#respond_to_missing?` to `StepFailure` wrapper class so it can more faithfully represent the failure object it wraps (flash-gordon)
+* Stop the DSL processing from conflicting with ActiveSupport's `Object#try` monkey-patch (joevandyk)
+
 # 0.6.0 / 2016-04-06
 
 ## Added
