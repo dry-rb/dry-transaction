@@ -13,6 +13,8 @@
 * Add `#respond_to_missing?` to `StepFailure` wrapper class so it can more faithfully represent the failure object it wraps (flash-gordon)
 * Stop the DSL processing from conflicting with ActiveSupport's `Object#try` monkey-patch (joevandyk)
 
+[Compare v0.6.0...v0.7.0](https://github.com/dry-rb/dry-transaction/compare/v0.6.0...v0.7.0)
+
 # 0.6.0 / 2016-04-06
 
 ## Added
