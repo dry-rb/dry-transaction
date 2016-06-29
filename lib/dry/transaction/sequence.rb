@@ -1,3 +1,4 @@
+require "dry/monads/either"
 require "dry/transaction/result_matcher"
 
 module Dry
@@ -50,9 +51,12 @@ module Dry
         result = steps.inject(Right(input), :bind)
 
         if block
-          block.call(ResultMatcher.new(result))
+          ResultMatcher.(result, &block)
         else
-          result
+          result.or { |step_failure|
+            # Unwrap the value from the StepFailure and return it directly
+            Left(step_failure.value)
+          }
         end
       end
       alias_method :[], :call
