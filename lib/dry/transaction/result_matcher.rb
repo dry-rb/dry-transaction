@@ -1,13 +1,13 @@
-require "dry-result_matcher"
+require "dry-matcher"
 
 module Dry
   module Transaction
-    ResultMatcher = Dry::ResultMatcher::Matcher.new(
-      success: Dry::ResultMatcher::Case.new(
+    ResultMatcher = Dry::Matcher.new(
+      success: Dry::Matcher::Case.new(
         match: -> result { result.right? },
         resolve: -> result { result.value },
       ),
-      failure: Dry::ResultMatcher::Case.new(
+      failure: Dry::Matcher::Case.new(
         match: -> result, step_name = nil {
           if step_name
             result.left? && result.value.step_name == step_name
