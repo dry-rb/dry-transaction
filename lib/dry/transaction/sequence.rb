@@ -1,5 +1,5 @@
 require "dry/monads/either"
-require "dry/transaction/result_matcher"
+require "dry/transaction/dsl"
 
 module Dry
   module Transaction
@@ -10,8 +10,12 @@ module Dry
       attr_reader :steps
 
       # @api private
-      def initialize(steps)
+      attr_reader :matcher
+
+      # @api private
+      def initialize(steps, matcher)
         @steps = steps
+        @matcher = matcher
       end
 
       # Run the transaction.
@@ -51,7 +55,7 @@ module Dry
         result = steps.inject(Right(input), :bind)
 
         if block
-          ResultMatcher.(result, &block)
+          matcher.(result, &block)
         else
           result.or { |step_failure|
             # Unwrap the value from the StepFailure and return it directly
@@ -140,7 +144,7 @@ module Dry
       def prepend(other = nil, **options, &block)
         other = accept_or_build_transaction(other, **options, &block)
 
-        self.class.new(other.steps + steps)
+        self.class.new(other.steps + steps, matcher)
       end
 
       # Return a transaction with the steps from the provided transaction
@@ -181,7 +185,7 @@ module Dry
       def append(other = nil, **options, &block)
         other = accept_or_build_transaction(other, **options, &block)
 
-        self.class.new(steps + other.steps)
+        self.class.new(steps + other.steps, matcher)
       end
 
       # Return a transaction with the steps from the provided transaction
@@ -234,7 +238,7 @@ module Dry
         other = accept_or_build_transaction(other, **options, &block)
         index = steps.index { |step| step.step_name == insertion_step } + (!!after ? 1 : 0)
 
-        self.class.new(steps.dup.insert(index, *other.steps))
+        self.class.new(steps.dup.insert(index, *other.steps), matcher)
       end
 
       # @overload remove(step, ...)
@@ -256,7 +260,7 @@ module Dry
       #
       #   @api public
       def remove(*steps_to_remove)
-        self.class.new(steps.reject { |step| steps_to_remove.include?(step.step_name) })
+        self.class.new(steps.reject { |step| steps_to_remove.include?(step.step_name) }, matcher)
       end
 
       private
