@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["README.md", "LICENSE.md", "Gemfile*", "Rakefile", "lib/**/*", "spec/**/*"]
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = ">= 2.0.0"
+  spec.required_ruby_version = ">= 2.1.0"
 
   spec.add_runtime_dependency "dry-container", ">= 0.2.8"
   spec.add_runtime_dependency "dry-matcher", ">= 0.5.0"
