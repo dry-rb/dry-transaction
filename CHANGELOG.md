@@ -1,3 +1,14 @@
+# 0.8.0 / 2016-07-06
+
+## Changed
+
+- Match block API is now provided by `dry-matcher` gem (timriley)
+- Matching behaviour is clearer: match cases are run in order, the first match case “wins” and is executed, and all subsequent cases are ignored. This ensures a single, deterministic return value from the match block - the output of the single “winning” match case. (timriley)
+
+## Added
+
+- Provide your own matcher object via a `matcher:` option passed to `Dry.Transaction` (timriley)
+
 # 0.7.0 / 2016-06-06
 
 ## Added
