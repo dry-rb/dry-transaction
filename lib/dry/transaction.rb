@@ -44,8 +44,10 @@ module Dry
   #
   # @param options [Hash] the options hash
   # @option options [#[]] :container the operations container
+  # @option options [#[]] :step_adapters (Dry::Transaction::StepAdapters) a custom container of step adapters
+  # @option options [Dry::Matcher] :matcher (Dry::Transaction::ResultMatcher) a custom matcher object for result matching block API
   #
-  # @return [Dry::Transaction::Steps] the transaction object
+  # @return [Dry::Transaction::Sequence] the transaction object
   #
   # @api public
   def self.Transaction(options = {}, &block)

@@ -8,6 +8,10 @@ if RUBY_ENGINE == "ruby"
   end
 end
 
+begin
+  require "byebug"
+rescue LoadError; end
+
 require "dry-transaction"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in

@@ -1,3 +1,4 @@
+require "dry/transaction/result_matcher"
 require "dry/transaction/step"
 require "dry/transaction/step_adapters"
 require "dry/transaction/sequence"
@@ -9,11 +10,13 @@ module Dry
       attr_reader :container
       attr_reader :step_adapters
       attr_reader :steps
+      attr_reader :matcher
 
       def initialize(options, &block)
         @container = options.fetch(:container)
-        @step_adapters = options.fetch(:step_adapters, StepAdapters)
+        @step_adapters = options.fetch(:step_adapters) { StepAdapters }
         @steps = []
+        @matcher = options.fetch(:matcher) { ResultMatcher }
 
         instance_eval(&block)
       end
@@ -35,7 +38,7 @@ module Dry
       end
 
       def call
-        Sequence.new(steps)
+        Sequence.new(steps, matcher)
       end
     end
   end
