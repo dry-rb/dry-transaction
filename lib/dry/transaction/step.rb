@@ -13,6 +13,7 @@ module Dry
       attr_reader :operation_name
       attr_reader :operation
       attr_reader :options
+      attr_reader :lambda
       attr_reader :call_args
 
       def initialize(step_adapter, step_name, operation_name, operation, options, call_args = [])
@@ -21,6 +22,7 @@ module Dry
         @operation_name = operation_name
         @operation = operation
         @options = options
+        @lambda = @options.delete(:λ)
         @call_args = call_args
       end
 
@@ -30,7 +32,7 @@ module Dry
 
       def call(input)
         args = call_args + [input]
-        result = step_adapter.call(self, *args)
+        result = step_adapter.call(self, *args, &@lambda)
 
         result.fmap { |value|
           broadcast :"#{step_name}_success", value

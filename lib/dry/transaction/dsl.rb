@@ -31,7 +31,7 @@ module Dry
         step_adapter = step_adapters[method_name]
         step_name = args.first
         options = args.last.is_a?(::Hash) ? args.last : {}
-        options[options[:lambda] ? :λ : :lambda] = cb unless cb.nil?
+        options[:λ] = cb unless cb.nil?
         operation_name = options.delete(:with) || step_name
         operation = container[operation_name]
 
