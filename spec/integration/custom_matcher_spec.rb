@@ -5,7 +5,7 @@ RSpec.describe "Custom matcher" do
   let(:transaction) {
     Dry.Transaction(container: container, matcher: Test::CustomMatcher) do
       step :process
-      step :validate
+      step :validate, failure: :bad_value
       step :persist
     end
   }
@@ -29,7 +29,13 @@ RSpec.describe "Custom matcher" do
           resolve: -> result { result.value }
         ),
         nup: Dry::Matcher::Case.new(
-          match: -> result { result.left? },
+          match: -> result, failure = nil {
+            if failure
+              result.left? && result.value.step.options[:failure] == failure
+            else
+              result.left?
+            end
+          },
           resolve: -> result { result.value.value }
         )
       )
@@ -39,7 +45,7 @@ RSpec.describe "Custom matcher" do
   it "supports a custom matcher" do
     matches = -> m {
       m.yep { |v| "Yep! #{v[:email]}" }
-      m.nup { |v| "Nup. #{v.to_s}" }
+      m.nup(:bad_value) { |v| "Nup. #{v.to_s}" }
     }
 
     input = {"name" => "Jane", "email" => "jane@doe.com"}
