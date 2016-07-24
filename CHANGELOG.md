@@ -1,3 +1,17 @@
+# 0.9.0 / Unreleased
+
+## Added
+
+- Support for passing blocks to step adapters (am-kantox)
+
+    ```ruby
+    Dry.Transaction(container: MyContainer) do
+      my_custom_step :some_step do
+        # this code is captured as a block and passed to the step adapter
+      end
+    end
+    ```
+
 # 0.8.0 / 2016-07-06
 
 ## Changed
