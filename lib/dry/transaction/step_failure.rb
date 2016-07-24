@@ -1,11 +1,11 @@
 module Dry
   module Transaction
     class StepFailure
-      attr_reader :step_name
+      attr_reader :step
       attr_reader :value
 
-      def initialize(step_name, value)
-        @step_name = step_name
+      def initialize(step, value)
+        @step = step
         @value = value
       end
     end

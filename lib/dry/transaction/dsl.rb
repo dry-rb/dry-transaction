@@ -25,7 +25,7 @@ module Dry
         step_adapters.key?(method_name)
       end
 
-      def method_missing(method_name, *args)
+      def method_missing(method_name, *args, &block)
         return super unless step_adapters.key?(method_name)
 
         step_adapter = step_adapters[method_name]
@@ -34,7 +34,7 @@ module Dry
         operation_name = options.delete(:with) || step_name
         operation = container[operation_name]
 
-        steps << Step.new(step_adapter, step_name, operation_name, operation, options)
+        steps << Step.new(step_adapter, step_name, operation_name, operation, options, &block)
       end
 
       def call

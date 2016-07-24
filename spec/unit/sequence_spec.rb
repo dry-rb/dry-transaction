@@ -169,5 +169,41 @@ RSpec.describe Dry::Transaction::Sequence do
         expect(initial_transaction.call("hello world").right).to eq "DLROW OLLEH"
       end
     end
+
+    context "with code block explicitly passed to step" do
+      class WithBlockStepAdapters < ::Dry::Transaction::StepAdapters # :nodoc:
+        class WithBlock
+          include Dry::Monads::Either::Mixin
+          def call(step, *args, input, &cb)
+            Right(step.operation.((block_given? ? yield(input) : input), *args))
+          end
+        end
+        register :with_block, WithBlock.new
+      end
+      let!(:with_block_container) {
+        { exclaim_all: -> input { input.split(" ").map { |str| "#{str}!" }.join(" ") } }
+      }
+
+      let!(:no_block_transaction) {
+        Dry.Transaction(container: with_block_container, step_adapters: WithBlockStepAdapters) do
+          with_block :exclaim_all
+        end
+      }
+      let!(:with_block_transaction) {
+        Dry.Transaction(container: with_block_container, step_adapters: WithBlockStepAdapters) do
+          with_block :exclaim_all do |input|
+            input.gsub(/(?<=\s|\A)/, '¡')
+          end
+        end
+      }
+
+      it "inserts normal bangs without block given" do
+        expect(no_block_transaction.call("hello world").right).to eq "hello! world!"
+      end
+
+      it "inserts spanish bangs with block given" do
+        expect(with_block_transaction.call("hello world").right).to eq "¡hello! ¡world!"
+      end
+    end
   end
 end
