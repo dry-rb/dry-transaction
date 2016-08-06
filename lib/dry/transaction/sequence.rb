@@ -3,6 +3,12 @@ require "dry/transaction/dsl"
 
 module Dry
   module Transaction
+    # This is the class that actually stores the transaction.
+    # To be precise, it stores a series of steps that make up a transaction and
+    # a matcher for handling the result of the transaction.
+    #
+    # Never instantiate this class directly, it is intended to be created through
+    # the provided DSL.
     class Sequence
       include Dry::Monads::Either::Mixin
 
@@ -231,12 +237,14 @@ module Dry
       # @api public
       def insert(other = nil, before: nil, after: nil, **options, &block)
         insertion_step = before || after
-        unless steps.map(&:step_name).include?(insertion_step)
+        match_insertion_step = proc { |step| step.step_name == insertion_step }
+
+        unless steps.any?(&match_insertion_step)
           raise ArgumentError, "+#{insertion_step}+ is not a valid step name"
         end
 
         other = accept_or_build_transaction(other, **options, &block)
-        index = steps.index { |step| step.step_name == insertion_step } + (!!after ? 1 : 0)
+        index = steps.index(&match_insertion_step) + (after ? 1 : 0)
 
         self.class.new(steps.dup.insert(index, *other.steps), matcher)
       end
@@ -265,14 +273,16 @@ module Dry
 
       private
 
+      # @param options [Hash] step arguments keyed by step name
       def assert_valid_options(options)
         options.each_key do |step_name|
-          unless steps.map(&:step_name).include?(step_name)
+          unless steps.any? { |step| step.step_name == step_name }
             raise ArgumentError, "+#{step_name}+ is not a valid step name"
           end
         end
       end
 
+      # @param options [Hash] step arguments keyed by step name
       def assert_options_satisfy_step_arity(options)
         steps.each do |step|
           args_required = step.arity >= 0 ? step.arity : ~step.arity
@@ -284,6 +294,7 @@ module Dry
         end
       end
 
+      # @param options [Hash] step arguments keyed by step name
       def steps_with_options_applied(options)
         steps.map { |step|
           if (args = options[step.step_name])
