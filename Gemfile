@@ -9,5 +9,5 @@ end
 
 group :tools do
   gem "pry"
-  gem "dry-container"
+  gem "rubocop"
 end
