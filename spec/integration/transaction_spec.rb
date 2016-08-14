@@ -3,7 +3,13 @@ RSpec.describe "Transactions" do
     Dry.Transaction(container: container) do
       map :process
       step :verify
-      try :validate, catch: Test::NotValidError
+      try :validate, with: -> input {
+        if input[:email].nil?
+          raise(container[:invalid_error], "email required")
+        else
+          input
+        end
+      }, catch: Test::NotValidError
       tee :persist
     end
   }
@@ -12,8 +18,8 @@ RSpec.describe "Transactions" do
     {
       process:  -> input { {name: input["name"], email: input["email"]} },
       verify:   -> input { Right(input) },
-      validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
-      persist:  -> input { Test::DB << input and true }
+      persist:  -> input { Test::DB << input and true },
+      invalid_error: Test::NotValidError
     }
   }
 

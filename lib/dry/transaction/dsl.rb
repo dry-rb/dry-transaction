@@ -1,6 +1,7 @@
 require "dry/transaction/result_matcher"
 require "dry/transaction/step"
 require "dry/transaction/step_adapters"
+require "dry/transaction/step_definition"
 require "dry/transaction/sequence"
 
 module Dry
@@ -31,8 +32,15 @@ module Dry
         step_adapter = step_adapters[method_name]
         step_name = args.first
         options = args.last.is_a?(::Hash) ? args.last : {}
-        operation_name = options.delete(:with) || step_name
-        operation = container[operation_name]
+        with = options.delete(:with)
+
+        if with.respond_to?(:call)
+          operation_name = step_name
+          operation = StepDefinition.new(container, &with)
+        else
+          operation_name = with || step_name
+          operation = container[operation_name]
+        end
 
         steps << Step.new(step_adapter, step_name, operation_name, operation, options, &block)
       end
