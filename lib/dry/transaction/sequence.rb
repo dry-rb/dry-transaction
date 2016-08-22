@@ -1,5 +1,4 @@
 require "dry/monads/either"
-require "dry/transaction/dsl"
 
 module Dry
   module Transaction
