@@ -1,5 +1,4 @@
 require "dry/monads/either"
-require "dry/transaction/dsl"
 
 module Dry
   module Transaction
@@ -310,7 +309,12 @@ module Dry
           raise ArgumentError, "a transaction must be provided or defined in a block"
         end
 
-        other_transaction || DSL.new(**options, &block).call
+        if other_transaction
+          other_transaction
+        else
+          require "dry/transaction/dsl"
+          DSL.new(**options, &block).call
+        end
       end
     end
   end
