@@ -28,7 +28,8 @@ module Dry
       end
 
       def with_call_args(*call_args)
-        self.class.new(step_adapter, step_name, operation_name, operation, options, call_args, &block)
+        @call_args = call_args
+        self
       end
 
       def call(input)
