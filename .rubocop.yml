@@ -3,6 +3,8 @@ AllCops:
     - spec/**/*.rb
 Metrics/LineLength:
   Max: 140
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
 Style/AndOr:
   Enabled: false
 Style/BlockDelimiters:
@@ -15,9 +17,11 @@ Style/BlockDelimiters:
     # Ours:
     - specify
     - match
-    - CallSheet
+    - Transaction
     - Success
     - Failure
+Style/Documentation:
+  Enabled: false
 Style/Lambda:
   Enabled: false
 Style/LambdaCall:
@@ -34,6 +38,9 @@ Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 # Specific exclusions
+Style/FileName:
+  Exclude:
+    - lib/dry-transaction.rb
 Style/MethodName:
   Exclude:
-    - lib/call_sheet.rb
+    - lib/dry-transaction.rb
