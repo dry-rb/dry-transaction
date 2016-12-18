@@ -59,6 +59,8 @@ RSpec.describe "Transactions" do
         m.success do |value|
           results << "success for #{value[:email]}"
         end
+
+        m.failure { }
       end
 
       expect(results.first).to eq "success for jane@doe.com"
@@ -85,6 +87,8 @@ RSpec.describe "Transactions" do
       results = []
 
       transaction.call(input) do |m|
+        m.success { }
+
         m.failure do |value|
           results << "Failed: #{value}"
         end
@@ -97,6 +101,8 @@ RSpec.describe "Transactions" do
       results = []
 
       transaction.call(input) do |m|
+        m.success { }
+
         m.failure :validate do |value|
           results << "Validation failure: #{value}"
         end
@@ -109,6 +115,8 @@ RSpec.describe "Transactions" do
       results = []
 
       transaction.call(input) do |m|
+        m.success { }
+
         m.failure :some_other_step do |value|
           results << "Some other step failure"
         end
