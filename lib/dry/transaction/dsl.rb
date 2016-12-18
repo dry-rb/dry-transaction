@@ -2,10 +2,9 @@ require "dry/transaction/result_matcher"
 require "dry/transaction/step"
 require "dry/transaction/step_adapters"
 require "dry/transaction/step_definition"
-require "dry/transaction/sequence"
 
 module Dry
-  module Transaction
+  class Transaction
     # @api private
     class DSL < BasicObject
       attr_reader :container
@@ -46,7 +45,7 @@ module Dry
       end
 
       def call
-        Sequence.new(steps, matcher)
+        Transaction.new(steps, matcher)
       end
     end
   end

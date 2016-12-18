@@ -1,4 +1,4 @@
-RSpec.describe Dry::Transaction::Sequence do
+RSpec.describe Dry::Transaction do
   subject(:container) {
     {
       upcase: -> input { input.upcase },

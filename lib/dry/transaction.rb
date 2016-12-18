@@ -1,6 +1,7 @@
 require "dry/monads/either"
 require "dry/transaction/version"
 require "dry/transaction/dsl"
+require "dry/transaction/api"
 
 module Dry
   # Define a business transaction.
@@ -47,10 +48,32 @@ module Dry
   # @option options [#[]] :step_adapters (Dry::Transaction::StepAdapters) a custom container of step adapters
   # @option options [Dry::Matcher] :matcher (Dry::Transaction::ResultMatcher) a custom matcher object for result matching block API
   #
-  # @return [Dry::Transaction::Sequence] the transaction object
+  # @return [Dry::Transaction] the transaction object
   #
   # @api public
   def self.Transaction(options = {}, &block)
     Transaction::DSL.new(options, &block).call
+  end
+
+  # This is the class that actually stores the transaction.
+  # To be precise, it stores a series of steps that make up a transaction and
+  # a matcher for handling the result of the transaction.
+  #
+  # Never instantiate this class directly, it is intended to be created through
+  # the provided DSL.
+  class Transaction
+    include API
+
+    # @api private
+    attr_reader :steps
+
+    # @api private
+    attr_reader :matcher
+
+    # @api private
+    def initialize(steps, matcher)
+      @steps = steps
+      @matcher = matcher
+    end
   end
 end

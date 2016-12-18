@@ -1,5 +1,5 @@
 module Dry
-  module Transaction
+  class Transaction
     # A wrapper for storing together the step that failed
     # and value describing the failure.
     class StepFailure

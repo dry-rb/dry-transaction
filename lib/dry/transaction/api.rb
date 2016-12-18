@@ -1,28 +1,8 @@
 require "dry/monads/either"
 
 module Dry
-  module Transaction
-    # This is the class that actually stores the transaction.
-    # To be precise, it stores a series of steps that make up a transaction and
-    # a matcher for handling the result of the transaction.
-    #
-    # Never instantiate this class directly, it is intended to be created through
-    # the provided DSL.
-    class Sequence
-      include Dry::Monads::Either::Mixin
-
-      # @api private
-      attr_reader :steps
-
-      # @api private
-      attr_reader :matcher
-
-      # @api private
-      def initialize(steps, matcher)
-        @steps = steps
-        @matcher = matcher
-      end
-
+  class Transaction
+    module API
       # Run the transaction.
       #
       # Each operation will be called in the order it was specified, with its
@@ -57,14 +37,14 @@ module Dry
         assert_options_satisfy_step_arity(options)
 
         steps = steps_with_options_applied(options)
-        result = steps.inject(Right(input), :bind)
+        result = steps.inject(Dry::Monads.Right(input), :bind)
 
         if block
           matcher.(result, &block)
         else
           result.or { |step_failure|
             # Unwrap the value from the StepFailure and return it directly
-            Left(step_failure.value)
+            Dry::Monads.Left(step_failure.value)
           }
         end
       end
@@ -136,14 +116,14 @@ module Dry
       #     step :another
       #   end
       #
-      # @param other [Dry::Transaction::Sequence] the transaction to prepend.
+      # @param other [Dry::Transaction] the transaction to prepend.
       #     Optional if you will define a transaction inline via a block.
       # @param options [Hash] the options hash for defining a transaction inline
       #     via a block. Optional if the transaction is passed directly as
       #     `other`.
       # @option options [#[]] :container the operations container
       #
-      # @return [Dry::Transaction::Sequence] the modified transaction object
+      # @return [Dry::Transaction] the modified transaction object
       #
       # @api public
       def prepend(other = nil, **options, &block)
@@ -177,14 +157,14 @@ module Dry
       #     step :another
       #   end
       #
-      # @param other [Dry::Transaction::Sequence] the transaction to append.
+      # @param other [Dry::Transaction] the transaction to append.
       #     Optional if you will define a transaction inline via a block.
       # @param options [Hash] the options hash for defining a transaction inline
       #     via a block. Optional if the transaction is passed directly as
       #     `other`.
       # @option options [#[]] :container the operations container
       #
-      # @return [Dry::Transaction::Sequence] the modified transaction object
+      # @return [Dry::Transaction] the modified transaction object
       #
       # @api public
       def append(other = nil, **options, &block)
@@ -220,7 +200,7 @@ module Dry
       #     step :another
       #   end
       #
-      # @param other [Dry::Transaction::Sequence] the transaction to append.
+      # @param other [Dry::Transaction] the transaction to append.
       #     Optional if you will define a transaction inline via a block.
       # @param before [Symbol] the name of the step before which the
       #     transaction should be inserted (provide either this or `after`)
@@ -231,7 +211,7 @@ module Dry
       #     as `other`.
       # @option options [#[]] :container the operations container
       #
-      # @return [Dry::Transaction::Sequence] the modified transaction object
+      # @return [Dry::Transaction] the modified transaction object
       #
       # @api public
       def insert(other = nil, before: nil, after: nil, **options, &block)
@@ -263,7 +243,7 @@ module Dry
       #   @param step [Symbol] the names of a step to remove
       #   @param ... [Symbol] more names of steps to remove
       #
-      #   @return [Dry::Transaction::Sequence] the modified transaction object
+      #   @return [Dry::Transaction] the modified transaction object
       #
       #   @api public
       def remove(*steps_to_remove)
@@ -316,6 +296,7 @@ module Dry
           DSL.new(**options, &block).call
         end
       end
+
     end
   end
 end

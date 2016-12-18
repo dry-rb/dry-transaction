@@ -3,7 +3,7 @@ require "wisper"
 require "dry/transaction/step_failure"
 
 module Dry
-  module Transaction
+  class Transaction
     # @api private
     class Step
       include Wisper::Publisher

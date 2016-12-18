@@ -1,5 +1,5 @@
 module Dry
-  module Transaction
+  class Transaction
     # @api private
     class StepDefinition
       include Dry::Monads::Either::Mixin

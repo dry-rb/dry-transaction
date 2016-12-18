@@ -1,7 +1,7 @@
 require "dry/monads/either"
 
 module Dry
-  module Transaction
+  class Transaction
     class StepAdapters
       # @api private
       class Raw
