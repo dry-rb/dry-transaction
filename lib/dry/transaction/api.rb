@@ -296,7 +296,6 @@ module Dry
           DSL.new(**options, &block).call
         end
       end
-
     end
   end
 end
