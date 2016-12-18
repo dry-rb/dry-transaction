@@ -1,8 +1,19 @@
-# 0.9.0 / Unreleased
+# 0.9.0 / 2016-12-19
 
 ## Added
 
-- Support for passing blocks to step adapters (am-kantox)
+- Procs (or any callable objects) can be passed as a step's `with:` option instead of a container identifier string (AMHOL in [#44](https://github.com/dry-rb/dry-transaction/pull/44))
+
+    ```ruby
+    Dry.Transaction(container: MyContainer) do
+      step :some_step, with: "operations.some_thing"
+      step :another, with: -> input {
+        # your code here
+      }
+    end
+    ```
+
+- Support for passing blocks to step adapters (am-kantox in [#36](https://github.com/dry-rb/dry-transaction/pull/36))
 
     ```ruby
     Dry.Transaction(container: MyContainer) do
@@ -14,7 +25,11 @@
 
 ## Changed
 
-- `#call` argument order for step operations is now `#call(input, *args)`, not `#call(*args, input)` (timriley)
+- Whole step object is passed to `StepFailure` upon failure, which provides more information to custom matchers (mrbongiolo in [#35](https://github.com/dry-rb/dry-transaction/pull/35))
+- `#call` argument order for step operations is now `#call(input, *args)`, not `#call(*args, input)` (timriley in [#48](https://github.com/dry-rb/dry-transaction/pull/48))
+- `Dry::Transaction::Sequence` renamed to `Dry::Transaction` (timriley in [#49](https://github.com/dry-rb/dry-transaction/pull/49))
+
+[Compare v0.8.0...v0.9.0](https://github.com/dry-rb/dry-transaction/compare/v0.8.0...v0.9.0)
 
 # 0.8.0 / 2016-07-06
 
@@ -26,6 +41,8 @@
 ## Added
 
 - Provide your own matcher object via a `matcher:` option passed to `Dry.Transaction` (timriley)
+
+[Compare v0.7.0...v0.8.0](https://github.com/dry-rb/dry-transaction/compare/v0.7.0...v0.8.0)
 
 # 0.7.0 / 2016-06-06
 
