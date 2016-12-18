@@ -10,7 +10,7 @@ module Dry
   #
   # The operations should be addressable via `#[]` in a container object that
   # you pass when creating the transaction. The operations must respond to
-  # `#call(*args, input)`.
+  # `#call(input, *args)`.
   #
   # Each operation will be called in the order it was specified in your
   # transaction, with its output passed as the input to the next operation.
