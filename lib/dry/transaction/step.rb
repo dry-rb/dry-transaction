@@ -32,7 +32,7 @@ module Dry
       end
 
       def call(input)
-        args = call_args + [input]
+        args = [input] + call_args
         result = step_adapter.call(self, *args, &block)
 
         result.fmap { |value|

@@ -5,8 +5,8 @@ module Dry
       class Map
         include Dry::Monads::Either::Mixin
 
-        def call(step, *args, input)
-          Right(step.operation.call(*args, input))
+        def call(step, input, *args)
+          Right(step.operation.call(input, *args))
         end
       end
 

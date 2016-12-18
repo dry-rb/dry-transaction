@@ -12,7 +12,7 @@ RSpec.describe "Passing additional arguments to step operations" do
   let(:container) {
     {
       process:  -> input { {name: input["name"], email: input["email"]} },
-      validate: -> allowed, input { !input[:email].include?(allowed) ? raise(Test::NotValidError, "email not allowed") : input },
+      validate: -> input, allowed { !input[:email].include?(allowed) ? raise(Test::NotValidError, "email not allowed") : input },
       persist:  -> input { Test::DB << input and true }
     }
   }

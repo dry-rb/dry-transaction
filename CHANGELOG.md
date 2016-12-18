@@ -12,6 +12,10 @@
     end
     ```
 
+## Changed
+
+- `#call` argument order for step operations is now `#call(input, *args)`, not `#call(*args, input)` (timriley)
+
 # 0.8.0 / 2016-07-06
 
 ## Changed

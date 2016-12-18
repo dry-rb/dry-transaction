@@ -1,5 +1,5 @@
 RSpec.describe Dry::Transaction::Step do
-  let(:step_adapter) { ->(step, *args, input) { step.operation.call(*args, input) } }
+  let(:step_adapter) { ->(step, input, *args) { step.operation.call(input, *args) } }
   let(:step_name) { :test }
   let(:operation_name) { step_name }
 
