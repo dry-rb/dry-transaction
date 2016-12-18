@@ -174,7 +174,7 @@ RSpec.describe Dry::Transaction::Sequence do
       class WithBlockStepAdapters < ::Dry::Transaction::StepAdapters # :nodoc:
         class WithBlock
           include Dry::Monads::Either::Mixin
-          def call(step, *args, input, &cb)
+          def call(step, input, *args, &cb)
             Right(step.operation.((block_given? ? yield(input) : input), *args))
           end
         end

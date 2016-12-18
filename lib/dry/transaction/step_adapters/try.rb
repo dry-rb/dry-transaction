@@ -5,12 +5,12 @@ module Dry
       class Try
         include Dry::Monads::Either::Mixin
 
-        def call(step, *args, input)
+        def call(step, input, *args)
           unless step.options[:catch]
             raise ArgumentError, "+try+ steps require one or more exception classes provided via +catch:+"
           end
 
-          Right(step.operation.call(*args, input))
+          Right(step.operation.call(input, *args))
         rescue *Array(step.options[:catch]) => e
           e = step.options[:raise].new(e.message) if step.options[:raise]
           Left(e)

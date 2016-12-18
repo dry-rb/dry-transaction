@@ -5,8 +5,8 @@ module Dry
       class Tee
         include Dry::Monads::Either::Mixin
 
-        def call(step, *args, input)
-          step.operation.call(*args, input)
+        def call(step, input, *args)
+          step.operation.call(input, *args)
           Right(input)
         end
       end

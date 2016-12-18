@@ -7,8 +7,8 @@ module Dry
       class Raw
         include Dry::Monads::Either::Mixin
 
-        def call(step, *args, input)
-          result = step.operation.call(*args, input)
+        def call(step, input, *args)
+          result = step.operation.call(input, *args)
 
           unless result.is_a?(Dry::Monads::Either)
             raise ArgumentError, "step +#{step.step_name}+ must return an Either object"
