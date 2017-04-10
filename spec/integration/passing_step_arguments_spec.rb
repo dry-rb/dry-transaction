@@ -1,5 +1,5 @@
 RSpec.describe "Passing additional arguments to step operations" do
-  let(:call_transaction) { transaction.call(input, step_options) }
+  let(:call_transaction) { transaction.step_args(step_options).call(input) }
 
   let(:transaction) {
     Dry.Transaction(container: container) do
