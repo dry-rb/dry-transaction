@@ -75,5 +75,9 @@ module Dry
       @steps = steps
       @matcher = matcher
     end
+
+    def with_step_arguments(new_steps)
+      self.class.new(new_steps, matcher)
+    end
   end
 end

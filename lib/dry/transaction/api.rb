@@ -33,10 +33,6 @@ module Dry
       #
       # @api public
       def call(input, options = {}, &block)
-        assert_valid_options(options)
-        assert_options_satisfy_step_arity(options)
-
-        steps = steps_with_options_applied(options)
         result = steps.inject(Dry::Monads.Right(input), :bind)
 
         if block
@@ -49,6 +45,12 @@ module Dry
         end
       end
       alias_method :[], :call
+
+      def step_args(options = {})
+        assert_valid_options(options)
+        assert_options_satisfy_step_arity(options)
+        with_step_arguments(steps_with_options_applied(options))
+      end
 
       # Subscribe to notifications from steps.
       #
