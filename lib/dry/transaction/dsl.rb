@@ -6,17 +6,19 @@ require "dry/transaction/step_definition"
 module Dry
   class Transaction
     # @api private
-    module DSL
+    class DSL < BasicObject
       attr_reader :container
       attr_reader :step_adapters
       attr_reader :steps
       attr_reader :matcher
 
-      def initialize(container, options)
-        @container = container
+      def initialize(options, &block)
+        @container = options.fetch(:container)
         @step_adapters = options.fetch(:step_adapters) { StepAdapters }
         @steps = []
         @matcher = options.fetch(:matcher) { ResultMatcher }
+
+        instance_eval(&block)
       end
 
       def respond_to_missing?(method_name)
