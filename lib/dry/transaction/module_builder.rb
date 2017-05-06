@@ -22,9 +22,29 @@ module Dry
             klass.extend const_get(:StepModule)
           end
 
+          attr_reader :options, :steps
+
           def initialize(options = {})
+            @options = options
             @matcher = options.fetch(:matcher) { ResultMatcher }
-            @transaction = Transaction.new(self.class.instance_variable_get(:@_steps), @matcher)
+            @steps = self.class.instance_variable_get(:@_steps)
+            @steps = overwrite_steps if options_include_step_key?
+            @transaction = Transaction.new(@steps, @matcher)
+          end
+
+          def overwrite_steps
+            options_keys = options.keys
+            steps.each_with_object([]) do |step, new_steps|
+              if options_keys.include?(step.operation_name)
+                new_steps << step.with_new_opration(options[step.operation_name])
+              else
+                new_steps << step
+              end
+            end
+          end
+
+          def options_include_step_key?
+            (steps.map(&:operation_name) & options.keys).any?
           end
 
           def method_missing(method, *args, &block)

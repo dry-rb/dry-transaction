@@ -2,7 +2,7 @@ require "dry-matcher"
 require "dry-monads"
 
 
-RSpec.describe "Custom matcher" do
+RSpec.describe "Class Base transaction" do
 
   before do
     module Test
@@ -23,16 +23,29 @@ RSpec.describe "Custom matcher" do
       tee :persist
     end
 
-    MyTransaction.new
+    MyTransaction.new(options)
   }
 
   before do
     Test::DB = []
   end
 
-  it "will execute it" do
-    transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
-    expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
+  context "Execute class base transaction" do
+    let(:options) { nil }
+    it "succesfully" do
+      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
+    end
+  end
+
+  context "Inject explicit operation at initialize" do
+    let(:verify) { -> input { Dry::Monads.Right(input[:email].upcase) }  }
+    let(:options) { { verify: verify } }
+
+    it "succesfully" do
+      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      expect(Test::DB).to include("JANE@DOE.COM")
+    end
   end
 
 end
