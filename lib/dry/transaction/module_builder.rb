@@ -36,7 +36,7 @@ module Dry
             options_keys = options.keys
             steps.each_with_object([]) do |step, new_steps|
               if options_keys.include?(step.operation_name)
-                new_steps << step.with_new_opration(options[step.operation_name])
+                new_steps << step.with_new_operation(options[step.operation_name])
               else
                 new_steps << step
               end

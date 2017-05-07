@@ -31,7 +31,7 @@ module Dry
         self.class.new(step_adapter, step_name, operation_name, operation, options, call_args, &block)
       end
 
-      def with_new_opration(new_operation)
+      def with_new_operation(new_operation)
         self.class.new(step_adapter, step_name, operation_name, new_operation, options, call_args, &block)
       end
 
