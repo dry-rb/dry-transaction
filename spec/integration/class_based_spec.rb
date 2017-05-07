@@ -31,7 +31,7 @@ RSpec.describe "Class Base transaction" do
   end
 
   context "Execute class base transaction" do
-    let(:options) { nil }
+    let(:options) { {} }
     it "succesfully" do
       transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
       expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
