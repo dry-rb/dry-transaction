@@ -31,8 +31,10 @@ module Dry
         self.class.new(step_adapter, step_name, operation_name, operation, options, call_args, &block)
       end
 
-      def with_new_operation(new_operation)
-        self.class.new(step_adapter, step_name, operation_name, new_operation, options, call_args, &block)
+      # Ugh, don't really like this.
+      # maybe better to `#bind(obj)` each step with the object is initialized?
+      def with_operation(operation)
+        self.class.new(step_adapter, step_name, operation_name, operation, options, call_args, &block)
       end
 
       def call(input)

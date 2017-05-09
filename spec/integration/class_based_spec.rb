@@ -15,15 +15,13 @@ RSpec.describe "Class Base transaction" do
   end
 
   let(:transaction) {
-    class MyTransaction
-      include Dry.Transaction(Test::Container)
+    Class.new do
+      include Dry::Transaction::Builder.new(container: Test::Container)
 
       map :process
       step :verify
       tee :persist
-    end
-
-    MyTransaction.new(options)
+    end.new(options)
   }
 
   before do
@@ -32,6 +30,7 @@ RSpec.describe "Class Base transaction" do
 
   context "Execute class base transaction" do
     let(:options) { {} }
+
     it "succesfully" do
       transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
       expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")

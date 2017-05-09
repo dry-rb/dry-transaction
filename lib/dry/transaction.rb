@@ -1,6 +1,7 @@
 require "dry/monads/either"
 require "dry/transaction/version"
 require "dry/transaction/dsl"
+require "dry/transaction/builder"
 require "dry/transaction/module_builder"
 require "dry/transaction/api"
 
