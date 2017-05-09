@@ -9,7 +9,7 @@ RSpec.describe "publishing step events" do
 
   let(:container) {
     {
-      process:  -> input { {name: input["name"]} },
+      process:  -> *args, input { {name: input["name"]} },
       verify:   -> input { input[:name].to_s != "" ? Right(input) : Left("no name") },
       persist:  -> input { Test::DB << input and true }
     }
@@ -27,7 +27,7 @@ RSpec.describe "publishing step events" do
     end
 
     specify "subscriber receives success events" do
-      transaction.call("name" => "Jane")
+      transaction.call({ "name" => "Jane" }, process: ['step arg'])
 
       expect(subscriber).to have_received(:process_success).with(name: "Jane")
       expect(subscriber).to have_received(:verify_success).with(name: "Jane")
