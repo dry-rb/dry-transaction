@@ -11,13 +11,15 @@ module Dry
       attr_reader :class_mod
       attr_reader :instance_mod
 
+      ClassMethods = Class.new(Module)
+
       def initialize(container: nil, step_adapters: StepAdapters, matcher: ResultMatcher)
         @container = container
         @step_adapters = step_adapters
         @matcher = matcher
 
-        @class_mod = define_class_mod
-        # @instance_mod = InstanceMethods.new
+        @class_mod = ClassMethods.new
+        define_class_mod
       end
 
       def included(klass)
@@ -26,11 +28,7 @@ module Dry
       end
 
       def define_class_mod
-        # Capture local vars to use in closure (FIXME: this doesn't feel nice)
-        container = self.container
-        step_adapters = self.step_adapters
-
-        Module.new do
+        class_mod.class_exec(container, step_adapters) do |container, step_adapters|
           def steps
             @steps ||= []
           end
@@ -39,13 +37,13 @@ module Dry
             define_method(adapter_name) do |step_name, with: nil, **options, &block|
               operation = if container
                 operation_name = with || step_name
-                # TODO: probably need to allow this next line to fail still, given we support local methods for operations
                 container[operation_name]
               end
 
               steps << Step.new(
                 step_adapters[adapter_name],
                 step_name,
+                operation_name,
                 operation,
                 options,
                 &block
@@ -55,40 +53,18 @@ module Dry
         end
       end
 
-      # module ClassMethods
-      #   def steps
-      #     @steps ||= []
-      #   end
-      # end
-
-      # class ClassMethods < Module
-      #   # attr_reader :steps
-
-      #   # def initialize(*)
-      #   #   @steps = steps
-      #   #   super
-      #   # end
-
-      #   # def included(klass)
-      #   #   klass.class_eval do
-      #   #   end
-      #   # end
-
-      #   def steps
-      #     @steps ||= []
-      #   end
-      # end
-
       module InstanceMethods
+        attr_reader :options
         def initialize(**options)
-          # TODO: support injecting step operations
-          # Should this actually be an instance method? Might be better if we pre-pended an `#initialize` that resolved _all_ steps from the container (if present)
+          @options = options
         end
 
         def call(input)
           self.class.steps.inject(Dry::Monads.Right(input)) { |input, step|
             input.bind { |value|
-              step = step.with_operation(method(step.step_name))
+              # We look for inject steps or local defined steps
+              step_operation = options[step.step_name].nil?  ? method(step.step_name) : options[step.step_name]
+              step = step.with_operation(step_operation) if step_operation
               step.(value)
             }
           }

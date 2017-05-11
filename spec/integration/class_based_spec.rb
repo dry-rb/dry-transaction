@@ -47,4 +47,78 @@ RSpec.describe "Class Base transaction" do
     end
   end
 
+  context "wrap step operation" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction::Builder.new(container: Test::Container)
+
+        map :process
+        step :verify
+        tee :persist
+
+        def verify(input)
+          new_input = input.merge(yeah: 'Dry-rb')
+          super(new_input)
+        end
+      end.new(options)
+    end
+
+    let(:options) { {} }
+
+    it "succesfully" do
+      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", yeah: "Dry-rb")
+    end
+  end
+
+  context "Local step definition" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction::Builder.new(container: Test::Container)
+
+        map :process
+        step :local_method
+        tee :persist
+
+        def local_method(input)
+          Dry::Monads.Right(input.keys)
+        end
+      end.new(options)
+    end
+
+    let(:options) { {} }
+    it "succesfully" do
+      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      expect(Test::DB).to include([:name, :email])
+    end
+  end
+
+  context "All steps are local methods" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction::Builder.new
+
+        map :process
+        step :local_method
+        tee :persist
+
+        def process(input)
+          input.to_a
+        end
+
+        def local_method(input)
+          Dry::Monads.Right(input)
+        end
+
+        def persist(input)
+          Test::DB << input and true
+        end
+      end.new(options)
+    end
+    let(:options) { {} }
+    it "succesfully" do
+      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      expect(Test::DB).to include([["name", "Jane"], ["email", "jane@doe.com"]])
+    end
+  end
 end
