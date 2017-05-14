@@ -2,7 +2,6 @@ require "dry/monads/either"
 require "dry/transaction/version"
 require "dry/transaction/dsl"
 require "dry/transaction/builder"
-require "dry/transaction/module_builder"
 require "dry/transaction/api"
 
 module Dry
@@ -53,9 +52,9 @@ module Dry
   # @return [Dry::Transaction] the transaction object
   #
   # @api public
-  def self.Transaction(container, options = {})
-    Transaction::ModuleBuilder.call(container, options)
-  end
+  # def self.Transaction(container, options = {})
+  #   Transaction::ModuleBuilder.call(container, options)
+  # end
 
   # This is the class that actually stores the transaction.
   # To be precise, it stores a series of steps that make up a transaction and

@@ -1,21 +1,12 @@
-require "dry-matcher"
-require "dry-monads"
-
 RSpec.describe "Custom matcher" do
   let(:transaction) {
-    Dry.Transaction(container: container, matcher: Test::CustomMatcher) do
+    Class.new do
+      include Dry::Transaction::Builder.new(container: Test::Container)
+
       step :process
       step :validate, failure: :bad_value
       step :persist
-    end
-  }
-
-  let(:container) {
-    {
-      process: -> input { Dry::Monads.Right(name: input["name"], email: input["email"]) },
-      validate: -> input { input[:email].nil? ? Dry::Monads.Left(:email_required) : Dry::Monads.Right(input) },
-      persist:  -> input { Test::DB << input and Dry::Monads.Right(input) }
-    }
+    end.new(matcher: Test::CustomMatcher)
   }
 
   before do
@@ -23,6 +14,12 @@ RSpec.describe "Custom matcher" do
     Test::QUEUE = []
 
     module Test
+      Container = {
+        process: -> input { Dry::Monads.Right(name: input["name"], email: input["email"]) },
+        validate: -> input { input[:email].nil? ? Dry::Monads.Left(:email_required) : Dry::Monads.Right(input) },
+        persist:  -> input { Test::DB << input and Dry::Monads.Right(input) },
+      }
+
       CustomMatcher = Dry::Matcher.new(
         yep: Dry::Matcher::Case.new(
           match: -> result { result.right? },

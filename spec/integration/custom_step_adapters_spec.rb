@@ -1,10 +1,12 @@
 RSpec.describe "Custom step adapters" do
   let(:transaction) {
-    Dry.Transaction(container: container, step_adapters: Test::CustomStepAdapters) do
+    Class.new do
+      include Dry::Transaction::Builder.new(container: Test::Container, step_adapters: Test::CustomStepAdapters)
+
       map :process
       tee :persist
       enqueue :deliver
-    end
+    end.new
   }
 
   let(:container) {
@@ -20,6 +22,12 @@ RSpec.describe "Custom step adapters" do
     Test::QUEUE = []
 
     module Test
+      Container = {
+        process: -> input { {name: input["name"], email: input["email"]} },
+        persist: -> input { Test::DB << input and true },
+        deliver: -> input { "Delivered email to #{input[:email]}" },
+      }
+
       class CustomStepAdapters < Dry::Transaction::StepAdapters
         extend Dry::Monads::Either::Mixin
 

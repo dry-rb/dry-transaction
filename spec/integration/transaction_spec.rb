@@ -1,31 +1,29 @@
 RSpec.describe "Transactions" do
   let(:transaction) {
-    Dry.Transaction(container: container) do
-      map :process
-      step :verify
-      try :validate, with: -> input {
-        if input[:email].nil?
-          raise(container[:invalid_error], "email required")
-        else
-          input
-        end
-      }, catch: Test::NotValidError
-      tee :persist
-    end
-  }
-
-  let(:container) {
-    {
-      process:  -> input { {name: input["name"], email: input["email"]} },
-      verify:   -> input { Right(input) },
-      persist:  -> input { Test::DB << input and true },
-      invalid_error: Test::NotValidError
-    }
+    Class.new do
+      include Dry::Transaction::Builder.new(container: Test::Container)
+        map :process
+        step :verify
+        try :validate, with: -> input {
+          if input[:email].nil?
+            raise(Test::Container[:invalid_error], "email required")
+          else
+            input
+          end
+        }, catch: Test::NotValidError
+        tee :persist
+    end.new
   }
 
   before do
     Test::NotValidError = Class.new(StandardError)
     Test::DB = []
+    Test::Container = {
+      process:  -> input { {name: input["name"], email: input["email"]} },
+      verify:   -> input { Right(input) },
+      persist:  -> input { Test::DB << input and true },
+      invalid_error: Test::NotValidError
+    }
   end
 
   context "successful" do
@@ -134,7 +132,7 @@ RSpec.describe "Transactions" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     before do
-      container[:verify] = -> input { Left("raw failure") }
+      Test::Container[:verify] = -> input { Left("raw failure") }
     end
 
     it "does not run subsequent operations" do
@@ -167,7 +165,7 @@ RSpec.describe "Transactions" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     before do
-      container[:verify] = -> input { "failure" }
+      Test::Container[:verify] = -> input { "failure" }
     end
 
     it "raises an exception" do
