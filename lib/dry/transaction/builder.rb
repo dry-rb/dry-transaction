@@ -59,6 +59,7 @@ module Dry
         attr_reader :options, :matcher
         def initialize(**options)
           @options = options
+          @options[:step_options] = {}
           @matcher = options.fetch(:matcher) { ResultMatcher }
         end
 
@@ -71,7 +72,9 @@ module Dry
             input.bind { |value|
               # We look for inject steps or local defined steps
               step_operation = methods.include?(step.step_name) ? method(step.step_name) : options[step.step_name]
+              step_options = options[:step_options][step.step_name]
               step = step.with_operation(step_operation) if step_operation
+              step = step.with_call_args(*step_options) if step_options
               step.(value)
             }
           }
@@ -98,6 +101,14 @@ module Dry
           end
         end
 
+        def step_args(step_options = {})
+          assert_valid_options(step_options)
+          assert_options_satisfy_step_arity(step_options)
+          store_options_for_steps(step_options)
+
+          self
+        end
+
         def respond_to_missing?(name, _include_private = false)
           steps.any? { |step| step.step_name == name }
         end
@@ -111,6 +122,38 @@ module Dry
           else
             raise NotImplementedError, "no operation defined for step +#{step.step_name}+"
           end
+        end
+
+        private
+
+        # @param options [Hash] step arguments keyed by step name
+        def assert_valid_options(step_options)
+          step_options.each_key do |step_name|
+            unless steps.any? { |step| step.step_name == step_name }
+              raise ArgumentError, "+#{step_name}+ is not a valid step name"
+            end
+          end
+        end
+
+        # @param options [Hash] step arguments keyed by step name
+        def assert_options_satisfy_step_arity(step_options)
+          steps.each do |step|
+            args_required = step.arity >= 0 ? step.arity : ~step.arity
+            args_supplied = step_options.fetch(step.step_name, []).length + 1 # add 1 for main `input`
+
+            if args_required > args_supplied
+              raise ArgumentError, "not enough options for step +#{step.step_name}+"
+            end
+          end
+        end
+
+        # @param options [Hash] step arguments keyed by step name
+        def store_options_for_steps(step_options)
+          steps.map { |step|
+            if (args = step_options[step.step_name])
+              options[:step_options][step.step_name] = args
+            end
+          }
         end
       end
     end
