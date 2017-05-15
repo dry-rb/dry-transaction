@@ -1,7 +1,7 @@
 RSpec.describe "Custom step adapters" do
   let(:transaction) {
     Class.new do
-      include Dry::Transaction::Builder.new(container: Test::Container, step_adapters: Test::CustomStepAdapters)
+      include Dry::Transaction(container: Test::Container, step_adapters: Test::CustomStepAdapters)
 
       map :process
       tee :persist

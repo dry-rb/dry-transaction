@@ -1,7 +1,7 @@
 RSpec.describe "Custom matcher" do
   let(:transaction) {
     Class.new do
-      include Dry::Transaction::Builder.new(container: Test::Container)
+      include Dry::Transaction(container: Test::Container)
 
       step :process
       step :validate, failure: :bad_value

@@ -1,5 +1,6 @@
-require "dry/transaction/step_adapters"
 require "dry/transaction/result_matcher"
+require "dry/transaction/step"
+require "dry/transaction/step_definition"
 
 module Dry
   class Transaction
@@ -11,7 +12,7 @@ module Dry
 
       ClassMethods = Class.new(Module)
 
-      def initialize(container: nil, step_adapters: StepAdapters)
+      def initialize(container: nil, step_adapters:)
         @container = container
         @step_adapters = step_adapters
 
@@ -71,6 +72,7 @@ module Dry
           result = steps.inject(Dry::Monads.Right(input)) { |input, step|
             input.bind { |value|
               # We look for inject steps or local defined steps
+              # We pass aditional step options
               step_operation = methods.include?(step.step_name) ? method(step.step_name) : options[step.step_name]
               step_options = options[:step_options][step.step_name]
               step = step.with_operation(step_operation) if step_operation

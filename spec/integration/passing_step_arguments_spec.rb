@@ -3,7 +3,7 @@ RSpec.describe "Passing additional arguments to step operations" do
 
   let(:transaction) {
     Class.new do
-      include Dry::Transaction::Builder.new(container: Test::Container)
+      include Dry::Transaction(container: Test::Container)
 
       map :process
       try :validate, catch: Test::NotValidError

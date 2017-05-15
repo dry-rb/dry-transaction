@@ -12,7 +12,7 @@ RSpec.describe "Class Base transaction" do
 
   let(:transaction) {
     Class.new do
-      include Dry::Transaction::Builder.new(container: Test::Container)
+      include Dry::Transaction(container: Test::Container)
 
       map :process
       step :verify
@@ -46,7 +46,7 @@ RSpec.describe "Class Base transaction" do
   context "wrap step operation" do
     let(:transaction) do
       Class.new do
-        include Dry::Transaction::Builder.new(container: Test::Container)
+        include Dry::Transaction(container: Test::Container)
 
         map :process
         step :verify
@@ -70,7 +70,7 @@ RSpec.describe "Class Base transaction" do
   context "Local step definition" do
     let(:transaction) do
       Class.new do
-        include Dry::Transaction::Builder.new(container: Test::Container)
+        include Dry::Transaction(container: Test::Container)
 
         map :process
         step :local_method
@@ -92,7 +92,7 @@ RSpec.describe "Class Base transaction" do
   context "All steps are local methods" do
     let(:transaction) do
       Class.new do
-        include Dry::Transaction::Builder.new
+        include Dry::Transaction()
 
         map :process
         step :local_method

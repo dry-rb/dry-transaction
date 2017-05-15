@@ -1,7 +1,7 @@
 RSpec.describe "publishing step events" do
   let(:transaction) {
     Class.new do
-      include Dry::Transaction::Builder.new(container: Test::Container)
+      include Dry::Transaction(container: Test::Container)
 
       map :process
       step :verify
