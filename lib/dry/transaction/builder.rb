@@ -1,6 +1,5 @@
 require "dry/transaction/result_matcher"
 require "dry/transaction/step"
-require "dry/transaction/step_definition"
 
 module Dry
   class Transaction
@@ -34,13 +33,8 @@ module Dry
           step_adapters.keys.each do |adapter_name|
             define_method(adapter_name) do |step_name, with: nil, **options, &block|
               operation = if container
-                if with.respond_to?(:call)
-                  operation_name = step_name
-                  operation = StepDefinition.new(container, &with)
-                else
-                  operation_name = with || step_name
-                  operation = container[operation_name]
-                end
+                operation_name = with || step_name
+                operation = container[operation_name]
               end
 
               steps << Step.new(
