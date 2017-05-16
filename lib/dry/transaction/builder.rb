@@ -34,6 +34,7 @@ module Dry
             define_method(adapter_name) do |step_name, with: nil, **options, &block|
               operation = if container
                 operation_name = with || step_name
+                # FIXME: I think we want to defer the resolution of the operation from the container until the class is initialized
                 operation = container[operation_name]
               end
 
