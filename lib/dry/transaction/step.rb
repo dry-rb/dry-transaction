@@ -3,7 +3,7 @@ require "wisper"
 require "dry/transaction/step_failure"
 
 module Dry
-  class Transaction
+  module Transaction
     # @api private
     class Step
       UNDEFINED = Object.new.freeze

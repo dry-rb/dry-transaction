@@ -4,7 +4,7 @@ require "dry/transaction/instance_methods"
 require "dry/transaction/operation_resolver"
 
 module Dry
-  class Transaction
+  module Transaction
     class Builder < Module
       attr_reader :container
       attr_reader :step_adapters

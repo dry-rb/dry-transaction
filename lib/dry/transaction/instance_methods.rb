@@ -1,5 +1,5 @@
 module Dry
-  class Transaction
+  module Transaction
     module InstanceMethods
       attr_reader :steps
       attr_reader :operations

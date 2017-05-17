@@ -1,7 +1,7 @@
 require "dry-container"
 
 module Dry
-  class Transaction
+  module Transaction
     class StepAdapters
       extend Dry::Container::Mixin
     end

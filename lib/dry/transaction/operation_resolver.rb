@@ -1,6 +1,6 @@
 module Dry
   # FIXME: this should be `module Transaciton` now
-  class Transaction
+  module Transaction
     class OperationResolver < Module
       attr_reader :container
       attr_reader :prepended_mod

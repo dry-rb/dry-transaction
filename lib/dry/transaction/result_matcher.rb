@@ -1,7 +1,7 @@
 require "dry-matcher"
 
 module Dry
-  class Transaction
+  module Transaction
     ResultMatcher = Dry::Matcher.new(
       success: Dry::Matcher::Case.new(
         match: -> result { result.right? },

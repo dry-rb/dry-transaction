@@ -1,5 +1,5 @@
 module Dry
-  class Transaction
+  module Transaction
     class StepAdapters
       # @api private
       class Try
