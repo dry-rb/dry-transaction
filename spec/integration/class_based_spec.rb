@@ -14,9 +14,9 @@ RSpec.describe "Class Base transaction" do
     Class.new do
       include Dry::Transaction(container: Test::Container)
 
-      map :process, with: :process
-      step :verify, with: :verify
-      tee :persist, with: :persist
+      map :process
+      step :verify
+      tee :persist
     end.new(**options)
   }
 
@@ -41,6 +41,33 @@ RSpec.describe "Class Base transaction" do
     it "succesfully" do
       transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
       expect(Test::DB).to include("JANE@DOE.COM")
+    end
+  end
+
+  context "different step_operations names inside the container" do
+    before do
+      module Test
+        Container = {
+          process_step:  -> input { {name: input["name"], email: input["email"]} },
+          verify_step:   -> input { Dry::Monads.Right(input) },
+          persist_step:  -> input { Test::DB << input and true },
+        }
+      end
+    end
+
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+
+        map :process, with: :process_step
+        step :verify, with: :verify_step
+        tee :persist, with: :persist_step
+      end.new(**options)
+    }
+
+    it "succesfully" do
+      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
     end
   end
 

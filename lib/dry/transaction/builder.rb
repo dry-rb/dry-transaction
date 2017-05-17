@@ -39,7 +39,7 @@ module Dry
 
           step_adapters.keys.each do |adapter_name|
             define_method(adapter_name) do |step_name, with: nil, **options, &block|
-              operation_name = with
+              operation_name = with || step_name
               operation = nil # operations are resolved only when transactions are instantiated
 
               steps << Step.new(
