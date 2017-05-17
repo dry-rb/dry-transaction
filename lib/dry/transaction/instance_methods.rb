@@ -8,7 +8,7 @@ module Dry
       def initialize(matcher: ResultMatcher, steps: (self.class.steps), **operations)
         @steps = steps.map { |step|
           operation = methods.include?(step.step_name) ? method(step.step_name) : operations[step.step_name]
-          step.apply(operation: operation)
+          step.curry(operation: operation)
         }
         @operations = operations
         @matcher = matcher
@@ -46,7 +46,7 @@ module Dry
 
         new_steps = steps.map { |step|
           if step_args[step.step_name]
-            step.apply(call_args: step_args[step.step_name])
+            step.curry(call_args: step_args[step.step_name])
           else
             step
           end
