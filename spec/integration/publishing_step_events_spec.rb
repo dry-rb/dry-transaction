@@ -3,9 +3,9 @@ RSpec.describe "publishing step events" do
     Class.new do
       include Dry::Transaction(container: Test::Container)
 
-      map :process
-      step :verify
-      tee :persist
+      map :process, with: :process
+      step :verify, with: :verify
+      tee :persist, with: :persist
     end.new
   }
 

@@ -6,6 +6,8 @@ module Dry
   class Transaction
     # @api private
     class Step
+      UNDEFINED = Object.new.freeze
+
       include Wisper::Publisher
       include Dry::Monads::Either::Mixin
 
@@ -27,18 +29,24 @@ module Dry
         @call_args = call_args
       end
 
-      def with_call_args(*call_args)
-        self.class.new(step_adapter, step_name, operation_name, operation, options, call_args, &block)
-      end
+      # TODO: rename to curry
+      def apply(operation: UNDEFINED, call_args: UNDEFINED)
+        new_operation = operation == UNDEFINED ? self.operation : operation
+        new_call_args = call_args == UNDEFINED ? self.call_args : call_args
 
-      # Ugh, don't really like this.
-      # maybe better to `#bind(obj)` each step with the object is initialized?
-      def with_operation(operation)
-        self.class.new(step_adapter, step_name, operation_name, operation, options, call_args, &block)
+        self.class.new(
+          step_adapter,
+          step_name,
+          operation_name,
+          new_operation,
+          options,
+          new_call_args,
+          &block
+        )
       end
 
       def call(input)
-        args = [input] + call_args
+        args = [input] + Array(call_args)
         result = step_adapter.call(self, *args, &block)
 
         result.fmap { |value|

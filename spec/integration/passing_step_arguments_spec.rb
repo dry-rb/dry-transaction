@@ -1,16 +1,15 @@
 RSpec.describe "Passing additional arguments to step operations" do
-  let(:call_transaction) { transaction.step_args(step_options).call(input) }
+  let(:call_transaction) { transaction.with_step_args(step_options).call(input) }
 
   let(:transaction) {
     Class.new do
       include Dry::Transaction(container: Test::Container)
 
-      map :process
-      try :validate, catch: Test::NotValidError
-      tee :persist
+      map :process, with: :process
+      try :validate, with: :validate, catch: Test::NotValidError
+      tee :persist, with: :persist
     end.new
   }
-
 
   let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 

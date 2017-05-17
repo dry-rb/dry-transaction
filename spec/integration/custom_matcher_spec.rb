@@ -3,9 +3,9 @@ RSpec.describe "Custom matcher" do
     Class.new do
       include Dry::Transaction(container: Test::Container)
 
-      step :process
-      step :validate, failure: :bad_value
-      step :persist
+      step :process, with: :process
+      step :validate, with: :validate, failure: :bad_value
+      step :persist, with: :persist
     end.new(matcher: Test::CustomMatcher)
   }
 

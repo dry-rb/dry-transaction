@@ -1,5 +1,6 @@
 require "dry/transaction/result_matcher"
 require "dry/transaction/step"
+require "dry/transaction/operation_resolver"
 
 module Dry
   class Transaction
@@ -7,36 +8,38 @@ module Dry
       attr_reader :container
       attr_reader :step_adapters
 
-      attr_reader :class_mod
+      attr_reader :class_dsl_mod
+      attr_reader :resolver_mod
 
-      ClassMethods = Class.new(Module)
+      DSL = Class.new(Module)
 
       def initialize(container: nil, step_adapters:)
         @container = container
         @step_adapters = step_adapters
 
-        @class_mod = ClassMethods.new
-        define_class_mod
+        @class_dsl_mod = DSL.new
+        define_dsl
+
+        @resolver_mod = OperationResolver.new(container)
       end
 
       def included(klass)
-        klass.extend(class_mod)
+        klass.extend(class_dsl_mod)
+        klass.send(:include, resolver_mod)
         klass.send(:include, InstanceMethods)
       end
 
-      def define_class_mod
-        class_mod.class_exec(container, step_adapters) do |container, step_adapters|
+      def define_dsl
+        class_dsl_mod.class_exec(step_adapters) do |step_adapters|
+          # TODO: I wonder if we could move this out of the class_exec and into a straight-up module
           def steps
             @steps ||= []
           end
 
           step_adapters.keys.each do |adapter_name|
             define_method(adapter_name) do |step_name, with: nil, **options, &block|
-              operation = if container
-                operation_name = with || step_name
-                # FIXME: I think we want to defer the resolution of the operation from the container until the class is initialized
-                operation = container[operation_name]
-              end
+              operation_name = with
+              operation = nil # operations are resolved only when transactions are instantiated
 
               steps << Step.new(
                 step_adapters[adapter_name],
@@ -52,29 +55,23 @@ module Dry
       end
 
       module InstanceMethods
-        attr_reader :options, :matcher
-        def initialize(**options)
-          @options = options
-          @options[:step_options] = {}
-          @matcher = options.fetch(:matcher) { ResultMatcher }
-        end
+        attr_reader :steps
+        attr_reader :operations
+        attr_reader :matcher
 
-        def steps
-          self.class.steps
+        def initialize(matcher: ResultMatcher, steps: (self.class.steps), **operations)
+          @steps = steps.map { |step|
+            operation = methods.include?(step.step_name) ? method(step.step_name) : operations[step.step_name]
+            step.apply(operation: operation)
+          }
+          @operations = operations
+          @matcher = matcher
         end
 
         def call(input, &block)
-          result = steps.inject(Dry::Monads.Right(input)) { |input, step|
-            input.bind { |value|
-              # We look for inject steps or local defined steps
-              # We pass aditional step options
-              step_operation = methods.include?(step.step_name) ? method(step.step_name) : options[step.step_name]
-              step_options = options[:step_options][step.step_name]
-              step = step.with_operation(step_operation) if step_operation
-              step = step.with_call_args(*step_options) if step_options
-              step.(value)
-            }
-          }
+          assert_step_arity
+
+          result = steps.inject(Dry::Monads.Right(input), :bind)
 
           if block
             matcher.(result, &block)
@@ -98,13 +95,21 @@ module Dry
           end
         end
 
-        def step_args(step_options = {})
-          assert_valid_options(step_options)
-          assert_options_satisfy_step_arity(step_options)
-          store_options_for_steps(step_options)
+        def with_step_args(**step_args)
+          assert_valid_step_args(step_args)
 
-          self
+          new_steps = steps.map { |step|
+            if step_args[step.step_name]
+              step.apply(call_args: step_args[step.step_name])
+            else
+              step
+            end
+          }
+
+          self.class.new(matcher: matcher, steps: new_steps, **operations)
         end
+
+        private
 
         def respond_to_missing?(name, _include_private = false)
           steps.any? { |step| step.step_name == name }
@@ -114,43 +119,32 @@ module Dry
           step = steps.detect { |step| step.step_name == name }
           super unless step
 
-          if step.operation
-            step.operation.(*args, &block)
-          else
-            raise NotImplementedError, "no operation defined for step +#{step.step_name}+"
-          end
+          operation = operations[step.step_name]
+          raise NotImplementedError, "no operation +#{step.operation_name}+ defined for step +#{step.step_name}+" unless operation
+
+          operation.(*args, &block)
         end
 
         private
 
         # @param options [Hash] step arguments keyed by step name
-        def assert_valid_options(step_options)
-          step_options.each_key do |step_name|
+        def assert_valid_step_args(step_args)
+          step_args.each_key do |step_name|
             unless steps.any? { |step| step.step_name == step_name }
               raise ArgumentError, "+#{step_name}+ is not a valid step name"
             end
           end
         end
 
-        # @param options [Hash] step arguments keyed by step name
-        def assert_options_satisfy_step_arity(step_options)
+        def assert_step_arity
           steps.each do |step|
-            args_required = step.arity >= 0 ? step.arity : ~step.arity
-            args_supplied = step_options.fetch(step.step_name, []).length + 1 # add 1 for main `input`
+            num_args_required = step.arity >= 0 ? step.arity : ~step.arity
+            num_args_supplied = step.call_args.length + 1 # add 1 for main `input`
 
-            if args_required > args_supplied
-              raise ArgumentError, "not enough options for step +#{step.step_name}+"
+            if num_args_required > num_args_supplied
+              raise ArgumentError, "not enough arguments supplied for step +#{step.step_name}+"
             end
           end
-        end
-
-        # @param options [Hash] step arguments keyed by step name
-        def store_options_for_steps(step_options)
-          steps.map { |step|
-            if (args = step_options[step.step_name])
-              options[:step_options][step.step_name] = args
-            end
-          }
         end
       end
     end

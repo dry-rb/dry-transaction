@@ -2,10 +2,10 @@ RSpec.describe "Transactions" do
   let(:transaction) {
     Class.new do
       include Dry::Transaction(container: Test::Container)
-        map :process
-        step :verify
-        try :validate, catch: Test::NotValidError
-        tee :persist
+        map :process, with: :process
+        step :verify, with: :verify
+        try :validate, with: :validate, catch: Test::NotValidError
+        tee :persist, with: :persist
     end.new
   }
 

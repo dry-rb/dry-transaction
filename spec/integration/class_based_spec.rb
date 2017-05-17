@@ -14,19 +14,19 @@ RSpec.describe "Class Base transaction" do
     Class.new do
       include Dry::Transaction(container: Test::Container)
 
-      map :process
-      step :verify
-      tee :persist
-    end.new(options)
+      map :process, with: :process
+      step :verify, with: :verify
+      tee :persist, with: :persist
+    end.new(**options)
   }
+
+  let(:options) { {} }
 
   before do
     Test::DB = []
   end
 
   context "Execute class base transaction" do
-    let(:options) { {} }
-
     it "succesfully" do
       transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
       expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
@@ -34,8 +34,9 @@ RSpec.describe "Class Base transaction" do
   end
 
   context "Inject explicit operation at initialize" do
-    let(:verify) { -> input { Dry::Monads.Right(input[:email].upcase) }  }
-    let(:options) { { verify: verify } }
+    let(:options) {
+      {verify: -> input { Dry::Monads.Right(input[:email].upcase) }}
+    }
 
     it "succesfully" do
       transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
@@ -48,9 +49,9 @@ RSpec.describe "Class Base transaction" do
       Class.new do
         include Dry::Transaction(container: Test::Container)
 
-        map :process
-        step :verify
-        tee :persist
+        map :process, with: :process
+        step :verify, with: :verify
+        tee :persist, with: :persist
 
         def verify(input)
           new_input = input.merge(yeah: 'Dry-rb')
@@ -72,19 +73,19 @@ RSpec.describe "Class Base transaction" do
       Class.new do
         include Dry::Transaction(container: Test::Container)
 
-        map :process
-        step :local_method
-        tee :persist
+        map :process, with: :process
+        step :verify
+        tee :persist, with: :persist
 
-        def local_method(input)
+        def verify(input)
           Dry::Monads.Right(input.keys)
         end
-      end.new(options)
+      end.new
     end
 
-    let(:options) { {} }
     it "succesfully" do
       transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+
       expect(Test::DB).to include([:name, :email])
     end
   end
@@ -94,24 +95,24 @@ RSpec.describe "Class Base transaction" do
       Class.new do
         include Dry::Transaction()
 
-        map :process
-        step :local_method
-        tee :persist
+        map :process, with: :process
+        step :verify, with: :verify
+        tee :persist, with: :persist
 
         def process(input)
           input.to_a
         end
 
-        def local_method(input)
+        def verify(input)
           Dry::Monads.Right(input)
         end
 
         def persist(input)
           Test::DB << input and true
         end
-      end.new(options)
+      end.new
     end
-    let(:options) { {} }
+
     it "succesfully" do
       transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
       expect(Test::DB).to include([["name", "Jane"], ["email", "jane@doe.com"]])
