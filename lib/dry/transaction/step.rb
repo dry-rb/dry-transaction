@@ -30,6 +30,7 @@ module Dry
       end
 
       def curry(operation: UNDEFINED, call_args: UNDEFINED)
+        return self if operation == UNDEFINED && call_args == UNDEFINED
         new_operation = operation == UNDEFINED ? self.operation : operation
         new_call_args = call_args == UNDEFINED ? self.call_args : call_args
 
