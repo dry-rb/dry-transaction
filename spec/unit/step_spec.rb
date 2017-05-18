@@ -48,18 +48,18 @@ RSpec.describe Dry::Transaction::Step do
     end
   end
 
-  describe "#curry" do
+  describe "#with" do
     let(:operation) { proc { |a, b| a + b } }
     context "without arguments" do
       it "returns itself" do
-        expect(step.curry).to eq step
+        expect(step.with).to eq step
       end
     end
 
     context "with operation argument" do
       it "returns new instance with only operation changed" do
         new_operation = proc { |a,b| a * b }
-        new_step = step.curry(operation: new_operation)
+        new_step = step.with(operation: new_operation)
         expect(new_step).to_not eq step
         expect(new_step.operation_name).to eq step.operation_name
         expect(new_step.operation).to_not eq step.operation
@@ -69,7 +69,7 @@ RSpec.describe Dry::Transaction::Step do
     context "with call_args argument" do
       let(:call_args) { [12] }
       it "returns new instance with only call_args changed" do
-        new_step = step.curry(call_args: call_args)
+        new_step = step.with(call_args: call_args)
         expect(new_step).to_not eq step
         expect(new_step.operation_name).to eq step.operation_name
         expect(new_step.call_args).to_not eq step.call_args
