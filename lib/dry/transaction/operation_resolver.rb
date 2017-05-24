@@ -1,5 +1,4 @@
 module Dry
-  # FIXME: this should be `module Transaciton` now
   module Transaction
     class OperationResolver < Module
       attr_reader :container
