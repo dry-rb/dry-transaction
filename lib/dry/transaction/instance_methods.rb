@@ -71,8 +71,6 @@ module Dry
         operation.(*args, &block)
       end
 
-      private
-
       # @param options [Hash] step arguments keyed by step name
       def assert_valid_step_args(step_args)
         step_args.each_key do |step_name|
