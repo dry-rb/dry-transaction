@@ -1,4 +1,4 @@
-require "dry-matcher"
+require "dry/matcher"
 
 module Dry
   module Transaction
