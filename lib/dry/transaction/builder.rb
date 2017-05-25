@@ -1,4 +1,3 @@
-require "dry/transaction/result_matcher"
 require "dry/transaction/step"
 require "dry/transaction/instance_methods"
 require "dry/transaction/operation_resolver"

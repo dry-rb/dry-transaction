@@ -1,17 +1,18 @@
+require "dry/monads"
+require "dry/transaction/result_matcher"
+
 module Dry
   module Transaction
     module InstanceMethods
       attr_reader :steps
       attr_reader :operations
-      attr_reader :matcher
 
-      def initialize(matcher: ResultMatcher, steps: (self.class.steps), **operations)
+      def initialize(steps: (self.class.steps), **operations)
         @steps = steps.map { |step|
           operation = methods.include?(step.step_name) ? method(step.step_name) : operations[step.step_name]
           step.with(operation: operation)
         }
         @operations = operations
-        @matcher = matcher
       end
 
       def call(input, &block)
@@ -20,7 +21,7 @@ module Dry
         result = steps.inject(Dry::Monads.Right(input), :bind)
 
         if block
-          matcher.(result, &block)
+          ResultMatcher.(result, &block)
         else
           result.or { |step_failure|
             # Unwrap the value from the StepFailure and return it directly
@@ -52,7 +53,7 @@ module Dry
           end
         }
 
-        self.class.new(matcher: matcher, steps: new_steps, **operations)
+        self.class.new(steps: new_steps, **operations)
       end
 
       private
@@ -62,7 +63,7 @@ module Dry
       end
 
       def method_missing(name, *args, &block)
-        step = steps.detect { |step| step.step_name == name }
+        step = steps.detect { |s| s.step_name == name }
         super unless step
 
         operation = operations[step.step_name]
