@@ -4,6 +4,13 @@ require "dry/transaction/step_adapters"
 require "dry/transaction/builder"
 
 module Dry
+  # Business transaction DSL
+  module Transaction
+    def self.included(klass)
+      klass.send :include, Dry::Transaction()
+    end
+  end
+
   # Define a business transaction.
   #
   # A business transaction is a series of callable operation objects that

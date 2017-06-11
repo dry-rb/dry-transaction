@@ -148,7 +148,7 @@ RSpec.describe "Transactions" do
   context "all steps are local methods" do
     let(:transaction) do
       Class.new do
-        include Dry::Transaction()
+        include Dry::Transaction
 
         map :process
         step :verify
