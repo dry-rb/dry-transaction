@@ -1,5 +1,5 @@
 require "dry/transaction/step"
-require 'dry/transaction/dsl'
+require "dry/transaction/dsl"
 require "dry/transaction/instance_methods"
 require "dry/transaction/operation_resolver"
 
