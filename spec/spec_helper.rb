@@ -1,4 +1,4 @@
-if RUBY_ENGINE == "ruby" && RUBY_VERSION >= "2.3"
+if RUBY_ENGINE == "ruby" && RUBY_VERSION >= "2.4"
   require "simplecov"
   SimpleCov.start do
     add_filter "/spec/"

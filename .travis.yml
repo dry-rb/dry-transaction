@@ -11,16 +11,14 @@ script:
 after_success:
   - '[ -d coverage ] && bundle exec codeclimate-test-reporter'
 rvm:
-  - 2.1
-  - 2.2
-  - 2.3.1
-  - jruby-9.1.5.0
+  - 2.1.10
+  - 2.2.7
+  - 2.3.4
+  - 2.4.1
+  - jruby-9.1.10.0
 env:
   global:
     - JRUBY_OPTS='--dev -J-Xmx1024M'
-matrix:
-  allow_failures:
-    - rvm: rbx-3
 addons:
   code_climate:
     repo_token: 2c92f1dc6b512f11d06153bcf2f3f5b507af6faa95b3319f559bae1a6bcb2c1a
