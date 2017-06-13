@@ -2,14 +2,14 @@ RSpec.describe "Transactions" do
   let(:transaction) {
     Class.new do
       include Dry::Transaction(container: Test::Container)
-        map :process, with: :process
-        step :verify, with: :verify
-        try :validate, with: :validate, catch: Test::NotValidError
-        tee :persist, with: :persist
-    end.new(**options)
+        map :process
+        step :verify
+        try :validate, catch: Test::NotValidError
+        tee :persist
+    end.new(**dependencies)
   }
 
-  let(:options) { {} }
+  let(:dependencies) { {} }
 
   before do
     Test::NotValidError = Class.new(StandardError)
@@ -61,7 +61,7 @@ RSpec.describe "Transactions" do
     end
   end
 
-  context "different step_operations names inside the container" do
+  context "different step names" do
     before do
       module Test
         ContainerNames = {
@@ -79,27 +79,28 @@ RSpec.describe "Transactions" do
         map :process, with: :process_step
         step :verify, with: :verify_step
         tee :persist, with: :persist_step
-      end.new(**options)
+      end.new(**dependencies)
     }
 
-    it "allow to specify different step_operations names" do
-      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+    it "supports steps using differently named container operations" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
       expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
     end
   end
 
-  context "inject explicit operation at initialize" do
-    let(:options) {
+  describe "operation injection" do
+    let(:dependencies) {
       {verify: -> input { Dry::Monads.Right(input.merge(foo: :bar)) }}
     }
 
-    it "calls the injected step" do
-      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
-      expect(Test::DB).to include({:name=>"Jane", :email=>"jane@doe.com", :foo=>:bar})
+    it "calls injected operations" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", foo: :bar)
     end
   end
 
-  context "wrap step operation" do
+  context "wrapping operations with local methods" do
     let(:transaction) do
       Class.new do
         include Dry::Transaction(container: Test::Container)
@@ -109,17 +110,18 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
 
         def verify(input)
-          new_input = input.merge(yeah: 'Dry-rb')
+          new_input = input.merge(greeting: "hello!")
           super(new_input)
         end
-      end.new(options)
+      end.new(**dependencies)
     end
 
-    let(:options) { {} }
+    let(:dependencies) { {} }
 
-    it "modify step operation at runtime" do
-      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
-      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", yeah: "Dry-rb")
+    it "allows local methods to run operations via super" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
     end
   end
 
@@ -139,7 +141,7 @@ RSpec.describe "Transactions" do
     end
 
     it "execute step only defined as local method" do
-      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
       expect(Test::DB).to include([:name, :email])
     end
@@ -169,7 +171,7 @@ RSpec.describe "Transactions" do
     end
 
     it "executes succesfully" do
-      transaction.call({"name" => "Jane", "email" => "jane@doe.com"})
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
       expect(Test::DB).to include([["name", "Jane"], ["email", "jane@doe.com"]])
     end
   end
