@@ -89,8 +89,17 @@ RSpec.describe "Transactions" do
   end
 
   describe "operation injection" do
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+          map :process
+          step :verify_step, with: :verify
+          tee :persist
+      end.new(**dependencies)
+    }
+
     let(:dependencies) {
-      {verify: -> input { Dry::Monads.Right(input.merge(foo: :bar)) }}
+      {verify_step: -> input { Dry::Monads.Right(input.merge(foo: :bar)) }}
     }
 
     it "calls injected operations" do
