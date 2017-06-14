@@ -1,15 +1,19 @@
 [gitter]: https://gitter.im/dry-rb/chat
-[gem]: https://rubygems.org/gems/dry-transaction
+[gem]: https://img.shields.io/gem/v/dry-transaction.svg][gem]
 [travis]: https://travis-ci.org/dry-rb/dry-transaction
-[code_climate]: https://codeclimate.com/github/dry-rb/dry-transaction
-[inch]: http://inch-ci.org/github/dry-rb/dry-transaction
+[gemnasium]: https://gemnasium.com/dry-rb/dry-transaction
+[codeclimate]: https://codeclimate.com/github/dry-rb/dry-transaction
+[coveralls]: https://coveralls.io/r/dry-rb/dry-transaction
+[inchpages]: http://inch-ci.org/github/dry-rb/dry-transaction
 
-# dry-transaction [![Join the Gitter chat](https://badges.gitter.im/Join%20Chat.svg)][gitter]
+# dry-transaction [![Join the chat at https://gitter.im/dry-rb/chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dry-rb/chat)
 
-[![Gem Version](https://img.shields.io/gem/v/dry-transaction.svg)][gem]
+[![Gem Version](https://badge.fury.io/rb/dry-transaction.svg)][gem]
 [![Build Status](https://travis-ci.org/dry-rb/dry-transaction.svg?branch=master)][travis]
-[![Code Climate](https://img.shields.io/codeclimate/github/dry-rb/dry-transaction.svg)][code_climate]
-[![API Documentation Coverage](http://inch-ci.org/github/dry-rb/dry-transaction.svg)][inch]
+[![Dependency Status](https://gemnasium.com/dry-rb/dry-transaction.svg)][gemnasium]
+[![Code Climate](https://codeclimate.com/github/dry-rb/dry-transaction/badges/gpa.svg)][codeclimate]
+[![Test Coverage](https://codeclimate.com/github/dry-rb/dry-transaction/badges/coverage.svg)][codeclimate]
+[![Inline docs](http://inch-ci.org/github/dry-rb/dry-transaction.svg?branch=master)][inchpages]
 
 dry-transaction is a business transaction DSL. It provides a simple way to define a complex business transaction that includes processing by many different objects.
 
