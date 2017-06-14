@@ -1,5 +1,5 @@
 [gitter]: https://gitter.im/dry-rb/chat
-[gem]: https://img.shields.io/gem/v/dry-transaction.svg][gem]
+[gem]: https://img.shields.io/gem/v/dry-transaction.svg]
 [travis]: https://travis-ci.org/dry-rb/dry-transaction
 [gemnasium]: https://gemnasium.com/dry-rb/dry-transaction
 [codeclimate]: https://codeclimate.com/github/dry-rb/dry-transaction
