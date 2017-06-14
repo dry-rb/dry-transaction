@@ -1,20 +1,14 @@
 RSpec.describe "Passing additional arguments to step operations" do
-  let(:call_transaction) { transaction.call(input, step_options) }
+  let(:call_transaction) { transaction.with_step_args(step_options).call(input) }
 
   let(:transaction) {
-    Dry.Transaction(container: container) do
-      map :process
-      try :validate, catch: Test::NotValidError
-      tee :persist
-    end
-  }
+    Class.new do
+      include Dry::Transaction(container: Test::Container)
 
-  let(:container) {
-    {
-      process:  -> input { {name: input["name"], email: input["email"]} },
-      validate: -> input, allowed { !input[:email].include?(allowed) ? raise(Test::NotValidError, "email not allowed") : input },
-      persist:  -> input { Test::DB << input and true }
-    }
+      map :process, with: :process
+      try :validate, with: :validate, catch: Test::NotValidError
+      tee :persist, with: :persist
+    end.new
   }
 
   let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
@@ -22,6 +16,13 @@ RSpec.describe "Passing additional arguments to step operations" do
   before do
     Test::NotValidError = Class.new(StandardError)
     Test::DB = []
+    module Test
+      Container = {
+        process:  -> input { {name: input["name"], email: input["email"]} },
+        validate: -> input, allowed { !input[:email].include?(allowed) ? raise(Test::NotValidError, "email not allowed") : input },
+        persist:  -> input { Test::DB << input and true }
+      }
+    end
   end
 
   context "required arguments provided" do

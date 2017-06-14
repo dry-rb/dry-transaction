@@ -1,31 +1,25 @@
 RSpec.describe "Transactions" do
   let(:transaction) {
-    Dry.Transaction(container: container) do
-      map :process
-      step :verify
-      try :validate, with: -> input {
-        if input[:email].nil?
-          raise(container[:invalid_error], "email required")
-        else
-          input
-        end
-      }, catch: Test::NotValidError
-      tee :persist
-    end
+    Class.new do
+      include Dry::Transaction(container: Test::Container)
+        map :process
+        step :verify
+        try :validate, catch: Test::NotValidError
+        tee :persist
+    end.new(**dependencies)
   }
 
-  let(:container) {
-    {
-      process:  -> input { {name: input["name"], email: input["email"]} },
-      verify:   -> input { Right(input) },
-      persist:  -> input { Test::DB << input and true },
-      invalid_error: Test::NotValidError
-    }
-  }
+  let(:dependencies) { {} }
 
   before do
     Test::NotValidError = Class.new(StandardError)
     Test::DB = []
+    Test::Container = {
+      process:  -> input { {name: input["name"], email: input["email"]} },
+      verify:   -> input { Right(input) },
+      validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
+      persist:  -> input { Test::DB << input and true },
+    }
   end
 
   context "successful" do
@@ -64,6 +58,130 @@ RSpec.describe "Transactions" do
       end
 
       expect(results.first).to eq "success for jane@doe.com"
+    end
+  end
+
+  context "different step names" do
+    before do
+      module Test
+        ContainerNames = {
+          process_step:  -> input { {name: input["name"], email: input["email"]} },
+          verify_step:   -> input { Dry::Monads.Right(input) },
+          persist_step:  -> input { Test::DB << input and true },
+        }
+      end
+    end
+
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::ContainerNames)
+
+        map :process, with: :process_step
+        step :verify, with: :verify_step
+        tee :persist, with: :persist_step
+      end.new(**dependencies)
+    }
+
+    it "supports steps using differently named container operations" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
+    end
+  end
+
+  describe "operation injection" do
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+          map :process
+          step :verify_step, with: :verify
+          tee :persist
+      end.new(**dependencies)
+    }
+
+    let(:dependencies) {
+      {verify_step: -> input { Dry::Monads.Right(input.merge(foo: :bar)) }}
+    }
+
+    it "calls injected operations" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", foo: :bar)
+    end
+  end
+
+  context "wrapping operations with local methods" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+
+        map :process, with: :process
+        step :verify, with: :verify
+        tee :persist, with: :persist
+
+        def verify(input)
+          new_input = input.merge(greeting: "hello!")
+          super(new_input)
+        end
+      end.new(**dependencies)
+    end
+
+    let(:dependencies) { {} }
+
+    it "allows local methods to run operations via super" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
+    end
+  end
+
+  context "local step definition" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+
+        map :process, with: :process
+        step :verify
+        tee :persist, with: :persist
+
+        def verify(input)
+          Right(input.keys)
+        end
+      end.new
+    end
+
+    it "execute step only defined as local method" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+
+      expect(Test::DB).to include([:name, :email])
+    end
+  end
+
+  context "all steps are local methods" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction
+
+        map :process
+        step :verify
+        tee :persist
+
+        def process(input)
+          input.to_a
+        end
+
+        def verify(input)
+          Dry::Monads.Right(input)
+        end
+
+        def persist(input)
+          Test::DB << input and true
+        end
+      end.new
+    end
+
+    it "executes succesfully" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+      expect(Test::DB).to include([["name", "Jane"], ["email", "jane@doe.com"]])
     end
   end
 
@@ -134,7 +252,7 @@ RSpec.describe "Transactions" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     before do
-      container[:verify] = -> input { Left("raw failure") }
+      Test::Container[:verify] = -> input { Left("raw failure") }
     end
 
     it "does not run subsequent operations" do
@@ -167,7 +285,7 @@ RSpec.describe "Transactions" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     before do
-      container[:verify] = -> input { "failure" }
+      Test::Container[:verify] = -> input { "failure" }
     end
 
     it "raises an exception" do

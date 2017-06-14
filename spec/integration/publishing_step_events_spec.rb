@@ -1,24 +1,26 @@
 RSpec.describe "publishing step events" do
   let(:transaction) {
-    Dry.Transaction(container: container) do
-      map :process
-      step :verify
-      tee :persist
-    end
-  }
+    Class.new do
+      include Dry::Transaction(container: Test::Container)
 
-  let(:container) {
-    {
-      process:  -> input { {name: input["name"]} },
-      verify:   -> input { input[:name].to_s != "" ? Right(input) : Left("no name") },
-      persist:  -> input { Test::DB << input and true }
-    }
+      map :process, with: :process
+      step :verify, with: :verify
+      tee :persist, with: :persist
+    end.new
   }
 
   let(:subscriber) { spy(:subscriber) }
 
   before do
     Test::DB = []
+
+    module Test
+      Container = {
+        process:  -> input { {name: input["name"]} },
+        verify:   -> input { input[:name].to_s != "" ? Dry::Monads.Right(input) : Dry::Monads.Left("no name") },
+        persist:  -> input { Test::DB << input and true }
+      }
+    end
   end
 
   context "subscribing to all step events" do
