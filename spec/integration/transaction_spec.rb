@@ -144,7 +144,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
 
         def verify(input)
-          Dry::Monads.Right(input.keys)
+          Right(input.keys)
         end
       end.new
     end
