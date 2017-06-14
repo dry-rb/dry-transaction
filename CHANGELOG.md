@@ -1,3 +1,101 @@
+# 0.10.0 / 2017-06-15
+
+This release makes major changes to the dry-transaction API: transctions are now defined within your own class, support instance methods for defining or wrapping steps, and operation containers are now optional.
+
+## Added
+
+- Added `Dry::Transaction::Operation` convenience mixin. This gives easy access to `Right` and `Left` result builders within your operation objects, and also enables dry-matcher's block-based result matching API for when the operations are called individually. (timriley in [#58](https://github.com/dry-rb/dry-transaction/pull/58))
+
+    ```ruby
+    class MyOperation
+      include Dry::Transaction::Operation
+
+      def call(input)
+        Right(input)
+      end
+    end
+
+    my_op = MyOperation.new
+    my_op.("hello") do |m|
+      m.success do |v|
+        "Success: #{v}
+      end
+      m.failure do |v|
+        "Failure: #{v}"
+      end
+    end
+    # => "Success: hello"
+
+## Changed
+
+- [BREAKING] Transactions are now defined within your own classes using a mixin & class-level API for step definitions (GustavoCaso & timriley in [#58](https://github.com/dry-rb/dry-transaction/pull/58))
+
+    ```ruby
+    class CreateUser
+      include Dry::Transaction(container: Container)
+
+      step :process, with: "operations.process"
+      step :validate, with: "operations.validate"
+      step :persist, with: "operations.persist"
+    end
+
+    create_user = CreateUser.new
+    create_user.call("name" => "Jane Doe")
+    ```
+
+  Instance methods can wrap operations by calling `super`:
+
+    ```ruby
+    class CreateUser
+      include Dry::Transaction(container: Container)
+
+      step :process, with: "operations.process"
+      step :validate, with: "operations.validate"
+      step :persist, with: "operations.persist"
+
+      def process(input)
+        adjusted_input = do_something_with(input)
+        super(adjusted_input)
+      end
+    end
+    ```
+
+  Substitute operations can be injected when initializing objects (helpful for testing):
+
+    ```ruby
+    create_user = CreateUser.new(process: substitute_process_operation)
+    ```
+
+- Transactions can be defined without an operations container, using instance methods only.
+
+    ```ruby
+    class CreateUser
+      include Dry::Transaction
+
+      step :process
+      step :validate
+
+      def process(input)
+        input = do_something_with(input)
+        Right(input)
+      end
+
+      def validate(input)
+        if input[:email].include?("@")
+          Right(input)
+        else
+          Left(:not_valid)
+        end
+      end
+    end
+    ```
+
+- [BREAKING] You can no longer extend existing transactions with `#prepend`, `#append`, `#insert`, or `#remove`. Since transactions will now be instances of your own classes, with their own different behaviors, there’s no predictable way to combine the behaviors of two different classes. If you need the ability to add or remove steps, you can create separate transactions for the different behaviours you need to offer, or build into your own transaction class a way to skip steps based on input or step arguments.
+- [BREAKING] Blocks in step definitions are no longer accepted. If you want to wrap a step with some local behavior, wrap it with an instance method (see above).
+- [BREAKING] There is no longer an option for configuring the result matcher block API - we now use `Dry::Transaction::ResultMatcher` by default. If you want to provide your own matcher, you can do this by overriding `#call` in your transaction classes and using your own matcher when a block is given.
+
+[Compare v0.9.0...v0.10.0](https://github.com/dry-rb/dry-transaction/compare/v0.9.0...v0.10.0)
+
 # 0.9.0 / 2016-12-19
 
 ## Added
