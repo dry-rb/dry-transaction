@@ -1,6 +1,6 @@
 # 0.10.0 / 2017-06-15
 
-This release makes major changes to the dry-transaction API: transctions are now defined within your own class, support instance methods for defining or wrapping steps, and operation containers are now optional.
+This release makes major changes to the dry-transaction API: transactions are now defined within your own class, support instance methods for defining or wrapping steps, and operation containers are now optional.
 
 ## Added
 
