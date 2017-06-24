@@ -20,15 +20,6 @@ RSpec.describe "Transactions" do
       validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
       persist:  -> input { Test::DB << input and true },
     }
-
-    class Test::DryContainer
-      extend Dry::Container::Mixin
-      register :process,  -> input { {name: input["name"], email: input["email"]} }
-      register :verify,   -> input { Right(input) }
-      register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
-      register :persist,  -> input { Test::DB << input and true }
-    end
-
   end
 
   context "successful" do
@@ -168,7 +159,7 @@ RSpec.describe "Transactions" do
   context "local step definition not in container when using dry-container" do
     let(:transaction) do
       Class.new do
-        include Dry::Transaction(container: Test::DryContainer)
+        include Dry::Transaction(container: Test::Container)
 
         map :process, with: :process
         step :verify_only_local

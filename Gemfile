@@ -6,7 +6,6 @@ group :test do
   gem "simplecov"
   gem "codeclimate-test-reporter"
   gem "byebug", platform: :mri
-  gem "dry-container"
 end
 
 group :tools do
