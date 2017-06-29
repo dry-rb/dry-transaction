@@ -6,13 +6,15 @@ module Dry
     module InstanceMethods
       attr_reader :steps
       attr_reader :operations
+      attr_reader :listeners
 
-      def initialize(steps: (self.class.steps), **operations)
+      def initialize(steps: (self.class.steps), listeners: nil, **operations)
         @steps = steps.map { |step|
           operation = methods.include?(step.step_name) ? method(step.step_name) : operations[step.step_name]
           step.with(operation: operation)
         }
         @operations = operations
+        subscribe(listeners) unless listeners.nil?
       end
 
       def call(input, &block)
@@ -31,6 +33,8 @@ module Dry
       end
 
       def subscribe(listeners)
+        @listeners = listeners
+
         if listeners.is_a?(Hash)
           listeners.each do |step_name, listener|
             steps.detect { |step| step.step_name == step_name }.subscribe(listener)
@@ -53,7 +57,7 @@ module Dry
           end
         }
 
-        self.class.new(steps: new_steps, **operations)
+        self.class.new(steps: new_steps, listeners: listeners, **operations)
       end
 
       private
