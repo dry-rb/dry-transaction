@@ -1,3 +1,11 @@
+# 0.10.1 / 2017-06-30
+
+## Fixed
+
+- Preserve step notification listeners when calling a transaction after passing extra step arguments (jcmfernandes in [#65](https://github.com/dry-rb/dry-transaction/pull/65))
+
+[Compare v0.10.0...v0.10.1](https://github.com/dry-rb/dry-transaction/compare/v0.10.0...v0.10.1)
+
 # 0.10.0 / 2017-06-15
 
 This release makes major changes to the dry-transaction API: transactions are now defined within your own class, support instance methods for defining or wrapping steps, and operation containers are now optional.
