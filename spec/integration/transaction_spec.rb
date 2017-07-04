@@ -1,28 +1,28 @@
 RSpec.describe "Transactions" do
-  let(:transaction) {
-    Class.new do
-      include Dry::Transaction(container: Test::Container)
-        map :process
-        step :verify
-        try :validate, catch: Test::NotValidError
-        tee :persist
-    end.new(**dependencies)
-  }
-
   let(:dependencies) { {} }
 
   before do
     Test::NotValidError = Class.new(StandardError)
     Test::DB = []
-    Test::Container = {
-      process:  -> input { {name: input["name"], email: input["email"]} },
-      verify:   -> input { Right(input) },
-      validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
-      persist:  -> input { Test::DB << input and true },
-    }
+    class Test::Container
+      extend Dry::Container::Mixin
+      register :process,  -> input { {name: input["name"], email: input["email"]} }
+      register :verify,   -> input { Dry::Monads::Right(input) }
+      register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
+      register :persist,  -> input { Test::DB << input and true }
+    end
   end
 
   context "successful" do
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+          map :process
+          step :verify
+          try :validate, catch: Test::NotValidError
+          tee :persist
+      end.new(**dependencies)
+    }
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     it "calls the operations" do
@@ -63,12 +63,11 @@ RSpec.describe "Transactions" do
 
   context "different step names" do
     before do
-      module Test
-        ContainerNames = {
-          process_step:  -> input { {name: input["name"], email: input["email"]} },
-          verify_step:   -> input { Dry::Monads.Right(input) },
-          persist_step:  -> input { Test::DB << input and true },
-        }
+      class Test::ContainerNames
+        extend Dry::Container::Mixin
+        register :process_step,  -> input { {name: input["name"], email: input["email"]} }
+        register :verify_step,   -> input { Dry::Monads::Right(input) }
+        register :persist_step,  -> input { Test::DB << input and true }
       end
     end
 
@@ -156,7 +155,7 @@ RSpec.describe "Transactions" do
     end
   end
 
-  context "local step definition not in container when using dry-container" do
+  context "local step definition not in container" do
     let(:transaction) do
       Class.new do
         include Dry::Transaction(container: Test::Container)
@@ -171,7 +170,7 @@ RSpec.describe "Transactions" do
       end.new
     end
 
-    it "execute step only defined as local method when using dry container" do
+    it "execute step only defined as local method" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
       expect(Test::DB).to include([:name, :email])
@@ -209,6 +208,15 @@ RSpec.describe "Transactions" do
   end
 
   context "failed in a try step" do
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+        map :process
+        step :verify
+        try :validate, catch: Test::NotValidError
+        tee :persist
+      end.new(**dependencies)
+    }
     let(:input) { {"name" => "Jane"} }
 
     it "does not run subsequent operations" do
@@ -275,8 +283,23 @@ RSpec.describe "Transactions" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     before do
-      Test::Container[:verify] = -> input { Left("raw failure") }
+      class Test::ContainerRaw
+        extend Dry::Container::Mixin
+        register :process_step,  -> input { {name: input["name"], email: input["email"]} }
+        register :verify_step,   -> input { Dry::Monads::Left("raw failure") }
+        register :persist_step,  -> input { Test::DB << input and true }
+      end
     end
+
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::ContainerRaw)
+
+        map :process, with: :process_step
+        step :verify, with: :verify_step
+        tee :persist, with: :persist_step
+      end.new(**dependencies)
+    }
 
     it "does not run subsequent operations" do
       transaction.call(input)
@@ -307,8 +330,22 @@ RSpec.describe "Transactions" do
   context "non-confirming raw step result" do
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::ContainerRaw)
+        map :process
+        step :verify
+        tee :persist
+      end.new(**dependencies)
+    }
+
     before do
-      Test::Container[:verify] = -> input { "failure" }
+      class Test::ContainerRaw
+        extend Dry::Container::Mixin
+        register :process,  -> input { {name: input["name"], email: input["email"]} }
+        register :verify,   -> input { "failure" }
+        register :persist,  -> input { Test::DB << input and true }
+      end
     end
 
     it "raises an exception" do
