@@ -1,3 +1,13 @@
+# 0.10.2 - 2017-07-10
+
+## Fixed
+
+- Only resolve an operation object from the container if the container reports that the key is present. This prevents exceptions from being raised when using dry-container and defining a transaction that includes steps both container-based and local method steps (jonolsson in [#64][pr64])
+
+[Compare v0.10.1...v0.10.2](https://github.com/dry-rb/dry-transaction/compare/v0.10.1...v0.10.2)
+
+[pr64]: https://github.com/dry-rb/dry-transaction/pull/64
+
 # 0.10.1 / 2017-06-30
 
 ## Fixed
