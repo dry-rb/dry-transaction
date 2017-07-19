@@ -6,9 +6,10 @@ module Dry
       # @api private
       class Raw
         include Dry::Monads::Either::Mixin
+        include Resolver
 
         def call(step, input, *args)
-          result = step.operation.call(input, *args)
+          result = resolve(step, input, *args)
 
           unless result.is_a?(Dry::Monads::Either)
             raise ArgumentError, "step +#{step.step_name}+ must return an Either object"

@@ -4,9 +4,11 @@ module Dry
       # @api private
       class Tee
         include Dry::Monads::Either::Mixin
+        include Resolver
 
         def call(step, input, *args)
-          step.operation.call(input, *args)
+          resolve(step, input, *args)
+
           Right(input)
         end
       end
