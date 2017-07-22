@@ -4,10 +4,9 @@ module Dry
       # @api private
       class Map
         include Dry::Monads::Either::Mixin
-        include Resolver
 
         def call(step, input, *args)
-          Right(resolve(step, input, *args))
+          Right(step.call_operation(input, *args))
         end
       end
 

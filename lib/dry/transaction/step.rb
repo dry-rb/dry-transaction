@@ -55,6 +55,14 @@ module Dry
         }
       end
 
+      def call_operation(*input)
+        if arity >= 1
+          operation.call(*input)
+        else
+          operation.call
+        end
+      end
+
       def arity
         case operation
         when Proc, Method

@@ -4,16 +4,6 @@ module Dry
   module Transaction
     class StepAdapters
       extend Dry::Container::Mixin
-
-      module Resolver
-        def resolve(step, input, *args)
-          if step.arity >= 1
-            step.operation.call(input, *args)
-          else
-            step.operation.call
-          end
-        end
-      end
     end
   end
 end
