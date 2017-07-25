@@ -133,6 +133,33 @@ RSpec.describe "Transactions" do
     end
   end
 
+  context "wrapping operations with private local methods" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+
+        map :process, with: :process
+        step :verify, with: :verify
+        tee :persist, with: :persist
+
+        private
+
+        def verify(input)
+          new_input = input.merge(greeting: "hello!")
+          super(new_input)
+        end
+      end.new(**dependencies)
+    end
+
+    let(:dependencies) { {} }
+
+    it "allows local methods to run operations via super" do
+      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
+    end
+  end
+
   context "local step definition" do
     let(:transaction) do
       Class.new do
