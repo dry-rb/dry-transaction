@@ -19,6 +19,7 @@ module Dry
 
       def call(input, &block)
         assert_step_arity
+        assert_rollback_support if self.class.rollback
 
         result = steps.inject(Dry::Monads.Right(input), :bind)
 
@@ -91,6 +92,14 @@ module Dry
 
           if num_args_required > num_args_supplied
             raise ArgumentError, "not enough arguments supplied for step +#{step.step_name}+"
+          end
+        end
+      end
+
+      def assert_rollback_support
+        steps.each do |step|
+          if !step.operation.respond_to?(:rollback)
+            raise RollbackActionNotDefined, "missing rollback action for step +#{step.step_name}+"
           end
         end
       end
