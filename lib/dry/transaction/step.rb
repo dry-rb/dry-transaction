@@ -55,8 +55,21 @@ module Dry
         }
       end
 
+      def call_operation(*input)
+        if arity >= 1
+          operation.call(*input)
+        else
+          operation.call
+        end
+      end
+
       def arity
-        operation.is_a?(Proc) ? operation.arity : operation.method(:call).arity
+        case operation
+        when Proc, Method
+          operation.arity
+        else
+          operation.method(:call).arity
+        end
       end
     end
   end

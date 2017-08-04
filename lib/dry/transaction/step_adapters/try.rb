@@ -10,7 +10,8 @@ module Dry
             raise ArgumentError, "+try+ steps require one or more exception classes provided via +catch:+"
           end
 
-          Right(step.operation.call(input, *args))
+          result = step.call_operation(input, *args)
+          Right(result)
         rescue *Array(step.options[:catch]) => e
           e = step.options[:raise].new(e.message) if step.options[:raise]
           Left(e)

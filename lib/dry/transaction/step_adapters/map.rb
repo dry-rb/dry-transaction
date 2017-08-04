@@ -6,7 +6,7 @@ module Dry
         include Dry::Monads::Either::Mixin
 
         def call(step, input, *args)
-          Right(step.operation.call(input, *args))
+          Right(step.call_operation(input, *args))
         end
       end
 

@@ -22,7 +22,7 @@ module Dry
         subscribe(listeners) unless listeners.nil?
       end
 
-      def call(input, &block)
+      def call(input = nil, &block)
         assert_step_arity
 
         result = steps.inject(Dry::Monads.Right(input), :bind)
