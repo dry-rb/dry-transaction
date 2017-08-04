@@ -10,7 +10,12 @@ module Dry
 
       def initialize(steps: (self.class.steps), listeners: nil, **operations)
         @steps = steps.map { |step|
-          operation = methods.include?(step.step_name) ? method(step.step_name) : operations[step.step_name]
+          operation =
+            if methods.include?(step.step_name) || private_methods.include?(step.step_name)
+              method(step.step_name)
+            else
+              operations[step.step_name]
+            end
           step.with(operation: operation)
         }
         @operations = operations
