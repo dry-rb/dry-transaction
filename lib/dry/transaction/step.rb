@@ -55,6 +55,15 @@ module Dry
         }
       end
 
+      def rollback(input)
+        args = [input] + Array(call_args)
+        result = operation.rollback(*args)
+
+        result.or { |value|
+          value
+        }
+      end
+
       def arity
         operation.is_a?(Proc) ? operation.arity : operation.method(:call).arity
       end

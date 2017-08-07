@@ -19,9 +19,10 @@ module Dry
 
       def call(input, &block)
         assert_step_arity
-        assert_rollback_support if self.class.rollback
+        rollback_support = self.class.rollback
+        assert_rollback_support if rollback_support
 
-        result = steps.inject(Dry::Monads.Right(input), :bind)
+        result = execute_steps(input, rollback_support: rollback_support)
 
         if block
           ResultMatcher.(result, &block)
@@ -63,6 +64,21 @@ module Dry
 
       private
 
+      def execute_steps(input, rollback_support: false)
+        current_step = nil
+        steps.inject(Dry::Monads.Right(input)) do |value, step|
+          current_step = step
+          value.bind(step)
+        end
+      rescue => e
+        raise e unless rollback_support
+        rollback_steps = steps.slice(0..steps.index(current_step)).reverse
+        result = rollback_steps.inject(input) do |value, step|
+          step.rollback(value)
+        end
+        Left(StepFailure.new(self, result))
+      end
+
       def respond_to_missing?(name, _include_private = false)
         steps.any? { |step| step.step_name == name }
       end
@@ -98,7 +114,7 @@ module Dry
 
       def assert_rollback_support
         steps.each do |step|
-          if !step.operation.respond_to?(:rollback)
+          unless step.operation.respond_to?(:rollback)
             raise RollbackActionNotDefined, "missing rollback action for step +#{step.step_name}+"
           end
         end
