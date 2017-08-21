@@ -19,6 +19,7 @@ rvm:
 env:
   global:
     - JRUBY_OPTS='--dev -J-Xmx1024M'
+    - COVERAGE=true
 addons:
   code_climate:
     repo_token: 2c92f1dc6b512f11d06153bcf2f3f5b507af6faa95b3319f559bae1a6bcb2c1a
