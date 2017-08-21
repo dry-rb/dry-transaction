@@ -17,9 +17,9 @@ module Dry
 
       def included(klass)
         klass.extend(dsl_mod)
-        klass.send(:include, InstanceMethods)
-        klass.send(:prepend, resolver_mod)
-        klass.send(:include, Dry::Monads::Either::Mixin)
+        klass.include(InstanceMethods)
+        klass.prepend(resolver_mod)
+        klass.include(Dry::Monads::Either::Mixin)
       end
     end
   end

@@ -7,7 +7,7 @@ module Dry
   # Business transaction DSL
   module Transaction
     def self.included(klass)
-      klass.send :include, Dry::Transaction()
+      klass.include(Dry::Transaction())
     end
   end
 
