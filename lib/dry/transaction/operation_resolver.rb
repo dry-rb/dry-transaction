@@ -6,7 +6,7 @@ module Dry
           define_method :initialize do |**kwargs|
             operation_kwargs = self.class.steps.select(&:operation_name).map { |step|
               operation = kwargs.fetch(step.step_name) {
-                ops_container and ops_container.key?(step.operation_name) and ops_container[step.operation_name]
+                ops_container && ops_container.key?(step.operation_name) && ops_container[step.operation_name]
               }
 
               [step.step_name, operation]
