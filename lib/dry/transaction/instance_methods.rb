@@ -1,9 +1,11 @@
-require "dry/monads"
+require "dry/monads/either"
 require "dry/transaction/result_matcher"
 
 module Dry
   module Transaction
     module InstanceMethods
+      include Dry::Monads::Either::Mixin
+
       attr_reader :steps
       attr_reader :operations
       attr_reader :listeners
@@ -25,14 +27,14 @@ module Dry
       def call(input = nil, &block)
         assert_step_arity
 
-        result = steps.inject(Dry::Monads.Right(input), :bind)
+        result = steps.inject(Right(input), :bind)
 
         if block
           ResultMatcher.(result, &block)
         else
           result.or { |step_failure|
             # Unwrap the value from the StepFailure and return it directly
-            Dry::Monads.Left(step_failure.value)
+            Left(step_failure.value)
           }
         end
       end

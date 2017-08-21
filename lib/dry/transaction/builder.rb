@@ -1,4 +1,3 @@
-require "dry/monads/either"
 require "dry/transaction/step"
 require "dry/transaction/dsl"
 require "dry/transaction/instance_methods"
@@ -19,7 +18,6 @@ module Dry
         klass.extend(dsl_mod)
         klass.include(InstanceMethods)
         klass.prepend(resolver_mod)
-        klass.include(Dry::Monads::Either::Mixin)
       end
     end
   end
