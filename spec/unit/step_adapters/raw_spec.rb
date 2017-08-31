@@ -31,7 +31,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw do
       end
 
       it "return the result of the operation as output" do
-        expect(subject.call(step, 'input').value).to eql 'INPUT'
+        expect(subject.call(step, 'input').left).to eql 'INPUT'
       end
     end
 
@@ -45,7 +45,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw do
       end
 
       it "return the result of the operation as output" do
-        expect(subject.call(step, 'input').value).to eql 'INPUT'
+        expect(subject.call(step, 'input').value!).to eql 'INPUT'
       end
     end
   end

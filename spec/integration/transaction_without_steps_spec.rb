@@ -45,7 +45,7 @@ RSpec.describe "Transactions steps without arguments" do
     end
 
     it "wraps the result of the final operation" do
-      expect(transaction.call().value).to eq(name: "Jane", email: "jane@doe.com")
+      expect(transaction.call().value!).to eq(name: "Jane", email: "jane@doe.com")
     end
 
     it "supports matching on success" do

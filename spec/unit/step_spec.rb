@@ -35,8 +35,8 @@ RSpec.describe Dry::Transaction::Step do
 
       it "wraps value in StepFailure" do
         aggregate_failures do
-          expect(subject.value).to be_a Dry::Transaction::StepFailure
-          expect(subject.value.value).to eq "error"
+          expect(subject.left).to be_a Dry::Transaction::StepFailure
+          expect(subject.left.value).to eq "error"
         end
       end
 

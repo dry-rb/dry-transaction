@@ -35,7 +35,7 @@ RSpec.describe "Transactions" do
     end
 
     it "wraps the result of the final operation" do
-      expect(transaction.call(input).value).to eq(name: "Jane", email: "jane@doe.com")
+      expect(transaction.call(input).value!).to eq(name: "Jane", email: "jane@doe.com")
     end
 
     it "can be called multiple times to the same effect" do
@@ -256,7 +256,7 @@ RSpec.describe "Transactions" do
     end
 
     it "wraps the result of the failing operation" do
-      expect(transaction.call(input).value).to be_a Test::NotValidError
+      expect(transaction.call(input).left).to be_a Test::NotValidError
     end
 
     it "supports matching on failure" do
@@ -338,17 +338,17 @@ RSpec.describe "Transactions" do
     end
 
     it "returns the failing value from the operation" do
-      expect(transaction.call(input).value).to eq "raw failure"
+      expect(transaction.call(input).left).to eq "raw failure"
     end
 
     it "returns an object that quacks like expected" do
-      result = transaction.call(input).value
+      result = transaction.call(input).left
 
       expect(Array(result)).to eq(['raw failure'])
     end
 
     it "does not allow to call private methods on the result accidently" do
-      result = transaction.call(input).value
+      result = transaction.call(input).left
 
       expect { result.print('') }.to raise_error(NoMethodError)
     end

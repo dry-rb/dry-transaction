@@ -17,7 +17,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Tee do
     end
 
     it "return the original input as output" do
-      expect(subject.call(step, 'input').value).to eql 'input'
+      expect(subject.call(step, 'input').value!).to eql 'input'
     end
   end
 end

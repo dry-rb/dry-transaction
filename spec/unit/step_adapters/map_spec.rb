@@ -17,7 +17,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Map do
     end
 
     it "return the result of the operation as output" do
-      expect(subject.call(step, 'input').value).to eql 'INPUT'
+      expect(subject.call(step, 'input').value!).to eql 'INPUT'
     end
   end
 end
