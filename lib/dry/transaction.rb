@@ -35,11 +35,13 @@ module Dry
   # If your operations don't already return `Success` or `Failure`, then they can be
   # added to the transaction with the following steps:
   #
-  # * `map` --- wrap the output of the operation in a `Success`
-  # * `try` --- wrap the output of the operation in a `Success`, unless a certain
+  # * `check` --- wrap original input to `Success` or `Left` Failure on operation
+  #   return value, and pass it as output.
+  # * `map`   --- wrap the output of the operation in a `Success`
+  # * `try`   --- wrap the output of the operation in a `Success`, unless a certain
   #   exception is raised, which will be caught and returned as a `Failure`.
-  # * `tee` --- ignore the output of the operation and pass through its original
-  #   input as a `Success`.
+  # * `tee`   --- ignore the output of the operation and pass through its original
+  #   input as a `Success`
   #
   # [dry-monads]: https://rubygems.org/gems/dry-monads
   #
