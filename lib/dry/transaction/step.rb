@@ -56,10 +56,10 @@ module Dry
       end
 
       def call_operation(*input)
-        if arity >= 1
-          operation.call(*input)
-        else
+        if arity.zero?
           operation.call
+        else
+          operation.call(*input)
         end
       end
 
