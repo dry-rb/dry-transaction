@@ -8,6 +8,7 @@ module Dry
   end
 end
 
+require "dry/transaction/step_adapters/check"
 require "dry/transaction/step_adapters/map"
 require "dry/transaction/step_adapters/raw"
 require "dry/transaction/step_adapters/tee"

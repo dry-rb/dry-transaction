@@ -34,11 +34,13 @@ module Dry
   # If your operations don't already return `Right` or `Left`, then they can be
   # added to the transaction with the following steps:
   #
-  # * `map` --- wrap the output of the operation in a `Right`
-  # * `try` --- wrap the output of the operation in a `Right`, unless a certain
+  # * `check` --- wrap original input to `Right` or `Left` based on operation
+  #   return value, and pass it as output.
+  # * `map`   --- wrap the output of the operation in a `Right`
+  # * `try`   --- wrap the output of the operation in a `Right`, unless a certain
   #   exception is raised, which will be caught and returned as a `Left`.
-  # * `tee` --- ignore the output of the operation and pass through its original
-  #   input as a `Right`.
+  # * `tee`   --- ignore the output of the operation and pass through its original
+  #   input as a `Right`
   #
   # [dry-monads]: https://rubygems.org/gems/dry-monads
   #

@@ -3,6 +3,7 @@ RSpec.describe "Custom step adapters" do
     Class.new do
       include Dry::Transaction(container: Test::Container, step_adapters: Test::CustomStepAdapters)
 
+      check :jane?, with: :jane?
       map :process, with: :process
       tee :persist, with: :persist
       enqueue :deliver, with: :deliver
@@ -15,6 +16,7 @@ RSpec.describe "Custom step adapters" do
 
     module Test
       Container = {
+        jane?:   -> input { input["name"] == "Jane" },
         process: -> input { {name: input["name"], email: input["email"]} },
         persist: -> input { Test::DB << input and true },
         deliver: -> input { "Delivered email to #{input[:email]}" },
