@@ -1,4 +1,14 @@
-# 0.10.2 - 2017-07-10
+# 0.10.3 - to-be-released
+
+## Fixed
+
+- Pass arguments to a step with keyword arguments with default values (flash-gordon in [#74][pr74])
+
+[Compare v0.10.2...master](https://github.com/dry-rb/dry-transaction/compare/v0.10.2...master)
+
+[pr74]: https://github.com/dry-rb/dry-transaction/pull/74
+
+# 0.10.2 / 2017-07-10
 
 ## Fixed
 
