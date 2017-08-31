@@ -1,4 +1,4 @@
-# 0.10.3 - to-be-released
+# 0.11.0 / to-be-released
 
 ## Fixed
 
