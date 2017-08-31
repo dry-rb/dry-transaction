@@ -379,4 +379,29 @@ RSpec.describe "Transactions" do
       expect { transaction.call(input) }.to raise_error(ArgumentError)
     end
   end
+
+  context "keyword arguments" do
+    let(:input) { { name: 'jane', age: 20 } }
+
+    let(:upcaser) do
+      Class.new {
+        def call(name: 'John', **rest)
+          Dry::Monads::Right(name: name[0].upcase + name[1..-1], **rest)
+        end
+      }.new
+    end
+
+    let(:transaction) do
+      Class.new {
+        include Dry::Transaction
+
+        step :camelize
+
+      }.new(camelize: upcaser)
+    end
+
+    it "calls the operations" do
+      expect(transaction.(input).value).to eql(name: 'Jane', age: 20)
+    end
+  end
 end
