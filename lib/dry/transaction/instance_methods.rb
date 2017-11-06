@@ -15,6 +15,8 @@ module Dry
           operation =
             if methods.include?(step.step_name) || private_methods.include?(step.step_name)
               method(step.step_name)
+            elsif operations[step.step_name].nil?
+              raise MissingStepDefinition.new(step.step_name)
             elsif operations[step.step_name].respond_to?(:call)
               operations[step.step_name]
             else

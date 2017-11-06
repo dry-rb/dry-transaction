@@ -429,23 +429,6 @@ RSpec.describe "Transactions" do
           expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepDefinition)
         end
       end
-
-      context "no container" do
-        let(:input) { {} }
-
-        let(:transaction) {
-          Class.new do
-            include Dry::Transaction
-            map :not_a_proc
-
-            not_a_proc = "definitelty not a proc"
-          end.new
-        }
-
-        it "raises an exception" do
-          expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepDefinition)
-        end
-      end
     end
 
     context "missing steps" do
@@ -465,7 +448,7 @@ RSpec.describe "Transactions" do
         }
 
         it "raises an exception" do
-          expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepDefinition)
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepDefinition)
         end
       end
 
@@ -490,7 +473,7 @@ RSpec.describe "Transactions" do
         end
 
         it "raises an exception" do
-          expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepDefinition)
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepDefinition)
         end
       end
     end
