@@ -426,7 +426,7 @@ RSpec.describe "Transactions" do
         end
 
         it "raises an exception" do
-          expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepDefinition)
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepError)
         end
       end
     end
@@ -448,7 +448,7 @@ RSpec.describe "Transactions" do
         }
 
         it "raises an exception" do
-          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepDefinition)
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepError)
         end
       end
 
@@ -473,7 +473,7 @@ RSpec.describe "Transactions" do
         end
 
         it "raises an exception" do
-          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepDefinition)
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepError)
         end
       end
     end

@@ -16,11 +16,11 @@ module Dry
             if methods.include?(step.step_name) || private_methods.include?(step.step_name)
               method(step.step_name)
             elsif operations[step.step_name].nil?
-              raise MissingStepDefinition.new(step.step_name)
+              raise MissingStepError.new(step.step_name)
             elsif operations[step.step_name].respond_to?(:call)
               operations[step.step_name]
             else
-              raise InvalidStepDefinition.new(step.step_name)
+              raise InvalidStepError.new(step.step_name)
             end
           step.with(operation: operation)
         }
