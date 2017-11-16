@@ -36,7 +36,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
 
       context "when the error was raised" do
 
-        it "return a Left Monad" do
+        it "return a Failure value" do
           expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
         end
 
@@ -54,7 +54,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
             }
           }
 
-          it "return a Left Monad" do
+          it "return a Failure value" do
             expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
           end
 
@@ -68,7 +68,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
 
       context "when the error was NOT raised" do
 
-        it "return a Right Monad" do
+        it "return a Success value" do
           expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
         end
 
@@ -84,7 +84,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
             }
           }
 
-          it "return a Right Monad" do
+          it "return a Success value" do
             expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
           end
 

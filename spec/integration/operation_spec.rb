@@ -6,13 +6,13 @@ RSpec.describe Dry::Transaction::Operation do
       include Dry::Transaction::Operation
 
       def call(input)
-        Right(input)
+        Success(input)
       end
     end.new
   }
 
   it "mixes in the Result monad constructors" do
-    expect(operation.("hello")).to be_right
+    expect(operation.("hello")).to be_success
   end
 
   it "supports pattern matching when called with a block" do

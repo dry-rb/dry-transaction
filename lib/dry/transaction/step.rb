@@ -51,7 +51,7 @@ module Dry
           value
         }.or { |value|
           broadcast :"#{step_name}_failure", *args, value
-          Left(StepFailure.new(self, value))
+          Failure(StepFailure.new(self, value))
         }
       end
 

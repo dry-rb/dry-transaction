@@ -25,7 +25,7 @@ RSpec.describe "Custom step adapters" do
 
         register :enqueue, -> step, input, *args {
           Test::QUEUE << step.operation.call(input, *args)
-          Right(input)
+          Success(input)
         }
       end
     end

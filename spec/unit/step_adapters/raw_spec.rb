@@ -12,7 +12,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw do
 
   describe "#call" do
 
-    context "when the result of the operation is NOT a Dry::Monads::Either" do
+    context "when the result of the operation is NOT a Dry::Monads::Result" do
 
       it "raises an ArgumentError" do
         expect do
@@ -21,12 +21,12 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw do
       end
     end
 
-    context "when the result of the operation is a Left Monad" do
+    context "when the result of the operation is a Failure value" do
       let(:operation) {
-        -> (input) { Left(input.upcase) }
+        -> (input) { Failure(input.upcase) }
       }
 
-      it "return a Left Monad" do
+      it "return a Failure value" do
         expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Failure
       end
 
@@ -35,12 +35,12 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw do
       end
     end
 
-    context "when the result of the operation is a Right Monad" do
+    context "when the result of the operation is a Success value" do
       let(:operation) {
-        -> (input) { Right(input.upcase) }
+        -> (input) { Success(input.upcase) }
       }
 
-      it "return a Right Monad" do
+      it "return a Success value" do
         expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
       end
 

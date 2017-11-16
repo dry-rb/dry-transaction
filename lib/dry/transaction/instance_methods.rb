@@ -31,14 +31,14 @@ module Dry
       def call(input = nil, &block)
         assert_step_arity
 
-        result = steps.inject(Right(input), :bind)
+        result = steps.inject(Success(input), :bind)
 
         if block
           ResultMatcher.(result, &block)
         else
           result.or { |step_failure|
             # Unwrap the value from the StepFailure and return it directly
-            Left(step_failure.value)
+            Failure(step_failure.value)
           }
         end
       end

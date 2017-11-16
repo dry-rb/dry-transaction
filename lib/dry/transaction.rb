@@ -25,21 +25,21 @@ module Dry
   # transaction, with its output passed as the input to the next operation.
   # Operations will only be called if the previous step was a success.
   #
-  # A step is successful when it returns a [dry-monads](dry-monads) `Right`
+  # A step is successful when it returns a [dry-monads](dry-monads) `Success`
   # object wrapping its output value. A step is a failure when it returns a
-  # `Left` object.  If your operations already return a `Right` or `Left`, they
+  # `Failure` object.  If your operations already return a `Success` or `Failure`, they
   # can be added to your operation as plain `step` steps.
   #
   # Add operation to your transaction with the `step` method.
   #
-  # If your operations don't already return `Right` or `Left`, then they can be
+  # If your operations don't already return `Success` or `Failure`, then they can be
   # added to the transaction with the following steps:
   #
-  # * `map` --- wrap the output of the operation in a `Right`
-  # * `try` --- wrap the output of the operation in a `Right`, unless a certain
-  #   exception is raised, which will be caught and returned as a `Left`.
+  # * `map` --- wrap the output of the operation in a `Success`
+  # * `try` --- wrap the output of the operation in a `Success`, unless a certain
+  #   exception is raised, which will be caught and returned as a `Failure`.
   # * `tee` --- ignore the output of the operation and pass through its original
-  #   input as a `Right`.
+  #   input as a `Success`.
   #
   # [dry-monads]: https://rubygems.org/gems/dry-monads
   #
@@ -52,7 +52,7 @@ module Dry
   #
   #     def second_step(input)
   #       result = do_something_with(input)
-  #       Right(result)
+  #       Success(result)
   #     end
   #   end
   #

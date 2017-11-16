@@ -11,10 +11,10 @@ module Dry
           end
 
           result = step.call_operation(input, *args)
-          Right(result)
+          Success(result)
         rescue *Array(step.options[:catch]) => e
           e = step.options[:raise].new(e.message) if step.options[:raise]
-          Left(e)
+          Failure(e)
         end
       end
 

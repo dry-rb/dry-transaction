@@ -4,7 +4,7 @@ RSpec.describe "publishing step events" do
       extend Dry::Container::Mixin
 
       register :process, -> input { {name: input["name"]} }
-      register :verify,  -> input { input[:name].to_s != "" ? Dry::Monads.Right(input) : Dry::Monads.Left("no name") }
+      register :verify,  -> input { input[:name].to_s != "" ? Dry::Monads.Success(input) : Dry::Monads.Failure("no name") }
       register :persist, -> input { Test::DB << input and true }
     end
   }
@@ -78,7 +78,7 @@ RSpec.describe "publishing step events" do
         extend Dry::Container::Mixin
 
         register :process, -> input { {name: input["name"]} }
-        register :verify,  -> input, name { input[:name].to_s == name ? Dry::Monads.Right(input) : Dry::Monads.Left("wrong name") }
+        register :verify,  -> input, name { input[:name].to_s == name ? Dry::Monads.Success(input) : Dry::Monads.Failure("wrong name") }
         register :persist, -> input { Test::DB << input and true }
       end
     }

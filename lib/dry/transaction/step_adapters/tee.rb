@@ -7,7 +7,7 @@ module Dry
 
         def call(step, input, *args)
           step.call_operation(input, *args)
-          Right(input)
+          Success(input)
         end
       end
 

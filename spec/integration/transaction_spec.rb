@@ -7,7 +7,7 @@ RSpec.describe "Transactions" do
     class Test::Container
       extend Dry::Container::Mixin
       register :process,  -> input { {name: input["name"], email: input["email"]} }
-      register :verify,   -> input { Dry::Monads::Right(input) }
+      register :verify,   -> input { Dry::Monads::Success(input) }
       register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       register :persist,  -> input { Test::DB << input and true }
     end
@@ -66,7 +66,7 @@ RSpec.describe "Transactions" do
       class Test::ContainerNames
         extend Dry::Container::Mixin
         register :process_step,  -> input { {name: input["name"], email: input["email"]} }
-        register :verify_step,   -> input { Dry::Monads::Right(input) }
+        register :verify_step,   -> input { Dry::Monads::Success(input) }
         register :persist_step,  -> input { Test::DB << input and true }
       end
     end
@@ -98,7 +98,7 @@ RSpec.describe "Transactions" do
     }
 
     let(:dependencies) {
-      {verify_step: -> input { Dry::Monads.Right(input.merge(foo: :bar)) }}
+      {verify_step: -> input { Success(input.merge(foo: :bar)) }}
     }
 
     it "calls injected operations" do
@@ -170,7 +170,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
 
         def verify(input)
-          Right(input.keys)
+          Success(input.keys)
         end
       end.new
     end
@@ -192,7 +192,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
 
         def verify_only_local(input)
-          Right(input.keys)
+          Success(input.keys)
         end
       end.new
     end
@@ -219,7 +219,7 @@ RSpec.describe "Transactions" do
         end
 
         def verify(input)
-          Dry::Monads.Right(input)
+          Success(input)
         end
 
         def persist(input)
@@ -313,7 +313,7 @@ RSpec.describe "Transactions" do
       class Test::ContainerRaw
         extend Dry::Container::Mixin
         register :process_step,  -> input { {name: input["name"], email: input["email"]} }
-        register :verify_step,   -> input { Dry::Monads::Left("raw failure") }
+        register :verify_step,   -> input { Dry::Monads::Failure("raw failure") }
         register :persist_step,  -> input { Test::DB << input and true }
       end
     end
@@ -334,7 +334,7 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a failure" do
-      expect(transaction.call(input)).to be_a Dry::Monads::Result::Failure
+      expect(transaction.call(input)).to be_a_failure
     end
 
     it "returns the failing value from the operation" do
@@ -386,7 +386,7 @@ RSpec.describe "Transactions" do
     let(:upcaser) do
       Class.new {
         def call(name: 'John', **rest)
-          Dry::Monads::Right(name: name[0].upcase + name[1..-1], **rest)
+          Dry::Monads::Success(name: name[0].upcase + name[1..-1], **rest)
         end
       }.new
     end
@@ -442,7 +442,7 @@ RSpec.describe "Transactions" do
             map :i_am_missing
 
             def noop
-              Dry::Monads::Right(input)
+              Success(input)
             end
           end.new
         }
@@ -468,7 +468,7 @@ RSpec.describe "Transactions" do
           class Test::ContainerRaw
             extend Dry::Container::Mixin
 
-            register :noop, -> input { Dry::Monads::Right(input) }
+            register :noop, -> input { Success(input) }
           end
         end
 
@@ -478,5 +478,4 @@ RSpec.describe "Transactions" do
       end
     end
   end
-
 end
