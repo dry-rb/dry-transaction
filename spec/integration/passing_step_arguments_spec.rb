@@ -29,7 +29,7 @@ RSpec.describe "Passing additional arguments to step operations" do
     let(:step_options) { {validate: ["doe.com"]} }
 
     it "passes the arguments and calls the operations successfully" do
-      expect(call_transaction).to be_a Dry::Monads::Either::Right
+      expect(call_transaction).to be_a Dry::Monads::Result::Success
     end
   end
 

@@ -1,10 +1,10 @@
-require "dry/monads/either"
+require "dry/monads/result"
 require "dry/transaction/result_matcher"
 
 module Dry
   module Transaction
     module InstanceMethods
-      include Dry::Monads::Either::Mixin
+      include Dry::Monads::Result::Mixin
 
       attr_reader :steps
       attr_reader :operations

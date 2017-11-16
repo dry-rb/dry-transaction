@@ -3,7 +3,7 @@ module Dry
     class StepAdapters
       # @api private
       class Try
-        include Dry::Monads::Either::Mixin
+        include Dry::Monads::Result::Mixin
 
         def call(step, input, *args)
           unless step.options[:catch]

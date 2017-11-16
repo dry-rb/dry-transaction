@@ -1,4 +1,4 @@
-require "dry/monads/either"
+require "dry/monads/result"
 require "wisper"
 require "dry/transaction/step_failure"
 
@@ -9,7 +9,7 @@ module Dry
       UNDEFINED = Object.new.freeze
 
       include Wisper::Publisher
-      include Dry::Monads::Either::Mixin
+      include Dry::Monads::Result::Mixin
 
       attr_reader :step_adapter
       attr_reader :step_name

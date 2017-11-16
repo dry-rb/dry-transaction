@@ -17,7 +17,7 @@ RSpec.describe Dry::Transaction::Step do
     subject { step.call(input) }
 
     context "when operation succeeds" do
-      let(:operation) { proc { |input| Dry::Monads::Either::Right.new(input) } }
+      let(:operation) { proc { |input| Dry::Monads::Result::Success.new(input) } }
 
       it { is_expected.to be_right }
 
@@ -29,7 +29,7 @@ RSpec.describe Dry::Transaction::Step do
     end
 
     context "when operation fails" do
-      let(:operation) { proc { |input| Dry::Monads::Either::Left.new("error") } }
+      let(:operation) { proc { |input| Dry::Monads::Result::Failure.new("error") } }
 
       it { is_expected.to be_left }
 

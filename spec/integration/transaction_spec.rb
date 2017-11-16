@@ -31,7 +31,7 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a success" do
-      expect(transaction.call(input)).to be_a Dry::Monads::Either::Right
+      expect(transaction.call(input)).to be_a Dry::Monads::Result::Success
     end
 
     it "wraps the result of the final operation" do
@@ -252,7 +252,7 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a failure" do
-      expect(transaction.call(input)).to be_a Dry::Monads::Either::Left
+      expect(transaction.call(input)).to be_a Dry::Monads::Result::Failure
     end
 
     it "wraps the result of the failing operation" do
@@ -334,7 +334,7 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a failure" do
-      expect(transaction.call(input)).to be_a Dry::Monads::Either::Left
+      expect(transaction.call(input)).to be_a Dry::Monads::Result::Failure
     end
 
     it "returns the failing value from the operation" do

@@ -27,7 +27,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw do
       }
 
       it "return a Left Monad" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Left
+        expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Failure
       end
 
       it "return the result of the operation as output" do
@@ -41,7 +41,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw do
       }
 
       it "return a Right Monad" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+        expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
       end
 
       it "return the result of the operation as output" do

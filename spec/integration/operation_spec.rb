@@ -11,7 +11,7 @@ RSpec.describe Dry::Transaction::Operation do
     end.new
   }
 
-  it "mixes in the Either monad constructors" do
+  it "mixes in the Result monad constructors" do
     expect(operation.("hello")).to be_right
   end
 

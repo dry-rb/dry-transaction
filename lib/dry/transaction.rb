@@ -1,4 +1,4 @@
-require "dry/monads/either"
+require "dry/monads/result"
 require "dry/transaction/version"
 require "dry/transaction/step_adapters"
 require "dry/transaction/builder"

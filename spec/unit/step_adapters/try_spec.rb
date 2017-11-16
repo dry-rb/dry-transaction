@@ -37,7 +37,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
       context "when the error was raised" do
 
         it "return a Left Monad" do
-          expect(subject.call(step, 1234)).to be_a Dry::Monads::Either::Left
+          expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
         end
 
         it "return the raised error as output" do
@@ -55,7 +55,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
           }
 
           it "return a Left Monad" do
-            expect(subject.call(step, 1234)).to be_a Dry::Monads::Either::Left
+            expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
           end
 
           it "return the error specified by :raise as output" do
@@ -69,7 +69,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
       context "when the error was NOT raised" do
 
         it "return a Right Monad" do
-          expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+          expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
         end
 
         it "return the result of the operation as output" do
@@ -85,7 +85,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
           }
 
           it "return a Right Monad" do
-            expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+            expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
           end
 
           it "return the result of the operation as output" do

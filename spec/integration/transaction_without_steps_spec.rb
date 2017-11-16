@@ -41,7 +41,7 @@ RSpec.describe "Transactions steps without arguments" do
     end
 
     it "returns a success" do
-      expect(transaction.call()).to be_a Dry::Monads::Either::Right
+      expect(transaction.call()).to be_a Dry::Monads::Result::Success
     end
 
     it "wraps the result of the final operation" do
