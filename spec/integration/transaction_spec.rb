@@ -404,4 +404,79 @@ RSpec.describe "Transactions" do
       expect(transaction.(input).value).to eql(name: 'Jane', age: 20)
     end
   end
+
+  context "invalid steps" do
+    context "non-callable step" do
+      context "with container" do
+        let(:input) { {} }
+
+        let(:transaction) {
+          Class.new do
+            include Dry::Transaction(container: Test::ContainerRaw)
+            map :not_a_proc
+          end.new
+        }
+
+        before do
+          class Test::ContainerRaw
+            extend Dry::Container::Mixin
+
+            register :not_a_proc, "definitely not a proc"
+          end
+        end
+
+        it "raises an exception" do
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepError)
+        end
+      end
+    end
+
+    context "missing steps" do
+      context "no container" do
+        let(:input) { {} }
+
+        let(:transaction) {
+          Class.new do
+            include Dry::Transaction
+            map :noop
+            map :i_am_missing
+
+            def noop
+              Dry::Monads::Right(input)
+            end
+          end.new
+        }
+
+        it "raises an exception" do
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepError)
+        end
+      end
+
+      context "with container" do
+        let(:input) { {} }
+
+        let(:transaction) {
+          Class.new do
+            include Dry::Transaction(container: Test::ContainerRaw)
+            map :noop
+            map :i_am_missing
+
+          end.new
+        }
+
+        before do
+          class Test::ContainerRaw
+            extend Dry::Container::Mixin
+
+            register :noop, -> input { Dry::Monads::Right(input) }
+          end
+        end
+
+        it "raises an exception" do
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepError)
+        end
+      end
+    end
+  end
+
 end
