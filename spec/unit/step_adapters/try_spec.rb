@@ -36,14 +36,14 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
 
       context "when the error was raised" do
 
-        it "return a Left Monad" do
-          expect(subject.call(step, 1234)).to be_a Dry::Monads::Either::Left
+        it "return a Failure value" do
+          expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
         end
 
         it "return the raised error as output" do
           result = subject.call(step, 1234)
-          expect(result.value).to be_a Test::NotValidError
-          expect(result.value.message).to eql 'not a string'
+          expect(result.left).to be_a Test::NotValidError
+          expect(result.left.message).to eql 'not a string'
         end
 
         context "when using the :raise option" do
@@ -54,26 +54,26 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
             }
           }
 
-          it "return a Left Monad" do
-            expect(subject.call(step, 1234)).to be_a Dry::Monads::Either::Left
+          it "return a Failure value" do
+            expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
           end
 
           it "return the error specified by :raise as output" do
             result = subject.call(step, 1234)
-            expect(result.value).to be_a Test::BetterNamingError
-            expect(result.value.message).to eql 'not a string'
+            expect(result.left).to be_a Test::BetterNamingError
+            expect(result.left.message).to eql 'not a string'
           end
         end
       end
 
       context "when the error was NOT raised" do
 
-        it "return a Right Monad" do
-          expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+        it "return a Success value" do
+          expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
         end
 
         it "return the result of the operation as output" do
-          expect(subject.call(step, 'input').value).to eql 'INPUT'
+          expect(subject.call(step, 'input').value!).to eql 'INPUT'
         end
 
         context "when using the :raise option" do
@@ -84,12 +84,12 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
             }
           }
 
-          it "return a Right Monad" do
-            expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+          it "return a Success value" do
+            expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
           end
 
           it "return the result of the operation as output" do
-            expect(subject.call(step, 'input').value).to eql 'INPUT'
+            expect(subject.call(step, 'input').value!).to eql 'INPUT'
           end
         end
       end

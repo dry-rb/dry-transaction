@@ -1,12 +1,12 @@
 module Dry
-  class Transaction
+  module Transaction
     class StepAdapters
       # @api private
       class Map
-        include Dry::Monads::Either::Mixin
+        include Dry::Monads::Result::Mixin
 
         def call(step, input, *args)
-          Right(step.operation.call(input, *args))
+          Success(step.call_operation(input, *args))
         end
       end
 

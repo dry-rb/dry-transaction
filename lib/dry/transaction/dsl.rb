@@ -1,51 +1,43 @@
-require "dry/transaction/result_matcher"
-require "dry/transaction/step"
-require "dry/transaction/step_adapters"
-require "dry/transaction/step_definition"
-
 module Dry
-  class Transaction
-    # @api private
-    class DSL < BasicObject
-      attr_reader :container
-      attr_reader :step_adapters
-      attr_reader :steps
-      attr_reader :matcher
+  module Transaction
+    class DSL < Module
+      def initialize(step_adapters:)
+        @step_adapters = step_adapters
 
-      def initialize(options, &block)
-        @container = options.fetch(:container)
-        @step_adapters = options.fetch(:step_adapters) { StepAdapters }
-        @steps = []
-        @matcher = options.fetch(:matcher) { ResultMatcher }
-
-        instance_eval(&block)
+        define_steps
+        define_dsl
       end
 
-      def respond_to_missing?(method_name)
-        step_adapters.key?(method_name)
+      def inspect
+        "Dry::Transaction::DSL(#{@step_adapters.keys.sort.join(', ')})"
       end
 
-      def method_missing(method_name, *args, &block)
-        return super unless step_adapters.key?(method_name)
+      private
 
-        step_adapter = step_adapters[method_name]
-        step_name = args.first
-        options = args.last.is_a?(::Hash) ? args.last : {}
-        with = options.delete(:with)
-
-        if with.respond_to?(:call)
-          operation_name = step_name
-          operation = StepDefinition.new(container, &with)
-        else
-          operation_name = with || step_name
-          operation = container[operation_name]
+      def define_steps
+        module_eval do
+          define_method(:steps) do
+            @steps ||= []
+          end
         end
-
-        steps << Step.new(step_adapter, step_name, operation_name, operation, options, &block)
       end
 
-      def call
-        Transaction.new(steps, matcher)
+      def define_dsl
+        module_exec(@step_adapters) do |step_adapters|
+          step_adapters.keys.each do |adapter_name|
+            define_method(adapter_name) do |step_name, with: nil, **options|
+              operation_name = with || step_name
+
+              steps << Step.new(
+                step_adapters[adapter_name],
+                step_name,
+                operation_name,
+                nil, # operations are resolved only when transactions are instantiated
+                options,
+              )
+            end
+          end
+        end
       end
     end
   end

@@ -1,13 +1,13 @@
 module Dry
-  class Transaction
+  module Transaction
     class StepAdapters
       # @api private
       class Tee
-        include Dry::Monads::Either::Mixin
+        include Dry::Monads::Result::Mixin
 
         def call(step, input, *args)
-          step.operation.call(input, *args)
-          Right(input)
+          step.call_operation(input, *args)
+          Success(input)
         end
       end
 
