@@ -42,10 +42,10 @@ module Dry
         )
       end
 
-      def call(input)
+      def call(input, &block)
         args = [input] + Array(call_args)
         broadcast :step_called, step_name, *args
-        result = step_adapter.call(self, *args)
+        result = step_adapter.call(self, *args, &block)
 
         result.fmap { |value|
           broadcast :step_succeeded, step_name, *args
@@ -56,11 +56,11 @@ module Dry
         }
       end
 
-      def call_operation(*input)
+      def call_operation(*input, &block)
         if arity.zero?
-          operation.call
+          operation.call(&block)
         else
-          operation.call(*input)
+          operation.call(*input, &block)
         end
       end
 

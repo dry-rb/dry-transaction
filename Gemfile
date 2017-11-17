@@ -8,7 +8,7 @@ gem "dry-matcher", git: "https://github.com/dry-rb/dry-matcher.git"
 group :test do
   gem "simplecov"
   gem "codeclimate-test-reporter"
-  gem "byebug", platform: :mri
+  gem "pry-byebug", platform: :mri
   gem "dry-container"
 end
 

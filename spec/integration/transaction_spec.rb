@@ -478,4 +478,65 @@ RSpec.describe "Transactions" do
       end
     end
   end
+
+  context "around steps" do
+    before do
+      Test::Rollback = Class.new(StandardError)
+
+      Test::DB.singleton_class.send(:attr_accessor, :in_transaction, :rolled_back, :committed)
+
+      def (Test::DB).transaction
+        self.in_transaction = true
+
+        yield
+      rescue => error
+        self.rolled_back = true
+        clear
+
+        raise error
+      ensure
+        self.in_transaction = false
+      end
+
+      Test::Container.register(:transaction) do |input, &block|
+        result = nil
+
+        begin
+          Test::DB.transaction do
+            result = block.(Success(input))
+            raise Test::Rollback if result.failure?
+            result
+          end
+        rescue Test::Rollback
+          result
+        end
+      end
+
+      Test::Container.register(:invalid) do |whatever|
+        Dry::Monads.Failure(:error)
+      end
+    end
+
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+
+        map :process
+        step :verify
+        around :transaction
+        tee :persist
+        step :invalid
+      end.new
+    }
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+
+    it 'rolls back transactions' do
+      transaction.call(input)
+
+      expect(Test::DB.rolled_back).to be true
+      expect(Test::DB.in_transaction).to be false
+      expect(Test::DB.committed).to be nil
+      expect(Test::DB).to be_empty
+    end
+  end
 end

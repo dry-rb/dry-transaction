@@ -1,5 +1,6 @@
 require "dry/monads/result"
 require "dry/transaction/result_matcher"
+require "dry/transaction/stack"
 
 module Dry
   module Transaction
@@ -25,13 +26,14 @@ module Dry
           step.with(operation: operation)
         }
         @operations = operations
+        @stack = Stack.new(@steps)
         subscribe(listeners) unless listeners.nil?
       end
 
       def call(input = nil, &block)
         assert_step_arity
 
-        result = steps.inject(Success(input), :bind)
+        result = @stack.(Success(input))
 
         if block
           ResultMatcher.(result, &block)

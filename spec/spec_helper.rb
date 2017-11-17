@@ -12,7 +12,8 @@ if RUBY_ENGINE == 'ruby' && ENV['COVERAGE'] == 'true'
 end
 
 begin
-  require "byebug"
+  require "pry"
+  require "pry-byebug"
 rescue LoadError; end
 
 require "dry-transaction"
