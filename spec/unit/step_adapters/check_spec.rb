@@ -13,7 +13,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Check do
   describe "#call" do
 
     it "return a Right Monad" do
-      expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+      expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
     end
 
     it "return the result of the operation as output" do
@@ -22,7 +22,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Check do
 
     context "when check fail" do
       it "return a Left Monad" do
-        expect(subject.call(step, 'wrong')).to be_a Dry::Monads::Either::Left
+        expect(subject.call(step, 'wrong')).to be_a Dry::Monads::Either::Failure
       end
 
       it "return the result of the operation as output" do
@@ -32,21 +32,21 @@ RSpec.describe Dry::Transaction::StepAdapters::Check do
 
     context "when operation return right monad" do
       let(:operation) {
-        -> (input) { Right(true) }
+        -> (input) { Success(true) }
       }
 
       it "return a Right Monad" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+        expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
       end
     end
 
     context "when operation return left monad" do
       let(:operation) {
-        -> (input) { Left(true) }
+        -> (input) { Failure(true) }
       }
 
       it "return a Left Monad" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Left
+        expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Failure
       end
     end
   end
