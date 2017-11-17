@@ -10,7 +10,7 @@ RSpec.describe Dry::Transaction::Step do
       Class.new do
         def test_success(*args); end
         alias_method :test_failure, :test_success
-        alias_method :test_starting, :test_failure
+        alias_method :test_starts, :test_failure
       end.new
     end
 
