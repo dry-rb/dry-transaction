@@ -44,6 +44,7 @@ module Dry
 
       def call(input)
         args = [input] + Array(call_args)
+        broadcast :"#{step_name}_starts", *args
         result = step_adapter.call(self, *args)
 
         result.fmap { |value|

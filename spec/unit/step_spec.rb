@@ -10,6 +10,7 @@ RSpec.describe Dry::Transaction::Step do
       Class.new do
         def test_success(*args); end
         alias_method :test_failure, :test_success
+        alias_method :test_starts, :test_failure
       end.new
     end
 
@@ -23,6 +24,16 @@ RSpec.describe Dry::Transaction::Step do
 
       it "publishes success" do
         expect(listener).to receive(:test_success).with(input)
+        step.subscribe(listener)
+        subject
+      end
+    end
+
+    context "when operation starts" do
+      let(:operation) { proc { |input| Dry::Monads::Either::Right.new(input) } }
+
+      it "publishes _starts" do
+        expect(listener).to receive(:test_starts).with(input)
         step.subscribe(listener)
         subject
       end
