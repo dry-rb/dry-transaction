@@ -44,14 +44,14 @@ module Dry
 
       def call(input)
         args = [input] + Array(call_args)
-        broadcast :"#{step_name}_starts", *args
+        broadcast :step_called, step_name, *args
         result = step_adapter.call(self, *args)
 
         result.fmap { |value|
-          broadcast :"#{step_name}_success", value
+          broadcast :step_succeeded, step_name, *args
           value
         }.or { |value|
-          broadcast :"#{step_name}_failure", *args, value
+          broadcast :step_failed, step_name, *args, value
           Failure(StepFailure.new(self, value))
         }
       end

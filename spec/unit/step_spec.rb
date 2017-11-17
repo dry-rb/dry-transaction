@@ -8,9 +8,9 @@ RSpec.describe Dry::Transaction::Step do
   describe "#call" do
     let(:listener) do
       Class.new do
-        def test_success(*args); end
-        alias_method :test_failure, :test_success
-        alias_method :test_starts, :test_failure
+        def step_called(step_name, *args); end
+        def step_succeeded(step_name, *args); end
+        def step_failed(step_name, *args, value); end
       end.new
     end
 
@@ -22,8 +22,8 @@ RSpec.describe Dry::Transaction::Step do
 
       it { is_expected.to be_right }
 
-      it "publishes success" do
-        expect(listener).to receive(:test_success).with(input)
+      it "publishes step_succeeded" do
+        expect(listener).to receive(:step_succeeded).with(step_name, "input")
         step.subscribe(listener)
         subject
       end
@@ -32,8 +32,8 @@ RSpec.describe Dry::Transaction::Step do
     context "when operation starts" do
       let(:operation) { proc { |input| Dry::Monads::Either::Right.new(input) } }
 
-      it "publishes _starts" do
-        expect(listener).to receive(:test_starts).with(input)
+      it "publishes step_called" do
+        expect(listener).to receive(:step_called).with(step_name, input)
         step.subscribe(listener)
         subject
       end
@@ -51,8 +51,8 @@ RSpec.describe Dry::Transaction::Step do
         end
       end
 
-      it "publishes failure" do
-        expect(listener).to receive(:test_failure).with(input, "error")
+      it "publishes step_failed" do
+        expect(listener).to receive(:step_failed).with(step_name, input, "error")
         step.subscribe(listener)
         subject
       end
