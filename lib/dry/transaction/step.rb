@@ -1,4 +1,4 @@
-require "dry/monads/either"
+require "dry/monads/result"
 require "wisper"
 require "dry/transaction/step_failure"
 
@@ -9,7 +9,7 @@ module Dry
       UNDEFINED = Object.new.freeze
 
       include Wisper::Publisher
-      include Dry::Monads::Either::Mixin
+      include Dry::Monads::Result::Mixin
 
       attr_reader :step_adapter
       attr_reader :step_name
@@ -44,22 +44,23 @@ module Dry
 
       def call(input)
         args = [input] + Array(call_args)
+        broadcast :step_called, step_name, *args
         result = step_adapter.call(self, *args)
 
         result.fmap { |value|
-          broadcast :"#{step_name}_success", value
+          broadcast :step_succeeded, step_name, *args
           value
         }.or { |value|
-          broadcast :"#{step_name}_failure", *args, value
-          Left(StepFailure.new(self, value))
+          broadcast :step_failed, step_name, *args, value
+          Failure(StepFailure.new(self, value))
         }
       end
 
       def call_operation(*input)
-        if arity >= 1
-          operation.call(*input)
-        else
+        if arity.zero?
           operation.call
+        else
+          operation.call(*input)
         end
       end
 

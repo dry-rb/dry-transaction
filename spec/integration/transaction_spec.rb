@@ -7,7 +7,7 @@ RSpec.describe "Transactions" do
     class Test::Container
       extend Dry::Container::Mixin
       register :process,  -> input { {name: input["name"], email: input["email"]} }
-      register :verify,   -> input { Dry::Monads::Right(input) }
+      register :verify,   -> input { Dry::Monads::Success(input) }
       register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       register :persist,  -> input { Test::DB << input and true }
     end
@@ -31,11 +31,11 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a success" do
-      expect(transaction.call(input)).to be_a Dry::Monads::Either::Right
+      expect(transaction.call(input)).to be_a Dry::Monads::Result::Success
     end
 
     it "wraps the result of the final operation" do
-      expect(transaction.call(input).value).to eq(name: "Jane", email: "jane@doe.com")
+      expect(transaction.call(input).value!).to eq(name: "Jane", email: "jane@doe.com")
     end
 
     it "can be called multiple times to the same effect" do
@@ -66,7 +66,7 @@ RSpec.describe "Transactions" do
       class Test::ContainerNames
         extend Dry::Container::Mixin
         register :process_step,  -> input { {name: input["name"], email: input["email"]} }
-        register :verify_step,   -> input { Dry::Monads::Right(input) }
+        register :verify_step,   -> input { Dry::Monads::Success(input) }
         register :persist_step,  -> input { Test::DB << input and true }
       end
     end
@@ -98,7 +98,7 @@ RSpec.describe "Transactions" do
     }
 
     let(:dependencies) {
-      {verify_step: -> input { Dry::Monads.Right(input.merge(foo: :bar)) }}
+      {verify_step: -> input { Success(input.merge(foo: :bar)) }}
     }
 
     it "calls injected operations" do
@@ -170,7 +170,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
 
         def verify(input)
-          Right(input.keys)
+          Success(input.keys)
         end
       end.new
     end
@@ -192,7 +192,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
 
         def verify_only_local(input)
-          Right(input.keys)
+          Success(input.keys)
         end
       end.new
     end
@@ -219,7 +219,7 @@ RSpec.describe "Transactions" do
         end
 
         def verify(input)
-          Dry::Monads.Right(input)
+          Success(input)
         end
 
         def persist(input)
@@ -252,11 +252,11 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a failure" do
-      expect(transaction.call(input)).to be_a Dry::Monads::Either::Left
+      expect(transaction.call(input)).to be_a Dry::Monads::Result::Failure
     end
 
     it "wraps the result of the failing operation" do
-      expect(transaction.call(input).value).to be_a Test::NotValidError
+      expect(transaction.call(input).left).to be_a Test::NotValidError
     end
 
     it "supports matching on failure" do
@@ -313,7 +313,7 @@ RSpec.describe "Transactions" do
       class Test::ContainerRaw
         extend Dry::Container::Mixin
         register :process_step,  -> input { {name: input["name"], email: input["email"]} }
-        register :verify_step,   -> input { Dry::Monads::Left("raw failure") }
+        register :verify_step,   -> input { Dry::Monads::Failure("raw failure") }
         register :persist_step,  -> input { Test::DB << input and true }
       end
     end
@@ -334,21 +334,21 @@ RSpec.describe "Transactions" do
     end
 
     it "returns a failure" do
-      expect(transaction.call(input)).to be_a Dry::Monads::Either::Left
+      expect(transaction.call(input)).to be_a_failure
     end
 
     it "returns the failing value from the operation" do
-      expect(transaction.call(input).value).to eq "raw failure"
+      expect(transaction.call(input).left).to eq "raw failure"
     end
 
     it "returns an object that quacks like expected" do
-      result = transaction.call(input).value
+      result = transaction.call(input).left
 
       expect(Array(result)).to eq(['raw failure'])
     end
 
     it "does not allow to call private methods on the result accidently" do
-      result = transaction.call(input).value
+      result = transaction.call(input).left
 
       expect { result.print('') }.to raise_error(NoMethodError)
     end
@@ -377,6 +377,105 @@ RSpec.describe "Transactions" do
 
     it "raises an exception" do
       expect { transaction.call(input) }.to raise_error(ArgumentError)
+    end
+  end
+
+  context "keyword arguments" do
+    let(:input) { { name: 'jane', age: 20 } }
+
+    let(:upcaser) do
+      Class.new {
+        def call(name: 'John', **rest)
+          Dry::Monads::Success(name: name[0].upcase + name[1..-1], **rest)
+        end
+      }.new
+    end
+
+    let(:transaction) do
+      Class.new {
+        include Dry::Transaction
+
+        step :camelize
+
+      }.new(camelize: upcaser)
+    end
+
+    it "calls the operations" do
+      expect(transaction.(input).value).to eql(name: 'Jane', age: 20)
+    end
+  end
+
+  context "invalid steps" do
+    context "non-callable step" do
+      context "with container" do
+        let(:input) { {} }
+
+        let(:transaction) {
+          Class.new do
+            include Dry::Transaction(container: Test::ContainerRaw)
+            map :not_a_proc
+          end.new
+        }
+
+        before do
+          class Test::ContainerRaw
+            extend Dry::Container::Mixin
+
+            register :not_a_proc, "definitely not a proc"
+          end
+        end
+
+        it "raises an exception" do
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::InvalidStepError)
+        end
+      end
+    end
+
+    context "missing steps" do
+      context "no container" do
+        let(:input) { {} }
+
+        let(:transaction) {
+          Class.new do
+            include Dry::Transaction
+            map :noop
+            map :i_am_missing
+
+            def noop
+              Success(input)
+            end
+          end.new
+        }
+
+        it "raises an exception" do
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepError)
+        end
+      end
+
+      context "with container" do
+        let(:input) { {} }
+
+        let(:transaction) {
+          Class.new do
+            include Dry::Transaction(container: Test::ContainerRaw)
+            map :noop
+            map :i_am_missing
+
+          end.new
+        }
+
+        before do
+          class Test::ContainerRaw
+            extend Dry::Container::Mixin
+
+            register :noop, -> input { Success(input) }
+          end
+        end
+
+        it "raises an exception" do
+          expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepError)
+        end
+      end
     end
   end
 end

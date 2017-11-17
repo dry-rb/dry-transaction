@@ -1,3 +1,3 @@
 RSpec.configure do |config|
-  config.include Dry::Monads::Either::Mixin
+  config.include Dry::Monads::Result::Mixin
 end

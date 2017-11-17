@@ -8,8 +8,9 @@ RSpec.describe Dry::Transaction::Step do
   describe "#call" do
     let(:listener) do
       Class.new do
-        def test_success(*args); end
-        alias_method :test_failure, :test_success
+        def step_called(step_name, *args); end
+        def step_succeeded(step_name, *args); end
+        def step_failed(step_name, *args, value); end
       end.new
     end
 
@@ -17,31 +18,41 @@ RSpec.describe Dry::Transaction::Step do
     subject { step.call(input) }
 
     context "when operation succeeds" do
-      let(:operation) { proc { |input| Dry::Monads::Either::Right.new(input) } }
+      let(:operation) { proc { |input| Dry::Monads::Result::Success.new(input) } }
 
       it { is_expected.to be_right }
 
-      it "publishes success" do
-        expect(listener).to receive(:test_success).with(input)
+      it "publishes step_succeeded" do
+        expect(listener).to receive(:step_succeeded).with(step_name, "input")
+        step.subscribe(listener)
+        subject
+      end
+    end
+
+    context "when operation starts" do
+      let(:operation) { proc { |input| Dry::Monads::Either::Right.new(input) } }
+
+      it "publishes step_called" do
+        expect(listener).to receive(:step_called).with(step_name, input)
         step.subscribe(listener)
         subject
       end
     end
 
     context "when operation fails" do
-      let(:operation) { proc { |input| Dry::Monads::Either::Left.new("error") } }
+      let(:operation) { proc { |input| Dry::Monads::Result::Failure.new("error") } }
 
       it { is_expected.to be_left }
 
       it "wraps value in StepFailure" do
         aggregate_failures do
-          expect(subject.value).to be_a Dry::Transaction::StepFailure
-          expect(subject.value.value).to eq "error"
+          expect(subject.left).to be_a Dry::Transaction::StepFailure
+          expect(subject.left.value).to eq "error"
         end
       end
 
-      it "publishes failure" do
-        expect(listener).to receive(:test_failure).with(input, "error")
+      it "publishes step_failed" do
+        expect(listener).to receive(:step_failed).with(step_name, input, "error")
         step.subscribe(listener)
         subject
       end

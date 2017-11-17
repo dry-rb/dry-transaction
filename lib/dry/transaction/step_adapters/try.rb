@@ -3,7 +3,7 @@ module Dry
     class StepAdapters
       # @api private
       class Try
-        include Dry::Monads::Either::Mixin
+        include Dry::Monads::Result::Mixin
 
         def call(step, input, *args)
           unless step.options[:catch]
@@ -11,10 +11,10 @@ module Dry
           end
 
           result = step.call_operation(input, *args)
-          Right(result)
+          Success(result)
         rescue *Array(step.options[:catch]) => e
           e = step.options[:raise].new(e.message) if step.options[:raise]
-          Left(e)
+          Failure(e)
         end
       end
 

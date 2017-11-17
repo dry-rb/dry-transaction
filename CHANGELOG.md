@@ -1,4 +1,30 @@
-# 0.10.2 - 2017-07-10
+# 0.11.0 / to-be-released
+
+## Added
+
+- Support for transaction steps without input values (GustavoCaso and timriley in [#69][pr69])
+
+## Changed
+
+- Usages of the `Either` monad was updated with `Result` and its constructors. See [the changes](https://github.com/dry-rb/dry-monads/blob/master/CHANGELOG.md#v040-2017-11-11) in `dry-monads` for more details (flash-gordon in [#81][pr81])
+- Minimal Ruby version is 2.2 (flash-gordon in [#72][pr72])
+
+## Fixed
+
+- Pass arguments to a step with keyword arguments with default values (flash-gordon in [#74][pr74])
+- Steps can be wrapped with private methods (semenovDL in [#70][pr70])
+- Improved error message on missing transaction step (Morozzzko in [#79][pr79])
+
+[Compare v0.10.2...master](https://github.com/dry-rb/dry-transaction/compare/v0.10.2...master)
+
+[pr69]: https://github.com/dry-rb/dry-transaction/pull/69
+[pr70]: https://github.com/dry-rb/dry-transaction/pull/70
+[pr72]: https://github.com/dry-rb/dry-transaction/pull/72
+[pr74]: https://github.com/dry-rb/dry-transaction/pull/74
+[pr79]: https://github.com/dry-rb/dry-transaction/pull/79
+[pr81]: https://github.com/dry-rb/dry-transaction/pull/81
+
+# 0.10.2 / 2017-07-10
 
 ## Fixed
 

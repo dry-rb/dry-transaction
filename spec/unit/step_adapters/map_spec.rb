@@ -12,12 +12,12 @@ RSpec.describe Dry::Transaction::StepAdapters::Map do
 
   describe "#call" do
 
-    it "return a Right Monad" do
-      expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Right
+    it "return a Success value" do
+      expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
     end
 
     it "return the result of the operation as output" do
-      expect(subject.call(step, 'input').value).to eql 'INPUT'
+      expect(subject.call(step, 'input').value!).to eql 'INPUT'
     end
   end
 end
