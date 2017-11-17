@@ -1,7 +1,10 @@
 # 0.11.0 / to-be-released
 
 ## Added
-
+- [BREAKING] Broadcast no longer send events with the step name followed `_success`, `_failure` or `_starts`, now
+every time a step is initiated will send the message to the subscriber `step_called` with the step name and the arguments. When a step is successful will send the message `step_succeeded` with the step name and the arguments. When a step fails will send the message `step_failed` with the step name, the arguments and the error value (GustavoCaso) in [#83][pr83]
+- Broadcast when a step has started by sending the event `#{step_name}_starts` (mihairadulescu) in [#82][pr82]
+- Add new step `check` that returns `Success` or `Failure` base on conditions (semenovDL) in [#84][pr84]
 - Support for transaction steps without input values (GustavoCaso and timriley in [#69][pr69])
 
 ## Changed
@@ -23,6 +26,9 @@
 [pr74]: https://github.com/dry-rb/dry-transaction/pull/74
 [pr79]: https://github.com/dry-rb/dry-transaction/pull/79
 [pr81]: https://github.com/dry-rb/dry-transaction/pull/81
+[pr82]: https://github.com/dry-rb/dry-transaction/pull/82
+[pr83]: https://github.com/dry-rb/dry-transaction/pull/83
+[pr84]: https://github.com/dry-rb/dry-transaction/pull/84
 
 # 0.10.2 / 2017-07-10
 
