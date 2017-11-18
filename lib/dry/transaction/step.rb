@@ -53,8 +53,16 @@ module Dry
       end
 
       def once(next_step)
-        result = nil
-        -> (x) { result ||= next_step.(x) }
+        continued = false
+
+        -> (input) do
+          if continued
+            input
+          else
+            continued = true
+            next_step.(input)
+          end
+        end
       end
 
       def with_broadcast(args, continue)
@@ -80,12 +88,13 @@ module Dry
       end
 
       def arity
-        case operation
-        when Proc, Method
-          operation.arity
-        else
-          operation.method(:call).arity
-        end
+        @arity ||=
+          case operation
+          when Proc, Method
+            operation.arity
+          else
+            operation.method(:call).arity
+          end
       end
     end
   end
