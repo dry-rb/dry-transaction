@@ -10,6 +10,7 @@ module Dry
       attr_reader :steps
       attr_reader :operations
       attr_reader :listeners
+      attr_reader :stack
 
       def initialize(steps: (self.class.steps), listeners: nil, **operations)
         @steps = steps.map { |step|
@@ -33,7 +34,7 @@ module Dry
       def call(input = nil, &block)
         assert_step_arity
 
-        result = @stack.(Success(input))
+        result = stack.(Success(input))
 
         if block
           ResultMatcher.(result, &block)
