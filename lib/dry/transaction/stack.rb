@@ -2,35 +2,19 @@ module Dry
   module Transaction
     # @api private
     class Stack
-      LOOPBACK = proc { |input| input }
+      LOOPBACK = :itself.to_proc.freeze
 
       def initialize(steps)
         @stack = compile(steps)
       end
 
-      def call(input)
-        @stack.(input)
+      def call(m)
+        @stack.(m)
       end
 
       def compile(steps)
         steps.reverse.reduce(LOOPBACK) do |next_step, step|
-          proc do |input|
-            input.bind do |value|
-              yielded = false
-
-              result = step.(value) do |next_input|
-                yielded = true
-
-                next_step.(next_input)
-              end
-
-              if yielded
-                result
-              else
-                next_step.(result)
-              end
-            end
-          end
+          proc { |m| m.bind { |value| step.(value, next_step) } }
         end
       end
     end

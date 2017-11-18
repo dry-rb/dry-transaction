@@ -7,6 +7,7 @@ module Dry
     # @api private
     class Step
       UNDEFINED = Object.new.freeze
+      NOOP = :itself.to_proc.freeze
 
       include Wisper::Publisher
       include Dry::Monads::Result::Mixin
@@ -38,29 +39,43 @@ module Dry
           operation_name,
           new_operation,
           options,
-          new_call_args,
+          new_call_args
         )
       end
 
-      def call(input, &block)
+      def call(input, next_step = NOOP)
         args = [input] + Array(call_args)
-        broadcast :step_called, step_name, *args
-        result = step_adapter.call(self, *args, &block)
+        continue = once(next_step)
 
-        result.fmap { |value|
+        with_broadcast(args, continue) do
+          step_adapter.call(self, *args, &continue)
+        end
+      end
+
+      def once(next_step)
+        result = nil
+        -> (x) { result ||= next_step.(x) }
+      end
+
+      def with_broadcast(args, continue)
+        broadcast :step_called, step_name, *args
+
+        result = yield.fmap { |value|
           broadcast :step_succeeded, step_name, *args
           value
         }.or { |value|
           broadcast :step_failed, step_name, *args, value
           Failure(StepFailure.new(self, value))
         }
+
+        continue.(result)
       end
 
-      def call_operation(*input, &block)
+      def call_operation(*input, &continue)
         if arity.zero?
-          operation.call(&block)
+          operation.call(&continue)
         else
-          operation.call(*input, &block)
+          operation.call(*input, &continue)
         end
       end
 
