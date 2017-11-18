@@ -1,15 +1,16 @@
 RSpec.describe "Transactions" do
+  include_context "database"
+
+  include Dry::Monads::Result::Mixin
+
   let(:dependencies) { {} }
 
   before do
-    Test::NotValidError = Class.new(StandardError)
-    Test::DB = []
-    class Test::Container
-      extend Dry::Container::Mixin
+    container.instance_exec do
       register :process,  -> input { {name: input["name"], email: input["email"]} }
-      register :verify,   -> input { Dry::Monads::Success(input) }
+      register :verify,   -> input { Success(input) }
       register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
-      register :persist,  -> input { Test::DB << input and true }
+      register :persist,  -> input { self[:database] << input and true }
     end
   end
 
@@ -17,17 +18,17 @@ RSpec.describe "Transactions" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-          map :process
-          step :verify
-          try :validate, catch: Test::NotValidError
-          tee :persist
+        map :process
+        step :verify
+        try :validate, catch: Test::NotValidError
+        tee :persist
       end.new(**dependencies)
     }
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     it "calls the operations" do
       transaction.call(input)
-      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
+      expect(database).to include(name: "Jane", email: "jane@doe.com")
     end
 
     it "returns a success" do
@@ -42,8 +43,8 @@ RSpec.describe "Transactions" do
       transaction.call(input)
       transaction.call(input)
 
-      expect(Test::DB[0]).to eq(name: "Jane", email: "jane@doe.com")
-      expect(Test::DB[1]).to eq(name: "Jane", email: "jane@doe.com")
+      expect(database[0]).to eql(name: "Jane", email: "jane@doe.com")
+      expect(database[1]).to eql(name: "Jane", email: "jane@doe.com")
     end
 
     it "supports matching on success" do
@@ -83,7 +84,7 @@ RSpec.describe "Transactions" do
 
     it "supports steps using differently named container operations" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
-      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
+      expect(database).to include(name: "Jane", email: "jane@doe.com")
     end
   end
 
@@ -104,7 +105,7 @@ RSpec.describe "Transactions" do
     it "calls injected operations" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
-      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", foo: :bar)
+      expect(database).to include(name: "Jane", email: "jane@doe.com", foo: :bar)
     end
   end
 
@@ -129,7 +130,7 @@ RSpec.describe "Transactions" do
     it "allows local methods to run operations via super" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
-      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
+      expect(database).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
     end
   end
 
@@ -151,12 +152,10 @@ RSpec.describe "Transactions" do
       end.new(**dependencies)
     end
 
-    let(:dependencies) { {} }
-
     it "allows local methods to run operations via super" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
-      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
+      expect(database).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
     end
   end
 
@@ -178,7 +177,7 @@ RSpec.describe "Transactions" do
     it "execute step only defined as local method" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
-      expect(Test::DB).to include([:name, :email])
+      expect(database).to include([:name, :email])
     end
   end
 
@@ -200,7 +199,7 @@ RSpec.describe "Transactions" do
     it "execute step only defined as local method" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
-      expect(Test::DB).to include([:name, :email])
+      expect(database).to include([:name, :email])
     end
   end
 
@@ -223,14 +222,14 @@ RSpec.describe "Transactions" do
         end
 
         def persist(input)
-          Test::DB << input and true
+          Test::Container[:database] << input and true
         end
       end.new
     end
 
     it "executes succesfully" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
-      expect(Test::DB).to include([["name", "Jane"], ["email", "jane@doe.com"]])
+      expect(database).to include([["name", "Jane"], ["email", "jane@doe.com"]])
     end
   end
 
@@ -248,7 +247,7 @@ RSpec.describe "Transactions" do
 
     it "does not run subsequent operations" do
       transaction.call(input)
-      expect(Test::DB).to be_empty
+      expect(database).to be_empty
     end
 
     it "returns a failure" do
@@ -312,9 +311,10 @@ RSpec.describe "Transactions" do
     before do
       class Test::ContainerRaw
         extend Dry::Container::Mixin
+        extend Dry::Monads::Result::Mixin
         register :process_step,  -> input { {name: input["name"], email: input["email"]} }
-        register :verify_step,   -> input { Dry::Monads::Failure("raw failure") }
-        register :persist_step,  -> input { Test::DB << input and true }
+        register :verify_step,   -> input { Failure("raw failure") }
+        register :persist_step,  -> input { self[:database] << input and true }
       end
     end
 
@@ -330,7 +330,7 @@ RSpec.describe "Transactions" do
 
     it "does not run subsequent operations" do
       transaction.call(input)
-      expect(Test::DB).to be_empty
+      expect(database).to be_empty
     end
 
     it "returns a failure" do
@@ -385,8 +385,10 @@ RSpec.describe "Transactions" do
 
     let(:upcaser) do
       Class.new {
+        include Dry::Monads::Result::Mixin
+
         def call(name: 'John', **rest)
-          Dry::Monads::Success(name: name[0].upcase + name[1..-1], **rest)
+          Success(name: name[0].upcase + name[1..-1], **rest)
         end
       }.new
     end
@@ -476,67 +478,6 @@ RSpec.describe "Transactions" do
           expect { transaction.call(input) }.to raise_error(Dry::Transaction::MissingStepError)
         end
       end
-    end
-  end
-
-  context "around steps" do
-    before do
-      Test::Rollback = Class.new(StandardError)
-
-      Test::DB.singleton_class.send(:attr_accessor, :in_transaction, :rolled_back, :committed)
-
-      def (Test::DB).transaction
-        self.in_transaction = true
-
-        yield
-      rescue => error
-        self.rolled_back = true
-        clear
-
-        raise error
-      ensure
-        self.in_transaction = false
-      end
-
-      Test::Container.register(:transaction) do |input, &block|
-        result = nil
-
-        begin
-          Test::DB.transaction do
-            result = block.(Success(input))
-            raise Test::Rollback if result.failure?
-            result
-          end
-        rescue Test::Rollback
-          result
-        end
-      end
-
-      Test::Container.register(:invalid) do |whatever|
-        Dry::Monads.Failure(:error)
-      end
-    end
-
-    let(:transaction) {
-      Class.new do
-        include Dry::Transaction(container: Test::Container)
-
-        map :process
-        step :verify
-        around :transaction
-        tee :persist
-        step :invalid
-      end.new
-    }
-    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
-
-    it 'rolls back transactions' do
-      transaction.call(input)
-
-      expect(Test::DB.rolled_back).to be true
-      expect(Test::DB.in_transaction).to be false
-      expect(Test::DB.committed).to be nil
-      expect(Test::DB).to be_empty
     end
   end
 end

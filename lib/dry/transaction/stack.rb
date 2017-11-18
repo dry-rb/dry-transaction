@@ -1,5 +1,6 @@
 module Dry
   module Transaction
+    # @api private
     class Stack
       LOOPBACK = proc { |input| input }
 
