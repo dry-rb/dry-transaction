@@ -5,8 +5,8 @@ module Dry
       class Map
         include Dry::Monads::Result::Mixin
 
-        def call(step, input, *args)
-          Success(step.call_operation(input, *args))
+        def call(operation, _options, args)
+          Success(operation.(*args))
         end
       end
 

@@ -5,9 +5,9 @@ module Dry
       class Tee
         include Dry::Monads::Result::Mixin
 
-        def call(step, input, *args)
-          step.call_operation(input, *args)
-          Success(input)
+        def call(operation, _options, args)
+          operation.(*args)
+          Success(args[0])
         end
       end
 

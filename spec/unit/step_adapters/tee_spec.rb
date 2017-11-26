@@ -1,4 +1,4 @@
-RSpec.describe Dry::Transaction::StepAdapters::Tee do
+RSpec.describe Dry::Transaction::StepAdapters::Tee, :adapter do
 
   subject { described_class.new }
 
@@ -6,18 +6,12 @@ RSpec.describe Dry::Transaction::StepAdapters::Tee do
     -> (input) { input.upcase }
   }
 
-  let(:step) {
-    Dry::Transaction::Step.new(subject, :step, :step, operation, {})
-  }
+  let(:options) { { step_name: "unit" } }
 
   describe "#call" do
 
     it "return a Success value" do
-      expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
-    end
-
-    it "return the original input as output" do
-      expect(subject.call(step, 'input').value!).to eql 'input'
+      expect(subject.(operation, options, ["input"])).to eql(Success("input"))
     end
   end
 end

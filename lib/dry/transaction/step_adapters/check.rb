@@ -5,8 +5,9 @@ module Dry
       class Check
         include Dry::Monads::Either::Mixin
 
-        def call(step, input, *args)
-          res = step.operation.call(*args, input)
+        def call(operation, _options, args)
+          input = args[0]
+          res = operation.(*args)
           res == true || res.is_a?(Success) ? Success(input) : Failure(input)
         end
       end

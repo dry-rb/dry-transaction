@@ -1,32 +1,22 @@
-RSpec.describe Dry::Transaction::StepAdapters::Check do
+RSpec.describe Dry::Transaction::StepAdapters::Check, :adapter do
 
   subject { described_class.new }
 
   let(:operation) {
-    -> (input) { input == 'input' }
+    -> (input) { input == "right" }
   }
 
-  let(:step) {
-    Dry::Transaction::Step.new(subject, :step, :step, operation, {})
-  }
+  let(:options) { { step_name: "unit" } }
 
   describe "#call" do
 
-    it "return a Right Monad" do
-      expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
+    it "returns the result of the operation as output" do
+      expect(subject.(operation, options, ["right"])).to eql(Success("right"))
     end
 
-    it "return the result of the operation as output" do
-      expect(subject.call(step, 'input').value).to eql 'input'
-    end
-
-    context "when check fail" do
-      it "return a Left Monad" do
-        expect(subject.call(step, 'wrong')).to be_a Dry::Monads::Either::Failure
-      end
-
-      it "return the result of the operation as output" do
-        expect(subject.call(step, 'input').value).to eql 'input'
+    context "when check fails" do
+      it "return a Failure" do
+        expect(subject.(operation, options, ["wrong"])).to eql(Failure("wrong"))
       end
     end
 
@@ -35,8 +25,8 @@ RSpec.describe Dry::Transaction::StepAdapters::Check do
         -> (input) { Success(true) }
       }
 
-      it "return a Right Monad" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
+      it "return a Success" do
+        expect(subject.(operation, options, ["input"])).to eql(Success("input"))
       end
     end
 
@@ -45,8 +35,8 @@ RSpec.describe Dry::Transaction::StepAdapters::Check do
         -> (input) { Failure(true) }
       }
 
-      it "return a Left Monad" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Either::Failure
+      it "return a Failure" do
+        expect(subject.(operation, options, ["input"])).to eql(Failure("input"))
       end
     end
   end

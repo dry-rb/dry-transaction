@@ -1,13 +1,14 @@
 require "dry/monads/result"
 require "wisper"
 require "dry/transaction/step_failure"
+require "dry/transaction/step_adapter"
 
 module Dry
   module Transaction
     # @api private
     class Step
       UNDEFINED = Object.new.freeze
-      NOOP = :itself.to_proc.freeze
+      RETURN = -> x { x }
 
       include Wisper::Publisher
       include Dry::Monads::Result::Mixin
@@ -15,86 +16,58 @@ module Dry
       attr_reader :step_adapter
       attr_reader :step_name
       attr_reader :operation_name
-      attr_reader :operation
-      attr_reader :options
       attr_reader :call_args
 
       def initialize(step_adapter, step_name, operation_name, operation, options, call_args = [])
-        @step_adapter = step_adapter
+        @step_adapter = StepAdapter[step_adapter, operation, **options, step_name: step_name]
         @step_name = step_name
         @operation_name = operation_name
-        @operation = operation
-        @options = options
         @call_args = call_args
       end
 
       def with(operation: UNDEFINED, call_args: UNDEFINED)
         return self if operation == UNDEFINED && call_args == UNDEFINED
-        new_operation = operation == UNDEFINED ? self.operation : operation
-        new_call_args = call_args == UNDEFINED ? self.call_args : call_args
+        new_operation = operation == UNDEFINED ? step_adapter.operation : operation
+        new_call_args = call_args == UNDEFINED ? self.call_args : Array(call_args)
 
         self.class.new(
           step_adapter,
           step_name,
           operation_name,
           new_operation,
-          options,
+          step_adapter.options,
           new_call_args
         )
       end
 
-      def call(input, next_step = NOOP)
-        args = [input] + Array(call_args)
-        continue = once(next_step)
+      def call(input, continue = RETURN)
+        args = [input, *call_args]
 
-        with_broadcast(args, continue) do
-          step_adapter.call(self, *args, &continue)
+        if step_adapter.yields?
+          with_broadcast(args) { step_adapter.(args, &continue) }
+        else
+          continue.(with_broadcast(args) { step_adapter.(args) })
         end
       end
 
-      def once(next_step)
-        continued = false
-
-        -> (input) do
-          if continued
-            input
-          else
-            continued = true
-            next_step.(input)
-          end
-        end
-      end
-
-      def with_broadcast(args, continue)
+      def with_broadcast(args)
         broadcast :step_called, step_name, *args
 
-        result = yield.fmap { |value|
+        yield.fmap { |value|
           broadcast :step_succeeded, step_name, *args
           value
         }.or { |value|
           broadcast :step_failed, step_name, *args, value
           Failure(StepFailure.new(self, value))
         }
-
-        continue.(result)
-      end
-
-      def call_operation(*input, &continue)
-        if arity.zero?
-          operation.call(&continue)
-        else
-          operation.call(*input, &continue)
-        end
       end
 
       def arity
-        @arity ||=
-          case operation
-          when Proc, Method
-            operation.arity
-          else
-            operation.method(:call).arity
-          end
+        step_adapter.operation.arity
+      end
+
+      def operation
+        step_adapter.operation
       end
     end
   end

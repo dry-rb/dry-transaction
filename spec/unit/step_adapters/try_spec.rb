@@ -9,11 +9,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
     }
   }
 
-  let(:step) {
-    Dry::Transaction::Step.new(subject, :step, :step, operation, options)
-  }
-
-  let(:options) { { catch: Test::NotValidError } }
+  let(:options) { { catch: Test::NotValidError, step_name: "unit" } }
 
   before do
     Test::NotValidError = Class.new(StandardError)
@@ -23,12 +19,15 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
   describe "#call" do
 
     context "without the :catch option" do
-      let(:options) { { } }
+      let(:options) { { step_name: "unit" } }
 
       it "raises an ArgumentError" do
-        expect do
-          subject.call(step, {})
-        end.to raise_error(ArgumentError)
+        expect {
+          subject.(operation, options, ["something"])
+        }.to raise_error(
+               Dry::Transaction::MissingCatchListError,
+               "step +unit+ requires one or more exception classes provided via +catch:+"
+             )
       end
     end
 
@@ -36,14 +35,14 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
 
       context "when the error was raised" do
 
-        it "return a Failure value" do
-          expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
+        it "returns a Failure value" do
+          expect(subject.(operation, options, [1234])).to be_a_failure
         end
 
-        it "return the raised error as output" do
-          result = subject.call(step, 1234)
+        it "returns the raised error as output" do
+          result = subject.(operation, options, [1234])
           expect(result.left).to be_a Test::NotValidError
-          expect(result.left.message).to eql 'not a string'
+          expect(result.left.message).to eql("not a string")
         end
 
         context "when using the :raise option" do
@@ -54,26 +53,22 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
             }
           }
 
-          it "return a Failure value" do
-            expect(subject.call(step, 1234)).to be_a Dry::Monads::Result::Failure
+          it "returns a Failure value" do
+            expect(subject.(operation, options, [1234])).to be_a_failure
           end
 
-          it "return the error specified by :raise as output" do
-            result = subject.call(step, 1234)
+          it "returns the error specified by :raise as output" do
+            result = subject.(operation, options, [1234])
             expect(result.left).to be_a Test::BetterNamingError
-            expect(result.left.message).to eql 'not a string'
+            expect(result.left.message).to eql("not a string")
           end
         end
       end
 
       context "when the error was NOT raised" do
 
-        it "return a Success value" do
-          expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
-        end
-
-        it "return the result of the operation as output" do
-          expect(subject.call(step, 'input').value!).to eql 'INPUT'
+        it "returns a Success value" do
+          expect(subject.(operation, options, ["input"])).to eql(Success("INPUT"))
         end
 
         context "when using the :raise option" do
@@ -84,12 +79,8 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
             }
           }
 
-          it "return a Success value" do
-            expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
-          end
-
-          it "return the result of the operation as output" do
-            expect(subject.call(step, 'input').value!).to eql 'INPUT'
+          it "returns a Success value" do
+            expect(subject.(operation, options, ["input"])).to  eql(Success("INPUT"))
           end
         end
       end

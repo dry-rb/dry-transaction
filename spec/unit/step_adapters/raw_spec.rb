@@ -1,51 +1,35 @@
-RSpec.describe Dry::Transaction::StepAdapters::Raw do
+RSpec.describe Dry::Transaction::StepAdapters::Raw, adapter: true do
 
   subject { described_class.new }
 
-  let(:operation) {
-    -> (input) { input.upcase }
-  }
-
-  let(:step) {
-    Dry::Transaction::Step.new(subject, :step, :step, operation, {})
-  }
+  let(:options) { { step_name: "unit" } }
 
   describe "#call" do
 
     context "when the result of the operation is NOT a Dry::Monads::Result" do
 
-      it "raises an ArgumentError" do
-        expect do
-          subject.call(step, 'input')
-        end.to raise_error(ArgumentError)
-      end
-    end
-
-    context "when the result of the operation is a Failure value" do
       let(:operation) {
-        -> (input) { Failure(input.upcase) }
+        -> (input) { input.upcase }
       }
 
-      it "return a Failure value" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Failure
-      end
-
-      it "return the result of the operation as output" do
-        expect(subject.call(step, 'input').left).to eql 'INPUT'
+      it "raises an InvalidResultError" do
+        expect {
+          subject.(operation, options, "input")
+        }.to raise_error(
+               Dry::Transaction::InvalidResultError,
+               "step +unit+ must return a Result object"
+             )
       end
     end
 
     context "when the result of the operation is a Success value" do
+
       let(:operation) {
         -> (input) { Success(input.upcase) }
       }
 
       it "return a Success value" do
-        expect(subject.call(step, 'input')).to be_a Dry::Monads::Result::Success
-      end
-
-      it "return the result of the operation as output" do
-        expect(subject.call(step, 'input').value!).to eql 'INPUT'
+        expect(subject.(operation, options, "input")).to eql(Success("INPUT"))
       end
     end
   end

@@ -1,13 +1,11 @@
-RSpec.describe Dry::Transaction::StepAdapters::Around do
+RSpec.describe Dry::Transaction::StepAdapters::Around, :adapter do
   subject { described_class.new }
 
   let(:operation) {
     -> (input, &block) { block.(Success(input.upcase)) }
   }
 
-  let(:step) {
-    Dry::Transaction::Step.new(subject, :step, :step, operation, {})
-  }
+  let(:options) { { step_name: "unit" } }
 
   let(:continue) do
     -> (input) { input.fmap { |v| v + " terminated" } }
@@ -19,28 +17,19 @@ RSpec.describe Dry::Transaction::StepAdapters::Around do
         -> (input) { "plain string" }
       end
 
-      let(:operation) {
-        -> (input, &block) { block.(input.upcase) }
-      }
-
-      it "raises an ArgumentError" do
-        expect do
-          subject.call(step, 'input', &continue)
-        end.to raise_error(ArgumentError, /must return a Result object/)
+      it "raises an InvalidResultError" do
+        expect {
+          subject.(operation, options, ["input"], &continue)
+        }.to raise_error(
+               Dry::Transaction::InvalidResultError,
+               "step +unit+ must return a Result object"
+             )
       end
     end
 
     context "passing a block" do
-      let(:operation) { -> (input, &block) { block.(Success(input.upcase)) } }
-
-      it "return a Success value" do
-        expect(subject.call(step, 'input', &continue)).to be_a Dry::Monads::Result::Success
-      end
-
-      it "yields a block" do
-        result = subject.call(step, "input", &continue)
-
-        expect(result).to eql(Success("INPUT terminated"))
+      it "returns a Success value with result from block" do
+        expect(subject.(operation, options, ["input"], &continue)).to eql(Success("INPUT terminated"))
       end
     end
 
@@ -50,11 +39,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Around do
       }
 
       it "return a Failure value" do
-        expect(subject.call(step, 'input', &continue)).to be_a Dry::Monads::Result::Failure
-      end
-
-      it "return the result of the operation as output" do
-        expect(subject.call(step, 'input', &continue).failure).to eql 'INPUT'
+        expect(subject.(operation, options, ["input"], &continue)).to eql(Failure("INPUT"))
       end
     end
   end
