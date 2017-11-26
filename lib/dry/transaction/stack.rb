@@ -12,6 +12,8 @@ module Dry
         @stack.(m)
       end
 
+      private
+
       def compile(steps)
         steps.reverse.reduce(RETURN) do |next_step, step|
           proc { |m| m.bind { |value| step.(value, next_step) } }
