@@ -2,8 +2,8 @@
 
 ## Added
 - Around steps that allow to control the execution of subsequently called steps. If you know how middleware works in rack or how around callbacks can be used in RSpec it's the same. A typical example of usage would be DB transactions (now first class support!) or controlling side effects: rolling back the changes, cleaning garbage produced by a failed transaction, etc. See more detailed explanation how this works [in the PR][pr85] (flash-gordon in [#85][pr85])
-- Broadcast when a step has started by sending the event `step_called` (mihairadulescu) in [#82][pr82]
-- Add new step `check` that returns `Success` or `Failure` base on conditions (semenovDL) in [#84][pr84]
+- Broadcast when a step has started by sending the event `step_called` (mihairadulescu in [#82][pr82])
+- Add new step `check` that returns `Success` or `Failure` base on conditions (semenovDL in [#84][pr84])
 - Support for transaction steps without input values (GustavoCaso and timriley in [#69][pr69])
 
 ## Changed
