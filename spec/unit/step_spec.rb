@@ -1,31 +1,27 @@
 RSpec.describe Dry::Transaction::Step do
-  let(:step_adapter) { ->(step, input, *args) { step.operation.call(input, *args) } }
+  let(:step_adapter) { Dry::Transaction::StepAdapters::Raw.new }
   let(:step_name) { :test }
   let(:operation_name) { step_name }
 
   subject(:step) { described_class.new(step_adapter, step_name, operation_name, operation, {}) }
 
   describe "#call" do
-    let(:listener) do
-      Class.new do
-        def step(step_name, *args); end
-        def step_succeeded(step_name, *args); end
-        def step_failed(step_name, *args, value); end
-      end.new
-    end
-
+    let(:listener) { spy(:listener) }
     let(:input) { "input" }
     subject { step.call(input) }
 
+    before do
+      step.subscribe(listener)
+    end
+
     context "when operation succeeds" do
-      let(:operation) { proc { |input| Dry::Monads::Result::Success.new(input) } }
+      let(:operation) { proc { |input| Dry::Monads::Result::Success.new("success") } }
 
       it { is_expected.to be_right }
 
       it "publishes step_succeeded" do
-        expect(listener).to receive(:step_succeeded).with(step_name, "input")
-        step.subscribe(listener)
         subject
+        expect(listener).to have_received(:step_succeeded).with(step_name, "success", "input")
       end
     end
 
@@ -33,9 +29,8 @@ RSpec.describe Dry::Transaction::Step do
       let(:operation) { proc { |input| Dry::Monads::Result::Right.new(input) } }
 
       it "publishes step" do
-        expect(listener).to receive(:step).with(step_name, input)
-        step.subscribe(listener)
         subject
+        expect(listener).to have_received(:step).with(step_name, input)
       end
     end
 
@@ -52,9 +47,8 @@ RSpec.describe Dry::Transaction::Step do
       end
 
       it "publishes step_failed" do
-        expect(listener).to receive(:step_failed).with(step_name, "error", "input")
-        step.subscribe(listener)
         subject
+        expect(listener).to have_received(:step_failed).with(step_name, "error", "input")
       end
     end
   end

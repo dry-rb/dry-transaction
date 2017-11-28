@@ -54,7 +54,7 @@ module Dry
         broadcast :step, step_name, *args
 
         yield.fmap { |value|
-          broadcast :step_succeeded, step_name, *args
+          broadcast :step_succeeded, step_name, value, *args
           value
         }.or { |value|
           broadcast :step_failed, step_name, value, *args

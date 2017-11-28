@@ -34,15 +34,15 @@ RSpec.describe "publishing step events" do
     specify "subscriber receives success events" do
       transaction.call("name" => "Jane")
 
-      expect(subscriber).to have_received(:step_succeeded).with(:process, "name" => "Jane")
-      expect(subscriber).to have_received(:step_succeeded).with(:verify, name: "Jane")
-      expect(subscriber).to have_received(:step_succeeded).with(:persist, name: "Jane")
+      expect(subscriber).to have_received(:step_succeeded).with(:process, {name: "Jane"}, {"name" => "Jane"})
+      expect(subscriber).to have_received(:step_succeeded).with(:verify, {name: "Jane"}, {name: "Jane"})
+      expect(subscriber).to have_received(:step_succeeded).with(:persist, {name: "Jane"}, {name: "Jane"})
     end
 
-    specify "subsriber receives success events for passing steps, a failure event for the failing step, and no subsequent events" do
+    specify "subscriber receives success events for passing steps, a failure event for the failing step, and no subsequent events" do
       transaction.call("name" => "")
 
-      expect(subscriber).to have_received(:step_succeeded).with(:process, "name" =>  "")
+      expect(subscriber).to have_received(:step_succeeded).with(:process, {name: ""}, {"name" =>  ""})
       expect(subscriber).to have_received(:step_failed).with(:verify, "no name", {name: ""})
       expect(subscriber).not_to have_received(:step_succeeded).with(:persist)
     end
@@ -56,7 +56,7 @@ RSpec.describe "publishing step events" do
     specify "subscriber receives success event for the specified step" do
       transaction.call("name" => "Jane")
 
-      expect(subscriber).to have_received(:step_succeeded).with(:verify, name: "Jane")
+      expect(subscriber).to have_received(:step_succeeded).with(:verify, {name: "Jane"}, {name: "Jane"})
       expect(subscriber).not_to have_received(:step_succeeded).with(:process)
       expect(subscriber).not_to have_received(:step_succeeded).with(:persist)
     end
@@ -86,7 +86,7 @@ RSpec.describe "publishing step events" do
     specify "subscriber receives success event for the specified step" do
       transaction.with_step_args(verify: ["Jane"]).call("name" => "Jane")
 
-      expect(subscriber).to have_received(:step_succeeded).with(:verify, {:name=>"Jane"}, "Jane")
+      expect(subscriber).to have_received(:step_succeeded).with(:verify, {:name=>"Jane"}, {:name=>"Jane"}, "Jane")
       expect(subscriber).not_to have_received(:step_succeeded).with(:process)
       expect(subscriber).not_to have_received(:step_succeeded).with(:persist)
     end
