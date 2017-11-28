@@ -8,7 +8,7 @@ RSpec.describe Dry::Transaction::Step do
   describe "#call" do
     let(:listener) do
       Class.new do
-        def step_called(step_name, *args); end
+        def step(step_name, *args); end
         def step_succeeded(step_name, *args); end
         def step_failed(step_name, *args, value); end
       end.new
@@ -32,8 +32,8 @@ RSpec.describe Dry::Transaction::Step do
     context "when operation starts" do
       let(:operation) { proc { |input| Dry::Monads::Result::Right.new(input) } }
 
-      it "publishes step_called" do
-        expect(listener).to receive(:step_called).with(step_name, input)
+      it "publishes step" do
+        expect(listener).to receive(:step).with(step_name, input)
         step.subscribe(listener)
         subject
       end
