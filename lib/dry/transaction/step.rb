@@ -51,7 +51,7 @@ module Dry
       end
 
       def with_broadcast(args)
-        broadcast :step_called, step_name, *args
+        broadcast :step, step_name, *args
 
         yield.fmap { |value|
           broadcast :step_succeeded, step_name, *args
