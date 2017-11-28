@@ -57,7 +57,7 @@ module Dry
           broadcast :step_succeeded, step_name, *args
           value
         }.or { |value|
-          broadcast :step_failed, step_name, *args, value
+          broadcast :step_failed, step_name, value, *args
           Failure(StepFailure.new(self, value))
         }
       end

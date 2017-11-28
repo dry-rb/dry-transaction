@@ -52,7 +52,7 @@ RSpec.describe Dry::Transaction::Step do
       end
 
       it "publishes step_failed" do
-        expect(listener).to receive(:step_failed).with(step_name, input, "error")
+        expect(listener).to receive(:step_failed).with(step_name, "error", "input")
         step.subscribe(listener)
         subject
       end

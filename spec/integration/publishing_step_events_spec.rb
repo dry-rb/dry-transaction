@@ -43,7 +43,7 @@ RSpec.describe "publishing step events" do
       transaction.call("name" => "")
 
       expect(subscriber).to have_received(:step_succeeded).with(:process, "name" =>  "")
-      expect(subscriber).to have_received(:step_failed).with(:verify , {name: ""}, "no name")
+      expect(subscriber).to have_received(:step_failed).with(:verify, "no name", {name: ""})
       expect(subscriber).not_to have_received(:step_succeeded).with(:persist)
     end
   end
@@ -64,7 +64,7 @@ RSpec.describe "publishing step events" do
     specify "subscriber receives failure event for the specified step" do
       transaction.call("name" => "")
 
-      expect(subscriber).to have_received(:step_failed).with(:verify, {name: ""}, "no name")
+      expect(subscriber).to have_received(:step_failed).with(:verify, "no name", {name: ""})
     end
   end
 
@@ -92,9 +92,9 @@ RSpec.describe "publishing step events" do
     end
 
     specify "subscriber receives failure event for the specified step" do
-      transaction.with_step_args(verify: ["Jade"]).call("name" => "")
+      transaction.with_step_args(verify: ["John"]).call("name" => "")
 
-      expect(subscriber).to have_received(:step_failed).with(:verify, {name: ""}, "Jade", "wrong name")
+      expect(subscriber).to have_received(:step_failed).with(:verify, "wrong name", {name: ""}, "John")
     end
   end
 end
