@@ -10,7 +10,7 @@ module Dry
       UNDEFINED = Object.new.freeze
       RETURN = -> x { x }
 
-      include Dry::Events::Publisher[object_id]
+      include Dry::Events::Publisher[name || object_id]
       include Dry::Monads::Result::Mixin
 
       register_event('step')
