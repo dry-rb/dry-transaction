@@ -58,7 +58,7 @@ module Dry
         publish(:step, step_name: step_name, args: args)
 
         yield.fmap { |value|
-          publish(:step_succeeded, step_name: step_name, args: args)
+          publish(:step_succeeded, step_name: step_name, args: args, value: value)
           value
         }.or { |value|
           publish(:step_failed, step_name: step_name, args: args, value: value)
