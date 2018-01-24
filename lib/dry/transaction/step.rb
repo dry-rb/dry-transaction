@@ -1,5 +1,5 @@
 require "dry/monads/result"
-require "wisper"
+require 'dry/events/publisher'
 require "dry/transaction/step_failure"
 require "dry/transaction/step_adapter"
 
@@ -10,8 +10,12 @@ module Dry
       UNDEFINED = Object.new.freeze
       RETURN = -> x { x }
 
-      include Wisper::Publisher
+      include Dry::Events::Publisher[name || object_id]
       include Dry::Monads::Result::Mixin
+
+      register_event(:step)
+      register_event(:step_succeeded)
+      register_event(:step_failed)
 
       attr_reader :step_adapter
       attr_reader :step_name
@@ -51,13 +55,13 @@ module Dry
       end
 
       def with_broadcast(args)
-        broadcast :step, step_name, *args
+        publish(:step, step_name: step_name, args: args)
 
         yield.fmap { |value|
-          broadcast :step_succeeded, step_name, *args
+          publish(:step_succeeded, step_name: step_name, args: args, value: value)
           value
         }.or { |value|
-          broadcast :step_failed, step_name, *args, value
+          publish(:step_failed, step_name: step_name, args: args, value: value)
           Failure(StepFailure.new(self, value))
         }
       end

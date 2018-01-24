@@ -8,9 +8,23 @@ RSpec.describe Dry::Transaction::Step do
   describe "#call" do
     let(:listener) do
       Class.new do
-        def step(step_name, *args); end
-        def step_succeeded(step_name, *args); end
-        def step_failed(step_name, *args, value); end
+        attr_reader :started, :success, :failed
+
+        def initialize
+          @started = []
+          @success = []
+          @failed = []
+        end
+
+        def on_step(event)
+          started << event[:step_name]
+        end
+        def on_step_succeeded(event)
+          success << "succeded_#{event[:step_name]}"
+        end
+        def on_step_failed(event)
+          failed << "failed_#{event[:step_name]}"
+        end
       end.new
     end
 
@@ -23,9 +37,11 @@ RSpec.describe Dry::Transaction::Step do
       it { is_expected.to be_right }
 
       it "publishes step_succeeded" do
-        expect(listener).to receive(:step_succeeded).with(step_name, "input")
+        expect(listener).to receive(:on_step_succeeded).and_call_original
         step.subscribe(listener)
         subject
+
+        expect(listener.success).to eq ['succeded_test']
       end
     end
 
@@ -33,9 +49,11 @@ RSpec.describe Dry::Transaction::Step do
       let(:operation) { proc { |input| Dry::Monads::Result::Right.new(input) } }
 
       it "publishes step" do
-        expect(listener).to receive(:step).with(step_name, input)
+        expect(listener).to receive(:on_step).and_call_original
         step.subscribe(listener)
         subject
+
+        expect(listener.started).to eq [:test]
       end
     end
 
@@ -52,9 +70,11 @@ RSpec.describe Dry::Transaction::Step do
       end
 
       it "publishes step_failed" do
-        expect(listener).to receive(:step_failed).with(step_name, input, "error")
+        expect(listener).to receive(:on_step_failed).and_call_original
         step.subscribe(listener)
         subject
+
+        expect(listener.failed).to eq ['failed_test']
       end
     end
   end
