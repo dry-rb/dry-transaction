@@ -13,9 +13,9 @@ module Dry
       include Dry::Events::Publisher[name || object_id]
       include Dry::Monads::Result::Mixin
 
-      register_event('step')
-      register_event('step_succeeded')
-      register_event('step_failed')
+      register_event(:step)
+      register_event(:step_succeeded)
+      register_event(:step_failed)
 
       attr_reader :step_adapter
       attr_reader :step_name
@@ -55,13 +55,13 @@ module Dry
       end
 
       def with_broadcast(args)
-        publish('step', step_name: step_name, args: args)
+        publish(:step, step_name: step_name, args: args)
 
         yield.fmap { |value|
-          publish('step_succeeded', step_name: step_name, args: args)
+          publish(:step_succeeded, step_name: step_name, args: args)
           value
         }.or { |value|
-          publish('step_failed', step_name: step_name, args: args, value: value)
+          publish(:step_failed, step_name: step_name, args: args, value: value)
           Failure(StepFailure.new(self, value))
         }
       end
