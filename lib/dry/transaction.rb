@@ -35,7 +35,7 @@ module Dry
   # If your operations don't already return `Success` or `Failure`, then they can be
   # added to the transaction with the following steps:
   #
-  # * `check` --- wrap original input to `Success` or `Failure` Failure on operation
+  # * `check` --- wrap original input in `Success` or `Failure` according to operation
   #   return value, and pass it as output.
   # * `map`   --- wrap the output of the operation in a `Success`
   # * `try`   --- wrap the output of the operation in a `Success`, unless a certain
