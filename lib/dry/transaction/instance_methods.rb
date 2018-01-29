@@ -14,16 +14,7 @@ module Dry
 
       def initialize(steps: (self.class.steps), listeners: nil, **operations)
         @steps = steps.map { |step|
-          operation =
-            if methods.include?(step.step_name) || private_methods.include?(step.step_name)
-              method(step.step_name)
-            elsif operations[step.step_name].nil?
-              raise MissingStepError.new(step.step_name)
-            elsif operations[step.step_name].respond_to?(:call)
-              operations[step.step_name]
-            else
-              raise InvalidStepError.new(step.step_name)
-            end
+          operation = resolve_operation(step, operations)
           step.with(operation: operation)
         }
         @operations = operations
@@ -88,6 +79,18 @@ module Dry
         raise NotImplementedError, "no operation +#{step.operation_name}+ defined for step +#{step.step_name}+" unless operation
 
         operation.(*args, &block)
+      end
+
+      def resolve_operation(step, **operations)
+        if methods.include?(step.step_name) || private_methods.include?(step.step_name)
+          method(step.step_name)
+        elsif operations[step.step_name].nil?
+          raise MissingStepError.new(step.step_name)
+        elsif operations[step.step_name].respond_to?(:call)
+          operations[step.step_name]
+        else
+          raise InvalidStepError.new(step.step_name)
+        end
       end
 
       def assert_valid_step_args(step_args)
