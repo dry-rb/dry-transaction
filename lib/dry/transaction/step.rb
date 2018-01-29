@@ -31,6 +31,7 @@ module Dry
 
       def with(operation: UNDEFINED, call_args: UNDEFINED)
         return self if operation == UNDEFINED && call_args == UNDEFINED
+
         new_operation = operation == UNDEFINED ? step_adapter.operation : operation
         new_call_args = call_args == UNDEFINED ? self.call_args : Array(call_args)
 
