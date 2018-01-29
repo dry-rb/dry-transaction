@@ -1,14 +1,16 @@
 # 0.11.0 / to-be-released
 
 ## Added
-- Around steps that allow to control the execution of subsequently called steps. If you know how middleware works in rack or how around callbacks can be used in RSpec it's the same. A typical example of usage would be DB transactions (now first class support!) or controlling side effects: rolling back the changes, cleaning garbage produced by a failed transaction, etc. See more detailed explanation how this works [in the PR][pr85] (flash-gordon in [#85][pr85])
+
+- Around steps, which allow control of the execution of subsequently called steps. If you know how middleware works in rack or how around callbacks can be used in RSpec, it's the same. A typical example of usage would be for DB transactions (now first class support!) or controlling side effects: rolling back the changes, cleaning garbage produced by a failed transaction, etc. See a more detailed explanation of how this works [in the PR][pr85] (flash-gordon in [#85][pr85])
 - Broadcast when a step has started by sending the event `step_called` (mihairadulescu in [#82][pr82])
 - Add new step `check` that returns `Success` or `Failure` base on conditions (semenovDL in [#84][pr84])
 - Support for transaction steps without input values (GustavoCaso and timriley in [#69][pr69])
 
 ## Changed
 
-- [BREAKING] Broadcast no longer send events with the step name followed `_success`, `_failure` or `_starts`, now every time a step is initiated will send the message to the subscriber `step_called` with the step name and the arguments. When a step is successful will send the message `step_succeeded` with the step name and the arguments. When a step fails will send the message `step_failed` with the step name, the arguments and the error value (GustavoCaso in [#83][pr83])
+- [BREAKING] Steps no longer broadcast events with their step name followed by `_success` or `_failure`. Now, more generic names are used for the broadcast events. Before each step runs, a `step` event is broadcast, with the step name and its arguments. After a step runs, a `step_succeeded` or `step_failed` event is broadcast, also with the step name, the arguments and the return value (GustavoCaso in [#83][pr83])
+- [BREAKING] Pub/sub support is now handled using [dry-events][dry-events] instead of wisper. Subscriber objects should now respond to `#on_step`, `#on_step_succeeded`, or `#on_step_failed` to receive broadcast events (GustavoCaso in [#90][pr90])
 - [BREAKING] The step adapter API has been changed in order to support around steps, although, the changes are not significant. Previously, an adapter received a `step` and a list of arguments for calling the operation. The list was passed as `*args` then you were needed to call `call_operation` on `step` and provide the list. From now on an adapter gets an `operation`, its `options`, and `args` (_without_ `*`). `operation` is an ordinary callable object so a typical call is as simple as `operaiton.(*args)`, that's it. If you want to turn your adapter into an around-like one you need to add `&block` parameter to the list of `call` arguments (e.g. `def call(operation, options, args, &block)`). `block` is responsible for calling the subsequent steps thus you can check or transform the return value and make some decisions based on it. Note capturing the block in the list of arguments is mandatory, a simple `yield` won't work, there are reasons, believe us. Check out the sources of [`around.rb`](https://github.com/dry-rb/dry-transaction/blob/master/lib/dry/transaction/step_adapters/around.rb) for reference, it's dead simple (flash-gordon in [#85][pr85])
 - Usages of the `Either` monad was updated with `Result` and its constructors. See [the changes](https://github.com/dry-rb/dry-monads/blob/master/CHANGELOG.md#v040-2017-11-11) in `dry-monads` for more details (flash-gordon in [#81][pr81])
 - Minimal Ruby version is 2.2 (flash-gordon in [#72][pr72])
@@ -21,6 +23,7 @@
 
 [Compare v0.10.2...master](https://github.com/dry-rb/dry-transaction/compare/v0.10.2...master)
 
+[dry-events]: http://dry-rb.org/gems/dry-events/
 [pr69]: https://github.com/dry-rb/dry-transaction/pull/69
 [pr70]: https://github.com/dry-rb/dry-transaction/pull/70
 [pr72]: https://github.com/dry-rb/dry-transaction/pull/72
@@ -31,6 +34,7 @@
 [pr83]: https://github.com/dry-rb/dry-transaction/pull/83
 [pr84]: https://github.com/dry-rb/dry-transaction/pull/84
 [pr85]: https://github.com/dry-rb/dry-transaction/pull/85
+[pr90]: https://github.com/dry-rb/dry-transaction/pull/90
 
 # 0.10.2 / 2017-07-10
 
