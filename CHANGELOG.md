@@ -1,4 +1,4 @@
-# 0.11.0 / to-be-released
+# 0.11.0 / 2018-02-19
 
 ## Added
 
@@ -21,7 +21,7 @@
 - Steps can be wrapped with private methods (semenovDL in [#70][pr70])
 - Improved error message on missing transaction step (Morozzzko in [#79][pr79])
 
-[Compare v0.10.2...master](https://github.com/dry-rb/dry-transaction/compare/v0.10.2...master)
+[Compare v0.10.2...v0.11.0](https://github.com/dry-rb/dry-transaction/compare/v0.10.2...v0.11.0)
 
 [dry-events]: http://dry-rb.org/gems/dry-events/
 [pr69]: https://github.com/dry-rb/dry-transaction/pull/69
