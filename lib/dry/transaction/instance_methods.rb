@@ -12,7 +12,7 @@ module Dry
       attr_reader :listeners
       attr_reader :stack
 
-      def initialize(steps: (self.class.steps), listeners: nil, **operations)
+      def initialize(*args, steps: (self.class.steps), listeners: nil, **operations)
         @steps = steps.map { |step|
           operation = resolve_operation(step, operations)
           step.with(operation: operation)
@@ -20,6 +20,8 @@ module Dry
         @operations = operations
         @stack = Stack.new(@steps)
         subscribe(listeners) unless listeners.nil?
+        # This fixes the failing test but breaks 42 other tests.
+        # super(*args, **operations)
       end
 
       def call(input = nil, &block)
