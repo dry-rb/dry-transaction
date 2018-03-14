@@ -159,6 +159,89 @@ RSpec.describe "Transactions" do
     end
   end
 
+  context "operation injection of step only defined in the transaction class not in the container" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction
+
+        step :process
+
+        def process(input)
+          new_input = input << :world
+          super(new_input)
+        end
+      end.new(**dependencies)
+    end
+
+    let(:dependencies) do
+      {process: -> input { Failure(input)} }
+    end
+
+    it "execute the transaction and execute the injected operation" do
+      result = transaction.call([:hello])
+
+      expect(result).to eq (Failure([:hello, :world]))
+    end
+  end
+
+  context "operation injection of step without container and no transaction instance methods" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction
+
+        map :process
+        step :verify
+        try :validate, catch: Test::NotValidError
+        tee :persist
+
+      end.new(**dependencies)
+    end
+
+    let(:dependencies) do
+      {
+        process:  -> input { {name: input["name"], email: input["email"]} },
+        verify:  -> input { Success(input) },
+        validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
+        persist:  -> input { database << input and true }
+      }
+    end
+
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+
+    it "calls the injected operations" do
+      transaction.call(input)
+      expect(database).to include(name: "Jane", email: "jane@doe.com")
+    end
+  end
+
+  context "operation injection of step without container and no transaction instance methods but missing an injected operation" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction
+
+        map :process
+        step :verify
+        try :validate, catch: Test::NotValidError
+        tee :persist
+
+      end.new(**dependencies)
+    end
+
+    let(:dependencies) do
+      {
+        process:  -> input { {name: input["name"], email: input["email"]} },
+        verify:  -> input { Success(input) },
+        validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
+      }
+    end
+
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+
+    it "raises an exception" do
+      expect { transaction }.to raise_error(Dry::Transaction::MissingStepError)
+    end
+  end
+
   context "local step definition" do
     let(:transaction) do
       Class.new do
