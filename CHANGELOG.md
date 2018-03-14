@@ -1,3 +1,13 @@
+# 0.11.1 / 2018-03-15
+
+## Added
+
+- Include `operation_name:` in options passed to step adapters. This is helpful for 3rd party step adapters that need the operation's name to fetch it from the container again later. (timriley in [#94][pr94])
+
+[Compare v0.11.0...v0.11.1](https://github.com/dry-rb/dry-transaction/compare/v0.11.0...v0.11.1)
+
+[pr94]: https://github.com/dry-rb/dry-transaction/pull/94
+
 # 0.11.0 / 2018-02-19
 
 ## Added
