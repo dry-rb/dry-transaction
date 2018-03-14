@@ -23,7 +23,7 @@ module Dry
       attr_reader :call_args
 
       def initialize(step_adapter, step_name, operation_name, operation, options, call_args = [])
-        @step_adapter = StepAdapter[step_adapter, operation, **options, step_name: step_name]
+        @step_adapter = StepAdapter[step_adapter, operation, **options, step_name: step_name, operation_name: operation_name]
         @step_name = step_name
         @operation_name = operation_name
         @call_args = call_args
