@@ -12,7 +12,8 @@ module Dry
       attr_reader :listeners
       attr_reader :stack
 
-      def initialize(*args, steps: (self.class.steps), listeners: nil, **operations)
+      def initialize(*args, steps: (self.class.steps), listeners: nil, **kwargs)
+        operations = resolve_operations(kwargs)
         @steps = steps.map { |step|
           operation = resolve_operation(step, operations)
           step.with(operation: operation)
@@ -20,8 +21,20 @@ module Dry
         @operations = operations
         @stack = Stack.new(@steps)
         subscribe(listeners) unless listeners.nil?
-        # This fixes the failing test but breaks 42 other tests.
-        # super(*args, **operations)
+
+        # This check is only needed because ruby seems to have an issue:
+        # ```
+        # def foo; end
+        # foo(**{}) # no error
+        # kw = {}
+        # foo(**kw) # wrong number of arguments (given 1, expected 0)
+        # ```
+        # Tested in ruby 2.4.3
+        if kwargs.empty?
+          super(*args)
+        else
+          super(*args, **kwargs)
+        end
       end
 
       def call(input = nil, &block)
