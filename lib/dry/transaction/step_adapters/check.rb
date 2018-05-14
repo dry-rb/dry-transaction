@@ -3,7 +3,7 @@ module Dry
     class StepAdapters
       # @api private
       class Check
-        include Dry::Monads::Either::Mixin
+        include Dry::Monads::Result::Mixin
 
         def call(operation, _options, args)
           input = args[0]
