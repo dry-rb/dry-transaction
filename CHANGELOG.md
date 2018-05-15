@@ -1,3 +1,13 @@
+# 0.11.2 / 2018-05-15
+
+## Changed
+
+- Use `Dry::Monads::Result` instead of the deprecated `Dry::Monads::Either` in the `check` step adapter (PavelTkachenko in [#103][pr103])
+
+[Compare v0.11.1...v0.11.2](https://github.com/dry-rb/dry-transaction/compare/v0.11.1...v0.11.2)
+
+[pr103]: https://github.com/dry-rb/dry-transaction/pull/103
+
 # 0.11.1 / 2018-03-15
 
 ## Added
