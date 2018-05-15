@@ -30,7 +30,7 @@ RSpec.describe Dry::Transaction::StepAdapters::Check, :adapter do
       end
     end
 
-    context "when operation return left monad" do
+    context "when operation return failure monad" do
       let(:operation) {
         -> (input) { Failure(true) }
       }

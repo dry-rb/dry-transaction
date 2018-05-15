@@ -41,8 +41,8 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
 
         it "returns the raised error as output" do
           result = subject.(operation, options, [1234])
-          expect(result.left).to be_a Test::NotValidError
-          expect(result.left.message).to eql("not a string")
+          expect(result.failure).to be_a Test::NotValidError
+          expect(result.failure.message).to eql("not a string")
         end
 
         context "when using the :raise option" do
@@ -59,8 +59,8 @@ RSpec.describe Dry::Transaction::StepAdapters::Try do
 
           it "returns the error specified by :raise as output" do
             result = subject.(operation, options, [1234])
-            expect(result.left).to be_a Test::BetterNamingError
-            expect(result.left.message).to eql("not a string")
+            expect(result.failure).to be_a Test::BetterNamingError
+            expect(result.failure.message).to eql("not a string")
           end
         end
       end
