@@ -1,3 +1,13 @@
+# 0.12.0 / 2018-05-16
+
+## Changed
+
+- Switch to `Dry::Monads::Result` API (away from `Either` API deprecated in dry-monads 1.0 betas) (Morozzzko in [#104][pr104])
+
+[Compare v0.11.2...v0.12.0](https://github.com/dry-rb/dry-transaction/compare/v0.11.2...v0.11.3)
+
+[pr104]: https://github.com/dry-rb/dry-transaction/pull/104
+
 # 0.11.2 / 2018-05-15
 
 ## Changed
