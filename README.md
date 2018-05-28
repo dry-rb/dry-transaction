@@ -1,7 +1,6 @@
 [gitter]: https://gitter.im/dry-rb/chat
 [gem]: https://img.shields.io/gem/v/dry-transaction.svg]
 [travis]: https://travis-ci.org/dry-rb/dry-transaction
-[gemnasium]: https://gemnasium.com/dry-rb/dry-transaction
 [codeclimate]: https://codeclimate.com/github/dry-rb/dry-transaction
 [coveralls]: https://coveralls.io/r/dry-rb/dry-transaction
 [inchpages]: http://inch-ci.org/github/dry-rb/dry-transaction
@@ -10,7 +9,6 @@
 
 [![Gem Version](https://badge.fury.io/rb/dry-transaction.svg)][gem]
 [![Build Status](https://travis-ci.org/dry-rb/dry-transaction.svg?branch=master)][travis]
-[![Dependency Status](https://gemnasium.com/dry-rb/dry-transaction.svg)][gemnasium]
 [![Code Climate](https://codeclimate.com/github/dry-rb/dry-transaction/badges/gpa.svg)][codeclimate]
 [![Test Coverage](https://codeclimate.com/github/dry-rb/dry-transaction/badges/coverage.svg)][codeclimate]
 [![Inline docs](http://inch-ci.org/github/dry-rb/dry-transaction.svg?branch=master)][inchpages]
