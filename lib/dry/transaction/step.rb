@@ -63,7 +63,7 @@ module Dry
           value
         }.or { |value|
           publish(:step_failed, step_name: step_name, args: args, value: value)
-          Failure(StepFailure.new(self, value))
+          Failure(step_adapter.failure_class.new(self, value))
         }
       end
 
