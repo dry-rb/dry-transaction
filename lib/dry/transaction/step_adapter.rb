@@ -27,6 +27,9 @@ module Dry
         @operation = Callable[operation]
 
         @options = options
+        if defined?(adapter.failure_class)
+          @options[:failure_class] ||= adapter.failure_class
+        end
 
         @yields = @adapter.
                     parameters.
@@ -43,6 +46,10 @@ module Dry
 
       def with(operation = self.operation, new_options = {})
         self.class.new(adapter, operation, options.merge(new_options))
+      end
+
+      def failure_class
+        options[:failure_class] || StepFailure
       end
     end
   end
