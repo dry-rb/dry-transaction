@@ -562,5 +562,39 @@ RSpec.describe "Transactions" do
         end
       end
     end
+
+    context "failed in an around step" do
+      let(:transaction) {
+        Class.new do
+          include Dry::Transaction(container: Test::Container)
+          around :log
+
+          map :process
+          step :verify
+          try :validate, catch: Test::NotValidError
+          tee :persist
+
+          def log(input, &block)
+            Test::Container[:database] << "Logging input #{input}"
+            block.(Success(input))
+          end
+        end.new(**dependencies)
+      }
+      let(:input) { {"name" => "Jane"} }
+
+      it "supports matching on specific step failures" do
+        results = []
+
+        transaction.call(input) do |m|
+          m.success { }
+
+          m.failure :validate do |value|
+            results << "Validation failure: #{value}"
+          end
+        end
+
+        expect(results.first).to eq "Validation failure: email required"
+      end
+    end
   end
 end

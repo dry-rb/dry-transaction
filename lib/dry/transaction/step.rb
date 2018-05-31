@@ -62,8 +62,11 @@ module Dry
           publish(:step_succeeded, step_name: step_name, args: args, value: value)
           value
         }.or { |value|
-          publish(:step_failed, step_name: step_name, args: args, value: value)
-          Failure(StepFailure.new(self, value))
+          Failure(
+            StepFailure.(self, value) {
+              publish(:step_failed, step_name: step_name, args: args, value: value)
+            }
+          )
         }
       end
 
