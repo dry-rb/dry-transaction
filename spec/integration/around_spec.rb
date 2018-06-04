@@ -5,7 +5,13 @@ RSpec.describe "around steps" do
 
   before do
     container.instance_exec do
-      register :validate, -> input { Success(input) }
+      register :validate, -> input {
+        if input[:account][:balance] >= 0
+          Success(input)
+        else
+          Failure(input)
+        end
+      }
 
       register :persist_user do |user:, **other|
         self[:database] << [:user, user]
@@ -23,8 +29,8 @@ RSpec.describe "around steps" do
     Class.new do
       include Dry::Transaction(container: Test::Container)
 
-      step :validate
       around :transaction
+      step :validate
       step :persist_user
       step :persist_account
       step :finalize
@@ -77,5 +83,18 @@ RSpec.describe "around steps" do
     expect(database).not_to be_in_transaction
     expect(database).not_to be_committed
     expect(database).to be_empty
+  end
+
+  it "supports matching on nested failures" do
+    invalid_input = input.merge(account: {balance: -10})
+
+    failed_input = nil
+
+    transaction.new(finalize: -> x { Success(x) }).call(invalid_input) do |m|
+      m.success { |v| v }
+      m.failure(:validate) { |input| failed_input = input }
+    end
+
+    expect(failed_input).to eq invalid_input
   end
 end
