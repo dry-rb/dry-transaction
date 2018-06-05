@@ -6,6 +6,16 @@ module Dry
       attr_reader :step
       attr_reader :value
 
+      # @api private
+      def self.call(step, value)
+        if self === value
+          value
+        else
+          yield
+          new(step, value)
+        end
+      end
+
       def initialize(step, value)
         @step = step
         @value = value
