@@ -1,3 +1,13 @@
+# 0.12.1 / 2018-06-05
+
+## Fixed
+
+- Support result matching on step failures nested within around steps (flash-gordon in [#106][pr106])
+
+[Compare v0.12.0...v0.12.1](https://github.com/dry-rb/dry-transaction/compare/v0.12.0...v0.12.1)
+
+[pr106]: https://github.com/dry-rb/dry-transaction/pull/106
+
 # 0.12.0 / 2018-05-16
 
 ## Changed
