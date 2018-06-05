@@ -97,4 +97,24 @@ RSpec.describe "around steps" do
 
     expect(failed_input).to eq invalid_input
   end
+
+  describe "subscribing to events" do
+    let(:subscriber) {
+      Class.new do
+        attr_reader :user_persisted
+
+        def on_step_succeeded(event)
+          @user_persisted = true if event[:step_name] == :persist_user
+        end
+      end.new
+    }
+
+    it "supports subscribing to events from nested steps" do
+      trans = transaction.new(finalize: -> x { Success(x) })
+      trans.subscribe(subscriber)
+      trans.call(input)
+
+      expect(subscriber.user_persisted).to be_truthy
+    end
+  end
 end
