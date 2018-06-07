@@ -6,14 +6,17 @@ module Dry
   module Transaction
     class OperationExtractor
       class Injected < Base
-        def call
+
+        def extracted_operation
           if function.respond_to?(:call)
             function
           elsif transaction_methods.include?(name)
             transaction_method
-          else
-            raise InvalidStepError.new(name)
           end
+        end
+
+        def error
+          InvalidStepError.new(name)
         end
       end
     end

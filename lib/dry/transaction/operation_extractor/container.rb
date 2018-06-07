@@ -6,14 +6,17 @@ module Dry
   module Transaction
     class OperationExtractor
       class Container < Base
-        def call
+
+        def extracted_operation
           if transaction_methods.include?(name)
             transaction_method
           elsif function.respond_to?(:call)
             function
-          else
-            raise InvalidStepError.new(name)
           end
+        end
+
+        def error
+          InvalidStepError.new(name)
         end
       end
     end

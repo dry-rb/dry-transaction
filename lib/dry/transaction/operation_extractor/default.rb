@@ -6,12 +6,13 @@ module Dry
   module Transaction
     class OperationExtractor
       class Default < Base
-        def call
-          if transaction_methods.include?(name)
-            transaction_method
-          else
-            raise MissingStepError.new(name)
-          end
+
+        def extracted_operation
+          transaction_method if transaction_methods.include?(name)
+        end
+
+        def error
+          MissingStepError.new(name)
         end
       end
     end
