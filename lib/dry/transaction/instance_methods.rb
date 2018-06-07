@@ -1,6 +1,7 @@
 require "dry/monads/result"
 require "dry/transaction/result_matcher"
 require "dry/transaction/stack"
+require "dry/transaction/operation_extractor"
 
 module Dry
   module Transaction
@@ -82,41 +83,13 @@ module Dry
       end
 
       def resolve_operation(step, **operations)
-        case operations[step.step_name]
+        operation = operations[step.step_name]
+
+        case operation
         when nil
           raise MissingStepError.new(step.step_name)
         when OperationResolver::Operation
-          extract_operation(step.step_name, operations)
-        end
-      end
-
-      def extract_operation(name, operations)
-        source = operations[name].source
-        function = operations[name].function
-
-        case source
-        when :injected
-          if function.respond_to?(:call)
-            function
-          elsif methods.include?(name) || private_methods.include?(name)
-            method(name)
-          else
-            raise InvalidStepError.new(name)
-          end
-        when :container
-          if methods.include?(name) || private_methods.include?(name)
-            method(name)
-          elsif function.respond_to?(:call)
-            function
-          else
-            raise InvalidStepError.new(name)
-          end
-        when nil
-          if methods.include?(name) || private_methods.include?(name)
-            method(name)
-          else
-            raise MissingStepError.new(name)
-          end
+          OperationExtractor.new(self, step.step_name, operation).call
         end
       end
 
