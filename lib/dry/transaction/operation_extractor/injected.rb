@@ -6,7 +6,6 @@ module Dry
   module Transaction
     class OperationExtractor
       class Injected < Base
-
         def extracted_operation
           if operation.respond_to?(:call)
             operation
@@ -15,10 +14,6 @@ module Dry
           elsif operation.nil?
             raise MissingStepError.new(name)
           end
-        end
-
-        def error
-          InvalidStepError.new(name)
         end
       end
     end

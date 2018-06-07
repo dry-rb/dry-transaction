@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "dry/transaction/operation_extractor/default"
 require "dry/transaction/operation_extractor/injected"
 require "dry/transaction/operation_extractor/container"
 
@@ -16,8 +15,7 @@ module Dry
         private
 
         def get_extractor_class(transaction, operation, step)
-          step_source = step.source ? step.source : :default
-          klass = self.const_get(step_source.to_s.capitalize)
+          klass = self.const_get(step.source.to_s.capitalize)
           klass.new(transaction, operation, step.step_name)
         end
       end

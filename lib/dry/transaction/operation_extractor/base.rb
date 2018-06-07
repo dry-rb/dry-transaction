@@ -14,12 +14,8 @@ module Dry
 
         def call
           op = extracted_operation
-          raise error unless op
+          raise InvalidStepError.new(name) unless op
           op
-        end
-
-        def error
-          raise NotImplementedError
         end
 
         def extracted_operation

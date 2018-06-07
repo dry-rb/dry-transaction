@@ -83,12 +83,6 @@ module Dry
       end
 
       def resolve_operation(step, **operations)
-        # operation = operations[step.step_name]
-        # require 'pry'; binding.pry
-        # case operation
-        # when nil
-        #   raise MissingStepError.new(step.step_name)
-        # else
         OperationExtractor.call(self, step, operations[step.step_name])
       end
 
