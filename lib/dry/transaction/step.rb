@@ -20,12 +20,14 @@ module Dry
       attr_reader :step_adapter
       attr_reader :step_name
       attr_reader :operation_name
+      attr_reader :source
       attr_reader :call_args
 
-      def initialize(step_adapter, step_name, operation_name, operation, options, call_args = [])
+      def initialize(step_adapter, step_name, operation_name, operation, source, options, call_args = [])
         @step_adapter = StepAdapter[step_adapter, operation, **options, step_name: step_name, operation_name: operation_name]
         @step_name = step_name
         @operation_name = operation_name
+        @source = source
         @call_args = call_args
       end
 
@@ -40,6 +42,7 @@ module Dry
           step_name,
           operation_name,
           new_operation,
+          source,
           step_adapter.options,
           new_call_args
         )

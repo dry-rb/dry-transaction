@@ -26,6 +26,7 @@ module Dry
         module_exec(@step_adapters) do |step_adapters|
           step_adapters.keys.each do |adapter_name|
             define_method(adapter_name) do |step_name, with: nil, **options|
+              source = with ? :container : :injected
               operation_name = with || step_name
 
               steps << Step.new(
@@ -33,7 +34,8 @@ module Dry
                 step_name,
                 operation_name,
                 nil, # operations are resolved only when transactions are instantiated
-                options,
+                source,
+                options
               )
             end
           end

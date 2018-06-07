@@ -8,17 +8,17 @@ module Dry
   module Transaction
     class OperationExtractor
       class << self
-        def call(transaction, name, operation)
-          klass = get_extractor_class(transaction, operation, name)
+        def call(transaction, step, operation)
+          klass = get_extractor_class(transaction, operation, step)
           klass.call
         end
 
         private
 
-        def get_extractor_class(transaction, operation, name)
-          operation_source = operation.source ? operation.source : :default
-          klass = self.const_get(operation_source.to_s.capitalize)
-          klass.new(transaction, operation, name)
+        def get_extractor_class(transaction, operation, step)
+          step_source = step.source ? step.source : :default
+          klass = self.const_get(step_source.to_s.capitalize)
+          klass.new(transaction, operation, step.step_name)
         end
       end
     end

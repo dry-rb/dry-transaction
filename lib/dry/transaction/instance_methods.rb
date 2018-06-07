@@ -76,21 +76,20 @@ module Dry
         step = steps.detect { |s| s.step_name == name }
         super unless step
 
-        operation = operations[step.step_name]&.function
+        operation = operations[step.step_name]
         raise NotImplementedError, "no operation +#{step.operation_name}+ defined for step +#{step.step_name}+" unless operation
 
         operation.(*args, &block)
       end
 
       def resolve_operation(step, **operations)
-        operation = operations[step.step_name]
-
-        case operation
-        when nil
-          raise MissingStepError.new(step.step_name)
-        when OperationResolver::Operation
-          OperationExtractor.call(self, step.step_name, operation)
-        end
+        # operation = operations[step.step_name]
+        # require 'pry'; binding.pry
+        # case operation
+        # when nil
+        #   raise MissingStepError.new(step.step_name)
+        # else
+        OperationExtractor.call(self, step, operations[step.step_name])
       end
 
       def assert_valid_step_args(step_args)

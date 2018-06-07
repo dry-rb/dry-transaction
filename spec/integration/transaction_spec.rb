@@ -272,10 +272,10 @@ RSpec.describe "Transactions" do
         include Dry::Transaction(container: Test::Container)
 
         map :process, with: :process
-        step :verify
+        step :verification
         tee :persist, with: :persist
 
-        def verify(input)
+        def verification(input)
           Success(input.keys)
         end
       end.new

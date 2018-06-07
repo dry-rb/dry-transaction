@@ -2,8 +2,9 @@ RSpec.describe Dry::Transaction::Step do
   let(:step_adapter) { ->(step, input, *args) { step.operation.call(input, *args) } }
   let(:step_name) { :test }
   let(:operation_name) { step_name }
+  let(:source) { :container }
 
-  subject(:step) { described_class.new(step_adapter, step_name, operation_name, operation, {}) }
+  subject(:step) { described_class.new(step_adapter, step_name, operation_name, operation, source, {}) }
 
   describe "#call" do
     let(:listener) do

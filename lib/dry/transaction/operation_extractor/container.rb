@@ -10,8 +10,10 @@ module Dry
         def extracted_operation
           if transaction_methods.include?(name)
             transaction_method
-          elsif function.respond_to?(:call)
-            function
+          elsif operation.nil?
+            raise MissingStepError.new(name)
+          elsif operation.respond_to?(:call)
+            operation
           end
         end
 

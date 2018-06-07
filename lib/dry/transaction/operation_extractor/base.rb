@@ -28,10 +28,6 @@ module Dry
 
         private
 
-        def function
-          operation.function
-        end
-
         def transaction_method
           transaction.method(name)
         end
