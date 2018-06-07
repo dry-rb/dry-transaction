@@ -177,10 +177,34 @@ RSpec.describe "Transactions" do
       {process: -> input { Failure(input)} }
     end
 
-    it "execute the transaction and execute the injected operation" do
+    xit "execute the transaction and execute the injected operation" do
       result = transaction.call([:hello])
 
       expect(result).to eq (Failure([:hello, :world]))
+    end
+  end
+
+  context "operation injection override local method" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction
+
+        step :operation
+
+        def operation(_input)
+          Failure(:hell)
+        end
+
+      end.new(**dependencies)
+    end
+
+    let(:dependencies) do
+      { operation: -> _input { Success(:heaven)} }
+    end
+
+    it "subsititude local method with injected one" do
+
+      expect(transaction.call('right')).to eq(Success(:heaven))
     end
   end
 

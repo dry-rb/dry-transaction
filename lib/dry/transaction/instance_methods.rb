@@ -75,21 +75,48 @@ module Dry
         step = steps.detect { |s| s.step_name == name }
         super unless step
 
-        operation = operations[step.step_name]
+        operation = operations[step.step_name]&.function
         raise NotImplementedError, "no operation +#{step.operation_name}+ defined for step +#{step.step_name}+" unless operation
 
         operation.(*args, &block)
       end
 
       def resolve_operation(step, **operations)
-        if methods.include?(step.step_name) || private_methods.include?(step.step_name)
-          method(step.step_name)
-        elsif operations[step.step_name].nil?
+        case operations[step.step_name]
+        when nil
           raise MissingStepError.new(step.step_name)
-        elsif operations[step.step_name].respond_to?(:call)
-          operations[step.step_name]
-        else
-          raise InvalidStepError.new(step.step_name)
+        when OperationResolver::Operation
+          extract_operation(step.step_name, operations)
+        end
+      end
+
+      def extract_operation(name, operations)
+        source = operations[name].source
+        function = operations[name].function
+
+        case source
+        when :injected
+          if function.respond_to?(:call)
+            function
+          elsif methods.include?(name) || private_methods.include?(name)
+            method(name)
+          else
+            raise InvalidStepError.new(name)
+          end
+        when :container
+          if methods.include?(name) || private_methods.include?(name)
+            method(name)
+          elsif function.respond_to?(:call)
+            function
+          else
+            raise InvalidStepError.new(name)
+          end
+        when nil
+          if methods.include?(name) || private_methods.include?(name)
+            method(name)
+          else
+            raise MissingStepError.new(name)
+          end
         end
       end
 
