@@ -89,7 +89,7 @@ module Dry
         when nil
           raise MissingStepError.new(step.step_name)
         when OperationResolver::Operation
-          OperationExtractor.new(self, step.step_name, operation).call
+          OperationExtractor.call(self, step.step_name, operation)
         end
       end
 

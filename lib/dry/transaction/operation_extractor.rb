@@ -1,57 +1,24 @@
 # frozen_string_literal: true
 
+require "dry/transaction/operation_extractor/default"
+require "dry/transaction/operation_extractor/injected"
+require "dry/transaction/operation_extractor/container"
+
 module Dry
   module Transaction
     class OperationExtractor
-      attr_reader :transaction, :name, :operation
-
-      def initialize(transaction, name, operation)
-        @transaction = transaction
-        @name = name
-        @operation = operation
-      end
-
-      def call
-        source = operation.source
-        function = operation.function
-
-        case source
-        when :injected
-          injected_policy(function)
-        when :container
-          container_policy(function)
-        when nil
-          if transaction_methods.include?(name)
-            transaction.method(name)
-          else
-            raise MissingStepError.new(name)
-          end
+      class << self
+        def call(transaction, name, operation)
+          klass = get_extractor_class(transaction, operation, name)
+          klass.call
         end
-      end
 
-      private
+        private
 
-      def transaction_methods
-        @transaction_methods ||= transaction.methods + transaction.private_methods
-      end
-
-      def injected_policy(function)
-        if function.respond_to?(:call)
-          function
-        elsif transaction_methods.include?(name)
-          transaction.method(name)
-        else
-          raise InvalidStepError.new(name)
-        end
-      end
-
-      def container_policy(function)
-        if transaction_methods.include?(name)
-          transaction.method(name)
-        elsif function.respond_to?(:call)
-          function
-        else
-          raise InvalidStepError.new(name)
+        def get_extractor_class(transaction, operation, name)
+          operation_source = operation.source ? operation.source : :default
+          klass = self.const_get(operation_source.to_s.capitalize)
+          klass.new(transaction, operation, name)
         end
       end
     end
