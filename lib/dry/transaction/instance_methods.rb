@@ -1,6 +1,7 @@
 require "dry/monads/result"
 require "dry/transaction/result_matcher"
 require "dry/transaction/stack"
+require "dry/transaction/operation_extractor"
 
 module Dry
   module Transaction
@@ -82,15 +83,7 @@ module Dry
       end
 
       def resolve_operation(step, **operations)
-        if methods.include?(step.step_name) || private_methods.include?(step.step_name)
-          method(step.step_name)
-        elsif operations[step.step_name].nil?
-          raise MissingStepError.new(step.step_name)
-        elsif operations[step.step_name].respond_to?(:call)
-          operations[step.step_name]
-        else
-          raise InvalidStepError.new(step.step_name)
-        end
+        OperationExtractor.call(self, step, operations[step.step_name])
       end
 
       def assert_valid_step_args(step_args)
