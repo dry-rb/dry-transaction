@@ -42,7 +42,7 @@ module Dry
 
         if listeners.is_a?(Hash)
           listeners.each do |step_name, listener|
-            steps.detect { |step| step.step_name == step_name }.subscribe(listener)
+            steps.detect { |step| step.name == step_name }.subscribe(listener)
           end
         else
           steps.each do |step|
@@ -55,8 +55,8 @@ module Dry
         assert_valid_step_args(step_args)
 
         new_steps = steps.map { |step|
-          if step_args[step.step_name]
-            step.with(call_args: step_args[step.step_name])
+          if step_args[step.name]
+            step.with(call_args: step_args[step.name])
           else
             step
           end
@@ -68,34 +68,37 @@ module Dry
       private
 
       def respond_to_missing?(name, _include_private = false)
-        steps.any? { |step| step.step_name == name }
+        steps.any? { |step| step.name == name }
       end
 
       def method_missing(name, *args, &block)
-        step = steps.detect { |s| s.step_name == name }
+        step = steps.detect { |s| s.name == name }
         super unless step
 
-        operation = operations[step.step_name]
-        raise NotImplementedError, "no operation +#{step.operation_name}+ defined for step +#{step.step_name}+" unless operation
+        operation = operations[step.name]
+        raise NotImplementedError, "no operation +#{step.operation_name}+ defined for step +#{step.name}+" unless operation
 
         operation.(*args, &block)
       end
+      # if step.internal? && operations[step.name]
+      #   operations[step.name]
+      # elsif methods.include?(step.name) || private_methods.include?(step.name)
 
       def resolve_operation(step, **operations)
-        if methods.include?(step.step_name) || private_methods.include?(step.step_name)
-          method(step.step_name)
-        elsif operations[step.step_name].nil?
-          raise MissingStepError.new(step.step_name)
-        elsif operations[step.step_name].respond_to?(:call)
-          operations[step.step_name]
+        if methods.include?(step.name) || private_methods.include?(step.name)
+          method(step.name)
+        elsif operations[step.name].nil?
+          raise MissingStepError.new(step.name)
+        elsif operations[step.name].respond_to?(:call)
+          operations[step.name]
         else
-          raise InvalidStepError.new(step.step_name)
+          raise InvalidStepError.new(step.name)
         end
       end
 
       def assert_valid_step_args(step_args)
         step_args.each_key do |step_name|
-          unless steps.any? { |step| step.step_name == step_name }
+          unless steps.any? { |step| step.name == step_name }
             raise ArgumentError, "+#{step_name}+ is not a valid step name"
           end
         end
@@ -107,7 +110,7 @@ module Dry
           num_args_supplied = step.call_args.length + 1 # add 1 for main `input`
 
           if num_args_required > num_args_supplied
-            raise ArgumentError, "not enough arguments supplied for step +#{step.step_name}+"
+            raise ArgumentError, "not enough arguments supplied for step +#{step.name}+"
           end
         end
       end

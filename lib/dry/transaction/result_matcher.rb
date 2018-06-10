@@ -10,7 +10,7 @@ module Dry
       failure: Dry::Matcher::Case.new(
         match: -> result, step_name = nil {
           if step_name
-            result.failure? && result.failure.step.step_name == step_name
+            result.failure? && result.failure.step.name == step_name
           else
             result.failure?
           end
