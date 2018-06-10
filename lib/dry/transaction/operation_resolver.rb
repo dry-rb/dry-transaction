@@ -5,7 +5,7 @@ module Dry
         module_exec(container) do |ops_container|
           define_method :initialize do |**kwargs|
             operation_kwargs = self.class.steps.select(&:operation_name).map { |step|
-              operation = kwargs.fetch(step.step_name) {
+              operation = kwargs.fetch(step.name) {
                 if ops_container && ops_container.key?(step.operation_name)
                   ops_container[step.operation_name]
                 else
@@ -13,7 +13,7 @@ module Dry
                 end
               }
 
-              [step.step_name, operation]
+              [step.name, operation]
             }.to_h
 
             super(**kwargs, **operation_kwargs)
