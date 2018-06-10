@@ -70,6 +70,14 @@ module Dry
         }
       end
 
+      def internal?
+        !external?
+      end
+
+      def external?
+        !!operation_name
+      end
+
       def arity
         adapter.operation.arity
       end

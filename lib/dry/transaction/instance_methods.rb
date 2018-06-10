@@ -80,12 +80,11 @@ module Dry
 
         operation.(*args, &block)
       end
-      # if step.internal? && operations[step.name]
-      #   operations[step.name]
-      # elsif methods.include?(step.name) || private_methods.include?(step.name)
 
       def resolve_operation(step, **operations)
-        if methods.include?(step.name) || private_methods.include?(step.name)
+        if step.internal? && operations[step.name]
+          operations[step.name]
+        elsif methods.include?(step.name) || private_methods.include?(step.name)
           method(step.name)
         elsif operations[step.name].nil?
           raise MissingStepError.new(step.name)
