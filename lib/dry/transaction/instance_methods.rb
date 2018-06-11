@@ -86,12 +86,12 @@ module Dry
           operations[step.name]
         elsif methods.include?(step.name) || private_methods.include?(step.name)
           method(step.name)
-        elsif operations[step.name].nil?
-          raise MissingStepError.new(step.name)
         elsif operations[step.name].respond_to?(:call)
           operations[step.name]
-        else
+        elsif operations[step.name]
           raise InvalidStepError.new(step.name)
+        else
+          raise MissingStepError.new(step.name)
         end
       end
 
