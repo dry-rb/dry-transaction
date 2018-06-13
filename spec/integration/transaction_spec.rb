@@ -18,10 +18,10 @@ RSpec.describe "Transactions" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-        map :process
-        step :verify
-        try :validate, catch: Test::NotValidError
-        tee :persist
+        map :process, with: :process
+        step :verify, with: :verify
+        try :validate, with: :validate, catch: Test::NotValidError
+        tee :persist, with: :persist
       end.new(**dependencies)
     }
     let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
@@ -92,9 +92,9 @@ RSpec.describe "Transactions" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-          map :process
+          map :process, with: :process
           step :verify_step, with: :verify
-          tee :persist
+          tee :persist, with: :persist
       end.new(**dependencies)
     }
 
@@ -177,10 +177,11 @@ RSpec.describe "Transactions" do
       {process: -> input { Failure(input)} }
     end
 
+    # FIXME: needs a better description
     it "execute the transaction and execute the injected operation" do
       result = transaction.call([:hello])
 
-      expect(result).to eq (Failure([:hello, :world]))
+      expect(result).to eq Failure([:hello])
     end
   end
 
@@ -286,9 +287,8 @@ RSpec.describe "Transactions" do
     end
   end
 
-
   context "all steps are local methods" do
-    let(:transaction) do
+    let(:transaction_class) do
       Class.new do
         include Dry::Transaction
 
@@ -307,12 +307,19 @@ RSpec.describe "Transactions" do
         def persist(input)
           Test::Container[:database] << input and true
         end
-      end.new
+      end
     end
 
     it "executes succesfully" do
-      transaction.call("name" => "Jane", "email" => "jane@doe.com")
+      transaction_class.new.call("name" => "Jane", "email" => "jane@doe.com")
       expect(database).to include([["name", "Jane"], ["email", "jane@doe.com"]])
+    end
+
+    it "allows replacement steps to be injected" do
+      verify = -> { Failure("nope") }
+
+      result = transaction_class.new(verify: verify).("name" => "Jane", "email" => "jane@doe.com")
+      expect(result).to eq Failure("nope")
     end
   end
 
@@ -320,10 +327,10 @@ RSpec.describe "Transactions" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-        map :process
-        step :verify
-        try :validate, catch: Test::NotValidError
-        tee :persist
+        map :process, with: :process
+        step :verify, with: :verify
+        try :validate, with: :validate, catch: Test::NotValidError
+        tee :persist, with: :persist
       end.new(**dependencies)
     }
     let(:input) { {"name" => "Jane"} }
@@ -498,7 +505,7 @@ RSpec.describe "Transactions" do
         let(:transaction) {
           Class.new do
             include Dry::Transaction(container: Test::ContainerRaw)
-            map :not_a_proc
+            map :not_a_proc, with: :not_a_proc
           end.new
         }
 

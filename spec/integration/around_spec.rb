@@ -29,11 +29,11 @@ RSpec.describe "around steps" do
     Class.new do
       include Dry::Transaction(container: Test::Container)
 
-      around :transaction
-      step :validate
-      step :persist_user
-      step :persist_account
-      step :finalize
+      around :transaction, with: :transaction
+      step :validate, with: :validate
+      step :persist_user, with: :persist_user
+      step :persist_account, with: :persist_account
+      step :finalize, with: :finalize
     end
   end
 

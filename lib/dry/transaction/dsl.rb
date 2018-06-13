@@ -26,7 +26,7 @@ module Dry
         module_exec(@step_adapters) do |step_adapters|
           step_adapters.each do |adapter_name, adapter|
             define_method(adapter_name) do |step_name, with: nil, **options|
-              operation_name = with || step_name
+              operation_name = with
 
               steps << Step.new(
                 adapter: adapter,
