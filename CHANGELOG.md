@@ -1,3 +1,13 @@
+# 0.13.0 / 2018-06-13
+
+## Changed
+
+- Internal step operations (steps backed by instance methods) can now be replaced via constructor arguments. Using instance methods to wrap external step operations now only works if the step is defined using the `with:` option (timriley in [#109][pr109])
+
+[Compare v0.12.1...v0.13.0](https://github.com/dry-rb/dry-transaction/compare/v0.12.0...v0.12.1)
+
+[pr109]: https://github.com/dry-rb/dry-transaction/pull/109
+
 # 0.12.1 / 2018-06-05
 
 ## Fixed
