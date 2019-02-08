@@ -2,8 +2,6 @@ module Dry
   module Transaction
     # @api private
     class Stack
-      RETURN = -> x { x }
-
       def initialize(steps)
         @stack = compile(steps)
       end
@@ -15,8 +13,12 @@ module Dry
       private
 
       def compile(steps)
-        steps.reverse.reduce(RETURN) do |next_step, step|
-          proc { |m| m.bind { |value| step.(value, next_step) } }
+        proc do |m|
+          steps.reduce([[StepAdapter::INITIAL_INPUT_KEY, m]]) do |acc, step|
+            step_inputs = step.inputs(acc)
+            prev_step_output = acc.last[1]
+            acc + [[step.name, prev_step_output.bind { step.(step_inputs.map(&:value!)) }]]
+          end.last[1]
         end
       end
     end

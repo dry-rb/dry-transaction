@@ -45,8 +45,8 @@ module Dry
         )
       end
 
-      def call(input, continue = RETURN)
-        args = [input, *call_args]
+      def call(inputs, continue = RETURN)
+        args = [*inputs, *call_args]
 
         if adapter.yields?
           with_broadcast(args) { adapter.(args, &continue) }
@@ -84,6 +84,16 @@ module Dry
 
       def operation
         adapter.operation
+      end
+
+      # @see StepAdapter#inputs
+      def inputs(previous_outputs)
+        adapter.inputs(previous_outputs)
+      end
+
+      # @see StepAdapter#inputs_arity
+      def inputs_arity
+        adapter.inputs_arity
       end
     end
   end
