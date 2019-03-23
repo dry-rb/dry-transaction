@@ -15,6 +15,10 @@ rvm:
   - 2.3.4
   - 2.4.1
   - jruby-9.1.10.0
+  - truffleruby
+matrix:
+  allow_failures:
+    - rvm: truffleruby
 env:
   global:
     - JRUBY_OPTS='--dev -J-Xmx1024M'
