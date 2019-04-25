@@ -48,4 +48,49 @@ RSpec.describe "Passing additional arguments to step operations" do
       expect { call_transaction }.to raise_error(ArgumentError)
     end
   end
+
+  context "with nested transactions" do
+    let(:transaction) {
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+
+        step :root, with: :nested
+      end.new
+    }
+
+    before do
+      module Test
+        nested_transaction = Class.new do
+          include Dry::Transaction
+
+          step :process
+
+          def process(input, *args)
+            Success args
+          end
+        end.new
+
+        Container = {
+            nested: nested_transaction
+        }
+      end
+    end
+
+    context "arguments provided" do
+      let(:step_options) { { root: ["doe.com"] } }
+
+      it "passes the arguments and calls the operations successfully" do
+        expect(call_transaction.value!).to match /doe.com/
+      end
+    end
+
+    context "arguments not provided" do
+      let(:step_options) { {} }
+
+      it "passes the arguments and calls the operations successfully" do
+        expect(call_transaction.value!).to be_empty
+      end
+    end
+  end
 end
+
