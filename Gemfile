@@ -13,3 +13,11 @@ group :tools do
   gem "pry"
   gem "rubocop"
 end
+
+group :development, :test do
+  gem "bundler"
+  gem "rake", "~> 11.2", ">= 11.2.2"
+  gem "rspec"
+  gem "simplecov"
+  gem "yard"
+end
