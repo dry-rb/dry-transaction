@@ -21,10 +21,4 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "dry-events", ">= 0.1.0"
   spec.add_runtime_dependency "dry-matcher", ">= 0.7.0"
   spec.add_runtime_dependency "dry-monads", ">= 0.4.0"
-
-  spec.add_development_dependency "bundler", "~> 1.15"
-  spec.add_development_dependency "rake", "~> 11.2", ">= 11.2.2"
-  spec.add_development_dependency "rspec", "~> 3.3"
-  spec.add_development_dependency "simplecov"
-  spec.add_development_dependency "yard"
 end
