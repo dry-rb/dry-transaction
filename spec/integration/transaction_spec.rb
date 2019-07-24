@@ -478,7 +478,7 @@ RSpec.describe "Transactions" do
         include Dry::Monads::Result::Mixin
 
         def call(name: 'John', **rest)
-          Success(name: name[0].upcase + name[1..-1], **rest)
+          Success({ name: name[0].upcase + name[1..-1], **rest })
         end
       }.new
     end
