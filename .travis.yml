@@ -7,9 +7,9 @@ after_success:
 rvm:
   - 2.2.7
   - 2.3.8
-  - 2.4.6
-  - 2.5.5
-  - 2.6.3
+  - 2.4.7
+  - 2.5.6
+  - 2.6.4
   - jruby-9.2.7.0
   - truffleruby
 matrix:
