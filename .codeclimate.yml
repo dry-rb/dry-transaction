@@ -1,35 +1,17 @@
----
-engines:
-  duplication:
-    enabled: true
-    config:
-      languages:
-      - ruby
-      - javascript
-      - python
-      - php
-  fixme:
-    enabled: true
+# this file is managed by dry-rb/devtools project
+
+version: "2"
+
+prepare:
+  fetch:
+  - url: "https://raw.githubusercontent.com/dry-rb/devtools/master/.rubocop.yml"
+    path: ".rubocop.yml"
+
+exclude_patterns:
+  - "benchmarks/"
+  - "examples/"
+  - "spec/"
+
+plugins:
   rubocop:
     enabled: true
-    checks:
-      Rubocop/Style/Alias:
-        enabled: false
-      Rubocop/Style/Documentation:
-        enabled: false
-      Rubocop/Style/TrailingCommaInArguments:
-        enabled: false
-    exclude_fingerprints:
-      - f8ef6c55d141c6e57981f4278357a46d
-      - 8a16c4dea75deac7cc41a8a209d0fe04
-ratings:
-  paths:
-  - "**.inc"
-  - "**.js"
-  - "**.jsx"
-  - "**.module"
-  - "**.php"
-  - "**.py"
-  - "**.rb"
-exclude_paths:
-- spec/

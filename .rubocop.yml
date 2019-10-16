@@ -1,46 +1,86 @@
+# this file is managed by dry-rb/devtools project
+
 AllCops:
-  Exclude:
-    - spec/**/*.rb
-Metrics/LineLength:
-  Max: 140
+  TargetRubyVersion: 2.4
+
+Style/EachWithObject:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+
 Style/Alias:
-  EnforcedStyle: prefer_alias_method
-Style/AndOr:
   Enabled: false
-Style/BlockDelimiters:
-  EnforcedStyle: semantic
-  IgnoredMethods:
-    # Defaults:
-    - lambda
-    - proc
-    - it
-    # Ours:
-    - specify
-    - match
-    - Transaction
-    - Success
-    - Failure
-Style/Documentation:
-  Enabled: false
-Style/Lambda:
-  Enabled: false
+
 Style/LambdaCall:
   Enabled: false
-Style/MultilineBlockChain:
-  Enabled: false
-Style/SignalException:
-  Enabled: false
-Style/SpaceInsideHashLiteralBraces:
-  EnforcedStyle: no_space
+
 Style/StabbyLambdaParentheses:
   Enabled: false
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
 
-# Specific exclusions
-Style/FileName:
+Style/FormatString:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Layout/SpaceInLambdaLiteral:
+  Enabled: false
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: true
+  EnforcedStyle: indented
+
+Metrics/LineLength:
+  Max: 100
+
+Metrics/MethodLength:
+  Max: 22
+
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/AbcSize:
+  Max: 20
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: true
+  Max: 10
+
+Lint/BooleanSymbol:
+  Enabled: false
+
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+Style/BlockDelimiters:
+  Enabled: false
+
+Layout/IndentFirstArrayElement:
+  EnforcedStyle: consistent
+
+Style/ClassAndModuleChildren:
   Exclude:
-    - lib/dry-transaction.rb
-Style/MethodName:
+    - "spec/**/*_spec.rb"
+
+Lint/HandleExceptions:
   Exclude:
-    - lib/dry-transaction.rb
+    - "spec/spec_helper.rb"
+
+Naming/FileName:
+  Exclude:
+    - "lib/dry-*.rb"
+
+Style/SymbolArray:
+  Exclude:
+    - "spec/**/*_spec.rb"
+
+Style/ConditionalAssignment:
+  Enabled: false
+
+Naming/MethodName:
+  Enabled: false
