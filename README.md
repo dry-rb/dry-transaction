@@ -1,6 +1,7 @@
 [gitter]: https://gitter.im/dry-rb/chat
+
 [gem]: https://img.shields.io/gem/v/dry-transaction.svg]
-[travis]: https://travis-ci.org/dry-rb/dry-transaction
+[ci]: https://github.com/dry-rb/dry-transaction/actions?query=workflow%3Aci
 [codeclimate]: https://codeclimate.com/github/dry-rb/dry-transaction
 [coveralls]: https://coveralls.io/r/dry-rb/dry-transaction
 [inchpages]: http://inch-ci.org/github/dry-rb/dry-transaction
@@ -8,7 +9,7 @@
 # dry-transaction [![Join the chat at https://gitter.im/dry-rb/chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dry-rb/chat)
 
 [![Gem Version](https://badge.fury.io/rb/dry-transaction.svg)][gem]
-[![Build Status](https://travis-ci.org/dry-rb/dry-transaction.svg?branch=master)][travis]
+[![Build Status](https://github.com/dry-rb/dry-transaction/workflows/ci/badge.svg)][ci]
 [![Code Climate](https://codeclimate.com/github/dry-rb/dry-transaction/badges/gpa.svg)][codeclimate]
 [![Test Coverage](https://codeclimate.com/github/dry-rb/dry-transaction/badges/coverage.svg)][codeclimate]
 [![Inline docs](http://inch-ci.org/github/dry-rb/dry-transaction.svg?branch=master)][inchpages]
@@ -37,8 +38,8 @@ $ gem install dry-transaction
 
 ## Links
 
-* [Documentation](http://dry-rb.org/gems/dry-transaction)
-* [API documentation](http://www.rubydoc.info/github/dry-rb/dry-transaction)
+- [Documentation](http://dry-rb.org/gems/dry-transaction)
+- [API documentation](http://www.rubydoc.info/github/dry-rb/dry-transaction)
 
 ## Development
 
