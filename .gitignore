@@ -4,3 +4,4 @@ Gemfile.lock
 /coverage
 /spec/examples.txt
 /pkg
+tmp/
