@@ -1,3 +1,4 @@
 ---
 BUNDLE_RETRY: "3"
 BUNDLE_JOBS: "4"
+BUNDLE_WITHOUT: "test:benchmarks:docs"
