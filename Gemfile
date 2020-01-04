@@ -1,24 +1,21 @@
 source "https://rubygems.org"
 
+eval_gemfile 'Gemfile.devtools'
+
 gemspec
 
 group :test do
-  gem "simplecov"
-  gem "codeclimate-test-reporter"
   gem "pry-byebug", platform: :mri
   gem "dry-container"
 end
 
 group :tools do
   gem "pry"
-  gem "rubocop"
-  gem 'ossy', git: 'https://github.com/solnic/ossy.git', branch: 'master'
 end
 
 group :development, :test do
   gem "bundler"
   gem "rake", "~> 11.2", ">= 11.2.2"
   gem "rspec"
-  gem "simplecov"
   gem "yard"
 end
