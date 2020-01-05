@@ -34,6 +34,8 @@ jobs:
         uses: eregon/use-ruby-action@master
         with:
           ruby-version: ${{matrix.ruby}}
+      - name: Install latest bundler
+        run: gem install bundler
       - name: Bundle install
         run: bundle install --jobs 4 --retry 3 --without tools docs benchmarks
       - name: Run all tests
