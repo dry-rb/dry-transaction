@@ -7,7 +7,7 @@ RSpec.describe "Transactions" do
 
   before do
     container.instance_exec do
-      register :process,  -> input { {name: input["name"], email: input["email"]} }
+      register :process,  -> input { { name: input["name"], email: input["email"] } }
       register :verify,   -> input { Success(input) }
       register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       register :persist,  -> input { self[:database] << input and true }
@@ -24,7 +24,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
       end.new(**dependencies)
     }
-    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
 
     it "calls the operations" do
       transaction.call(input)
@@ -55,7 +55,7 @@ RSpec.describe "Transactions" do
           results << "success for #{value[:email]}"
         end
 
-        m.failure { }
+        m.failure {}
       end
 
       expect(results.first).to eq "success for jane@doe.com"
@@ -66,7 +66,7 @@ RSpec.describe "Transactions" do
     before do
       class Test::ContainerNames
         extend Dry::Container::Mixin
-        register :process_step,  -> input { {name: input["name"], email: input["email"]} }
+        register :process_step,  -> input { { name: input["name"], email: input["email"] } }
         register :verify_step,   -> input { Dry::Monads::Success(input) }
         register :persist_step,  -> input { Test::DB << input and true }
       end
@@ -92,14 +92,14 @@ RSpec.describe "Transactions" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-          map :process, with: :process
-          step :verify_step, with: :verify
-          tee :persist, with: :persist
+        map :process, with: :process
+        step :verify_step, with: :verify
+        tee :persist, with: :persist
       end.new(**dependencies)
     }
 
     let(:dependencies) {
-      {verify_step: -> input { Success(input.merge(foo: :bar)) }}
+      { verify_step: -> input { Success(input.merge(foo: :bar)) } }
     }
 
     it "calls injected operations" do
@@ -174,7 +174,7 @@ RSpec.describe "Transactions" do
     end
 
     let(:dependencies) do
-      {process: -> input { Failure(input)} }
+      { process: -> input { Failure(input) } }
     end
 
     # FIXME: needs a better description
@@ -194,20 +194,19 @@ RSpec.describe "Transactions" do
         step :verify
         try :validate, catch: Test::NotValidError
         tee :persist
-
       end.new(**dependencies)
     end
 
     let(:dependencies) do
       {
-        process:  -> input { {name: input["name"], email: input["email"]} },
-        verify:  -> input { Success(input) },
+        process: -> input { { name: input["name"], email: input["email"] } },
+        verify: -> input { Success(input) },
         validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
-        persist:  -> input { database << input and true }
+        persist: -> input { database << input and true }
       }
     end
 
-    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
 
     it "calls the injected operations" do
       transaction.call(input)
@@ -224,19 +223,18 @@ RSpec.describe "Transactions" do
         step :verify
         try :validate, catch: Test::NotValidError
         tee :persist
-
       end.new(**dependencies)
     end
 
     let(:dependencies) do
       {
-        process:  -> input { {name: input["name"], email: input["email"]} },
-        verify:  -> input { Success(input) },
+        process: -> input { { name: input["name"], email: input["email"] } },
+        verify: -> input { Success(input) },
         validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       }
     end
 
-    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
 
     it "raises an exception" do
       expect { transaction }.to raise_error(Dry::Transaction::MissingStepError)
@@ -333,7 +331,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
       end.new(**dependencies)
     }
-    let(:input) { {"name" => "Jane"} }
+    let(:input) { { "name" => "Jane" } }
 
     it "does not run subsequent operations" do
       transaction.call(input)
@@ -352,7 +350,7 @@ RSpec.describe "Transactions" do
       results = []
 
       transaction.call(input) do |m|
-        m.success { }
+        m.success {}
 
         m.failure do |value|
           results << "Failed: #{value}"
@@ -366,7 +364,7 @@ RSpec.describe "Transactions" do
       results = []
 
       transaction.call(input) do |m|
-        m.success { }
+        m.success {}
 
         m.failure :validate do |value|
           results << "Validation failure: #{value}"
@@ -380,7 +378,7 @@ RSpec.describe "Transactions" do
       results = []
 
       transaction.call(input) do |m|
-        m.success { }
+        m.success {}
 
         m.failure :some_other_step do |value|
           results << "Some other step failure"
@@ -396,13 +394,13 @@ RSpec.describe "Transactions" do
   end
 
   context "failed in a raw step" do
-    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
 
     before do
       class Test::ContainerRaw
         extend Dry::Container::Mixin
         extend Dry::Monads::Result::Mixin
-        register :process_step,  -> input { {name: input["name"], email: input["email"]} }
+        register :process_step,  -> input { { name: input["name"], email: input["email"] } }
         register :verify_step,   -> input { Failure("raw failure") }
         register :persist_step,  -> input { self[:database] << input and true }
       end
@@ -445,7 +443,7 @@ RSpec.describe "Transactions" do
   end
 
   context "non-confirming raw step result" do
-    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
 
     let(:transaction) {
       Class.new do
@@ -459,7 +457,7 @@ RSpec.describe "Transactions" do
     before do
       class Test::ContainerRaw
         extend Dry::Container::Mixin
-        register :process,  -> input { {name: input["name"], email: input["email"]} }
+        register :process,  -> input { { name: input["name"], email: input["email"] } }
         register :verify,   -> input { "failure" }
         register :persist,  -> input { Test::DB << input and true }
       end
@@ -488,7 +486,6 @@ RSpec.describe "Transactions" do
         include Dry::Transaction
 
         step :camelize
-
       }.new(camelize: upcaser)
     end
 
@@ -552,7 +549,6 @@ RSpec.describe "Transactions" do
             include Dry::Transaction(container: Test::ContainerRaw)
             map :noop
             map :i_am_missing
-
           end.new
         }
 

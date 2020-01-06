@@ -3,14 +3,14 @@ RSpec.describe "Transactions steps without arguments" do
 
   before do
     Test::NotValidError = Class.new(StandardError)
-    Test::DB = [{"name" => "Jane", "email" => "jane@doe.com"}]
+    Test::DB = [{ "name" => "Jane", "email" => "jane@doe.com" }]
     Test::Http = Class.new do
       def self.get
         "pong"
       end
 
       def self.post(value)
-        Test::DB <<  value
+        Test::DB << value
       end
     end
     class Test::Container
@@ -28,10 +28,10 @@ RSpec.describe "Transactions steps without arguments" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-          map :fetch_data, with: :fetch_data
-          map :process, with: :process
-          try :validate, with: :validate, catch: Test::NotValidError
-          tee :persist, with: :persist
+        map :fetch_data, with: :fetch_data
+        map :process, with: :process
+        try :validate, with: :validate, catch: Test::NotValidError
+        tee :persist, with: :persist
       end.new(**dependencies)
     }
 
@@ -56,7 +56,7 @@ RSpec.describe "Transactions steps without arguments" do
           results << "success for #{value[:email]}"
         end
 
-        m.failure { }
+        m.failure {}
       end
 
       expect(results.first).to eq "success for jane@doe.com"
@@ -67,11 +67,11 @@ RSpec.describe "Transactions steps without arguments" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-          tee :call_outside, with: :call_outside
-          map :fetch_data, with: :fetch_data
-          map :process, with: :process
-          try :validate, with: :validate, catch: Test::NotValidError
-          tee :external_store, with: :external_store
+        tee :call_outside, with: :call_outside
+        map :fetch_data, with: :fetch_data
+        map :process, with: :process
+        try :validate, with: :validate, catch: Test::NotValidError
+        tee :external_store, with: :external_store
       end.new(**dependencies)
     }
 
@@ -85,13 +85,13 @@ RSpec.describe "Transactions steps without arguments" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
-          map :process, with: :process
-          try :validate, with: :validate, catch: Test::NotValidError
-          tee :call_outside, with: :call_outside
-          tee :external_store, with: :external_store
+        map :process, with: :process
+        try :validate, with: :validate, catch: Test::NotValidError
+        tee :call_outside, with: :call_outside
+        tee :external_store, with: :external_store
       end.new(**dependencies)
     }
-    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
+    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
 
     it "calls the operations" do
       transaction.call(input)

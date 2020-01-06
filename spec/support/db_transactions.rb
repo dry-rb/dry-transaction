@@ -35,6 +35,7 @@ RSpec.shared_context "db transactions" do
         Test::DB.transaction do
           result = block.(Success(input))
           raise Test::Rollback if result.failure?
+
           result
         end
       rescue Test::Rollback

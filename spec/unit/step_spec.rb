@@ -27,9 +27,11 @@ RSpec.describe Dry::Transaction::Step do
         def on_step(event)
           started << event[:step_name]
         end
+
         def on_step_succeeded(event)
           success << "succeded_#{event[:step_name]}"
         end
+
         def on_step_failed(event)
           failed << "failed_#{event[:step_name]}"
         end
@@ -97,7 +99,7 @@ RSpec.describe Dry::Transaction::Step do
 
     context "with operation argument" do
       it "returns new instance with only operation changed" do
-        new_operation = proc { |a,b| a * b }
+        new_operation = proc { |a, b| a * b }
         new_step = step.with(operation: new_operation)
         expect(new_step).to_not eq step
         expect(new_step.operation_name).to eq step.operation_name

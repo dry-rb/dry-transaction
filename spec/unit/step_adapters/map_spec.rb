@@ -1,5 +1,4 @@
 RSpec.describe Dry::Transaction::StepAdapters::Map, :adapter do
-
   subject { described_class.new }
 
   let(:options) { {} }

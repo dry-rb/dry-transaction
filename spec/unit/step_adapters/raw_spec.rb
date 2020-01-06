@@ -1,13 +1,10 @@
 RSpec.describe Dry::Transaction::StepAdapters::Raw, adapter: true do
-
   subject { described_class.new }
 
   let(:options) { { step_name: "unit" } }
 
   describe "#call" do
-
     context "when the result of the operation is NOT a Dry::Monads::Result" do
-
       let(:operation) {
         -> (input) { input.upcase }
       }
@@ -16,14 +13,13 @@ RSpec.describe Dry::Transaction::StepAdapters::Raw, adapter: true do
         expect {
           subject.(operation, options, "input")
         }.to raise_error(
-               Dry::Transaction::InvalidResultError,
-               "step +unit+ must return a Result object"
-             )
+          Dry::Transaction::InvalidResultError,
+          "step +unit+ must return a Result object"
+        )
       end
     end
 
     context "when the result of the operation is a Success value" do
-
       let(:operation) {
         -> (input) { Success(input.upcase) }
       }

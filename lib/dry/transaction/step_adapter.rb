@@ -28,9 +28,9 @@ module Dry
 
         @options = options
 
-        @yields = @adapter.
-                    parameters.
-                    any? { |type, _| type == :block }
+        @yields = @adapter
+          .parameters
+          .any? { |type, _| type == :block }
       end
 
       def yields?

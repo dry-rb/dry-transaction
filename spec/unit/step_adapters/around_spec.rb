@@ -21,9 +21,9 @@ RSpec.describe Dry::Transaction::StepAdapters::Around, :adapter do
         expect {
           subject.(operation, options, ["input"], &continue)
         }.to raise_error(
-               Dry::Transaction::InvalidResultError,
-               "step +unit+ must return a Result object"
-             )
+          Dry::Transaction::InvalidResultError,
+          "step +unit+ must return a Result object"
+        )
       end
     end
 

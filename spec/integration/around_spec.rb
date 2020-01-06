@@ -18,7 +18,7 @@ RSpec.describe "around steps" do
         Success(other)
       end
 
-      register :persist_account do |account: |
+      register :persist_account do |account:|
         self[:database] << [:account, account]
         Success(true)
       end
@@ -86,7 +86,7 @@ RSpec.describe "around steps" do
   end
 
   it "supports matching on nested failures" do
-    invalid_input = input.merge(account: {balance: -10})
+    invalid_input = input.merge(account: { balance: -10 })
 
     failed_input = nil
 

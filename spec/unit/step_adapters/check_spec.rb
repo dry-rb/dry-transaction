@@ -1,5 +1,4 @@
 RSpec.describe Dry::Transaction::StepAdapters::Check, :adapter do
-
   subject { described_class.new }
 
   let(:operation) {
@@ -9,7 +8,6 @@ RSpec.describe Dry::Transaction::StepAdapters::Check, :adapter do
   let(:options) { { step_name: "unit" } }
 
   describe "#call" do
-
     it "returns the result of the operation as output" do
       expect(subject.(operation, options, ["right"])).to eql(Success("right"))
     end

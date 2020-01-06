@@ -6,7 +6,6 @@ begin
   require "pry"
   require "pry-byebug"
 rescue LoadError; end
-
 require "dry-transaction"
 require "dry-matcher"
 require "dry-monads"
