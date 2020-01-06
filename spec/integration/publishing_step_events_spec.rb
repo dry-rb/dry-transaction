@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "publishing step events" do
   let(:container) {
     Class.new do

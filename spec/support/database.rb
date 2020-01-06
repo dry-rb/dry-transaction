@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_context "database" do
   include_context "container"
 

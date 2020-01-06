@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Transactions" do
   include_context "database"
 

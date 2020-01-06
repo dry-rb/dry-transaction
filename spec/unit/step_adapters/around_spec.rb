@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::Transaction::StepAdapters::Around, :adapter do
   subject { described_class.new }
 

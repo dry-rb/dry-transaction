@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Passing additional arguments to step operations" do
   let(:call_transaction) { transaction.with_step_args(step_options).call(input) }
 

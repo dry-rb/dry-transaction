@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "around steps" do
   include_context "db transactions"
 

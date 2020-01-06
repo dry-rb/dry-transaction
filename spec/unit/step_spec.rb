@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Dry::Transaction::Step do
   let(:step_adapter) { ->(step, input, *args) { step.operation.call(input, *args) } }
   let(:step_name) { :test }

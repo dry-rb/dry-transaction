@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe "Transactions steps without arguments" do
   let(:dependencies) { {} }
 

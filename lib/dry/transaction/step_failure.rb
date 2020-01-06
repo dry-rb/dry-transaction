@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dry
   module Transaction
     # A wrapper for storing together the step that failed

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Test
   def self.remove_constants
     constants.each(&method(:remove_const))

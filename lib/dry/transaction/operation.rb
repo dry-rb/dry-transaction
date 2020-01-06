@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "dry/monads/result"
 require "dry/matcher"
 require "dry/matcher/result_matcher"
