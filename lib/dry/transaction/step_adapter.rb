@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/transaction/callable"
+require 'dry/transaction/callable'
 
 module Dry
   module Transaction

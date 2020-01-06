@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/transaction/operation"
+require 'dry/transaction/operation'
 
 RSpec.describe Dry::Transaction::Operation do
   subject(:operation) {
@@ -13,12 +13,12 @@ RSpec.describe Dry::Transaction::Operation do
     end.new
   }
 
-  it "mixes in the Result monad constructors" do
-    expect(operation.("hello")).to be_success
+  it 'mixes in the Result monad constructors' do
+    expect(operation.('hello')).to be_success
   end
 
-  it "supports pattern matching when called with a block" do
-    result = operation.("hello") do |m|
+  it 'supports pattern matching when called with a block' do
+    result = operation.('hello') do |m|
       m.success do |v|
         "Success: #{v}"
       end
@@ -27,6 +27,6 @@ RSpec.describe Dry::Transaction::Operation do
       end
     end
 
-    expect(result).to eq "Success: hello"
+    expect(result).to eq 'Success: hello'
   end
 end

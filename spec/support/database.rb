@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.shared_context "database" do
-  include_context "container"
+RSpec.shared_context 'database' do
+  include_context 'container'
 
   before do
     Test::NotValidError = Class.new(StandardError)

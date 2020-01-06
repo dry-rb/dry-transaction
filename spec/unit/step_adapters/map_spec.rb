@@ -9,8 +9,8 @@ RSpec.describe Dry::Transaction::StepAdapters::Map, :adapter do
     -> (input) { input.upcase }
   }
 
-  describe "#call" do
-    it "return a Success value" do
+  describe '#call' do
+    it 'return a Success value' do
       expect(subject.(operation, options, 'input')).to eql(Success('INPUT'))
     end
   end

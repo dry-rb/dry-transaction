@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "dry/monads/result"
-require "dry/transaction/result_matcher"
-require "dry/transaction/stack"
+require 'dry/monads/result'
+require 'dry/transaction/result_matcher'
+require 'dry/transaction/stack'
 
 module Dry
   module Transaction

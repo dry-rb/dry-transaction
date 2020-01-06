@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry-container"
+require 'dry-container'
 
 module Dry
   module Transaction
@@ -10,9 +10,9 @@ module Dry
   end
 end
 
-require "dry/transaction/step_adapters/check"
-require "dry/transaction/step_adapters/map"
-require "dry/transaction/step_adapters/raw"
-require "dry/transaction/step_adapters/tee"
-require "dry/transaction/step_adapters/try"
-require "dry/transaction/step_adapters/around"
+require 'dry/transaction/step_adapters/check'
+require 'dry/transaction/step_adapters/map'
+require 'dry/transaction/step_adapters/raw'
+require 'dry/transaction/step_adapters/tee'
+require 'dry/transaction/step_adapters/try'
+require 'dry/transaction/step_adapters/around'

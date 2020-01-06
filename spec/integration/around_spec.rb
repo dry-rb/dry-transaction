@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.describe "around steps" do
-  include_context "db transactions"
+RSpec.describe 'around steps' do
+  include_context 'db transactions'
 
   include Dry::Monads::Result::Mixin
 
@@ -39,9 +39,9 @@ RSpec.describe "around steps" do
     end
   end
 
-  let(:input) { { user: { name: "Jane" }, account: { balance: 0 } } }
+  let(:input) { { user: { name: 'Jane' }, account: { balance: 0 } } }
 
-  it "starts a transaction" do
+  it 'starts a transaction' do
     called = false
 
     finalize = -> x do
@@ -55,17 +55,17 @@ RSpec.describe "around steps" do
     expect(result).to eql(Success(true))
   end
 
-  it "commits transactions" do
+  it 'commits transactions' do
     transaction.new(finalize: -> x { Success(x) }).call(input)
 
     expect(database).to be_committed
     expect(database).not_to be_rolled_back
     expect(database).not_to be_in_transaction
-    expect(database).to eql([[:user, name: "Jane"],
+    expect(database).to eql([[:user, name: 'Jane'],
                              [:account, balance: 0]])
   end
 
-  it "rolls back transactions on failure" do
+  it 'rolls back transactions on failure' do
     transaction.new(finalize: -> x { Failure(x) }).call(input)
 
     expect(database).to be_rolled_back
@@ -74,7 +74,7 @@ RSpec.describe "around steps" do
     expect(database).to be_empty
   end
 
-  it "rolls back transaction on exception" do
+  it 'rolls back transaction on exception' do
     uncaught = Class.new(StandardError)
 
     expect {
@@ -87,7 +87,7 @@ RSpec.describe "around steps" do
     expect(database).to be_empty
   end
 
-  it "supports matching on nested failures" do
+  it 'supports matching on nested failures' do
     invalid_input = input.merge(account: { balance: -10 })
 
     failed_input = nil
@@ -100,7 +100,7 @@ RSpec.describe "around steps" do
     expect(failed_input).to eq invalid_input
   end
 
-  describe "subscribing to events" do
+  describe 'subscribing to events' do
     let(:subscriber) {
       Class.new do
         attr_reader :user_persisted
@@ -111,7 +111,7 @@ RSpec.describe "around steps" do
       end.new
     }
 
-    it "supports subscribing to events from nested steps" do
+    it 'supports subscribing to events from nested steps' do
       trans = transaction.new(finalize: -> x { Success(x) })
       trans.subscribe(subscriber)
       trans.call(input)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/transaction/errors"
+require 'dry/transaction/errors'
 
 module Dry
   module Transaction

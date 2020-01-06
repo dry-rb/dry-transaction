@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "dry/transaction/step"
-require "dry/transaction/dsl"
-require "dry/transaction/instance_methods"
-require "dry/transaction/operation_resolver"
+require 'dry/transaction/step'
+require 'dry/transaction/dsl'
+require 'dry/transaction/instance_methods'
+require 'dry/transaction/operation_resolver'
 
 module Dry
   module Transaction

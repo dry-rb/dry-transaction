@@ -15,7 +15,7 @@ RSpec.describe Dry::Transaction::Step do
     )
   }
 
-  describe "#call" do
+  describe '#call' do
     let(:listener) do
       Class.new do
         attr_reader :started, :success, :failed
@@ -40,15 +40,15 @@ RSpec.describe Dry::Transaction::Step do
       end.new
     end
 
-    let(:input) { "input" }
+    let(:input) { 'input' }
     subject { step.call(input) }
 
-    context "when operation succeeds" do
+    context 'when operation succeeds' do
       let(:operation) { proc { |input| Dry::Monads.Success(input) } }
 
       it { is_expected.to be_success }
 
-      it "publishes step_succeeded" do
+      it 'publishes step_succeeded' do
         expect(listener).to receive(:on_step_succeeded).and_call_original
         step.subscribe(listener)
         subject
@@ -57,10 +57,10 @@ RSpec.describe Dry::Transaction::Step do
       end
     end
 
-    context "when operation starts" do
+    context 'when operation starts' do
       let(:operation) { proc { |input| Dry::Monads.Success(input) } }
 
-      it "publishes step" do
+      it 'publishes step' do
         expect(listener).to receive(:on_step).and_call_original
         step.subscribe(listener)
         subject
@@ -69,19 +69,19 @@ RSpec.describe Dry::Transaction::Step do
       end
     end
 
-    context "when operation fails" do
-      let(:operation) { proc { |input| Dry::Monads.Failure("error") } }
+    context 'when operation fails' do
+      let(:operation) { proc { |input| Dry::Monads.Failure('error') } }
 
       it { is_expected.to be_failure }
 
-      it "wraps value in StepFailure" do
+      it 'wraps value in StepFailure' do
         aggregate_failures do
           expect(subject.failure).to be_a Dry::Transaction::StepFailure
-          expect(subject.failure.value).to eq "error"
+          expect(subject.failure.value).to eq 'error'
         end
       end
 
-      it "publishes step_failed" do
+      it 'publishes step_failed' do
         expect(listener).to receive(:on_step_failed).and_call_original
         step.subscribe(listener)
         subject
@@ -91,16 +91,16 @@ RSpec.describe Dry::Transaction::Step do
     end
   end
 
-  describe "#with" do
+  describe '#with' do
     let(:operation) { proc { |a, b| a + b } }
-    context "without arguments" do
-      it "returns itself" do
+    context 'without arguments' do
+      it 'returns itself' do
         expect(step.with).to eq step
       end
     end
 
-    context "with operation argument" do
-      it "returns new instance with only operation changed" do
+    context 'with operation argument' do
+      it 'returns new instance with only operation changed' do
         new_operation = proc { |a, b| a * b }
         new_step = step.with(operation: new_operation)
         expect(new_step).to_not eq step
@@ -109,9 +109,9 @@ RSpec.describe Dry::Transaction::Step do
       end
     end
 
-    context "with call_args argument" do
+    context 'with call_args argument' do
       let(:call_args) { [12] }
-      it "returns new instance with only call_args changed" do
+      it 'returns new instance with only call_args changed' do
         new_step = step.with(call_args: call_args)
         expect(new_step).to_not eq step
         expect(new_step.operation_name).to eq step.operation_name
@@ -120,15 +120,15 @@ RSpec.describe Dry::Transaction::Step do
     end
   end
 
-  describe "#arity" do
+  describe '#arity' do
     subject { step.arity }
 
-    context "when operation is a proc" do
+    context 'when operation is a proc' do
       let(:operation) { proc { |a, b| a + b } }
       it { is_expected.to eq 2 }
     end
 
-    context "when operation is an object with call method" do
+    context 'when operation is an object with call method' do
       let(:operation) do
         Class.new do
           def call(a, b, c)
