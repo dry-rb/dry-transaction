@@ -1,2 +1,11 @@
 name: dry-transaction
 codacy_id: f2c8f3f2e96a477faee00109cfb2090d
+gemspec:
+  authors: ["Tim Riley"]
+  email: ["tim@icelab.com.au"]
+  summary: "Business Transaction Flow DSL"
+  runtime_dependencies:
+    - [dry-container, ">= 0.2.8"]
+    - [dry-events, ">= 0.1.0"]
+    - [dry-matcher, ">= 0.7.0"]
+    - [dry-monads, ">= 0.4.0"]
