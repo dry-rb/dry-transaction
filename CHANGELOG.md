@@ -4,6 +4,8 @@
 ### Changed
 
 - Internal step operations (steps backed by instance methods) can now be replaced via constructor arguments. Using instance methods to wrap external step operations now only works if the step is defined using the `with:` option (timriley in [#109][pr109])
+[Compare v0.12.1...v0.13.0](https://github.com/dry-rb/dry-transaction/compare/v0.12.1...v0.13.0)
+
 ## 0.12.1 2018-06-05
 
 
@@ -11,24 +13,32 @@
 
 - Support result matching on step failures nested within around steps (flash-gordon in [#106][pr106])
 
+[Compare v0.12.0...v0.12.1](https://github.com/dry-rb/dry-transaction/compare/v0.12.0...v0.12.1)
+
 ## 0.12.0 2018-05-16
 
 
 ### Changed
 
 - Switch to `Dry::Monads::Result` API (away from `Either` API deprecated in dry-monads 1.0 betas) (Morozzzko in [#104][pr104])
+[Compare v0.11.2...v0.12.0](https://github.com/dry-rb/dry-transaction/compare/v0.11.2...v0.12.0)
+
 ## 0.11.2 2018-05-15
 
 
 ### Changed
 
 - Use `Dry::Monads::Result` instead of the deprecated `Dry::Monads::Either` in the `check` step adapter (PavelTkachenko in [#103][pr103])
+[Compare v0.11.1...v0.11.2](https://github.com/dry-rb/dry-transaction/compare/v0.11.1...v0.11.2)
+
 ## 0.11.1 2018-03-15
 
 
 ### Added
 
 - Include `operation_name:` in options passed to step adapters. This is helpful for 3rd party step adapters that need the operation's name to fetch it from the container again later. (timriley in [#94][pr94])
+
+[Compare v0.11.0...v0.11.1](https://github.com/dry-rb/dry-transaction/compare/v0.11.0...v0.11.1)
 
 ## 0.11.0 2018-02-19
 
@@ -53,6 +63,8 @@
 - [BREAKING] The step adapter API has been changed in order to support around steps, although, the changes are not significant. Previously, an adapter received a `step` and a list of arguments for calling the operation. The list was passed as `*args` then you were needed to call `call_operation` on `step` and provide the list. From now on an adapter gets an `operation`, its `options`, and `args` (_without_ `*`). `operation` is an ordinary callable object so a typical call is as simple as `operation.(*args)`, that's it. If you want to turn your adapter into an around-like one you need to add `&block` parameter to the list of `call` arguments (e.g. `def call(operation, options, args, &block)`). `block` is responsible for calling the subsequent steps thus you can check or transform the return value and make some decisions based on it. Note capturing the block in the list of arguments is mandatory, a simple `yield` won't work, there are reasons, believe us. Check out the sources of [`around.rb`](https://github.com/dry-rb/dry-transaction/blob/master/lib/dry/transaction/step_adapters/around.rb) for reference, it's dead simple (flash-gordon in [#85][pr85])
 - Usages of the `Either` monad was updated with `Result` and its constructors. See [the changes](https://github.com/dry-rb/dry-monads/blob/master/CHANGELOG.md#v040-2017-11-11) in `dry-monads` for more details (flash-gordon in [#81][pr81])
 - Minimal Ruby version is 2.2 (flash-gordon in [#72][pr72])
+[Compare v0.10.2...v0.11.0](https://github.com/dry-rb/dry-transaction/compare/v0.10.2...v0.11.0)
+
 ## 0.10.2 2017-07-10
 
 
@@ -60,12 +72,16 @@
 
 - Only resolve an operation object from the container if the container reports that the key is present. This prevents exceptions from being raised when using dry-container and defining a transaction that includes steps both container-based and local method steps (jonolsson in [#64][pr64])
 
+[Compare v0.10.1...v0.10.2](https://github.com/dry-rb/dry-transaction/compare/v0.10.1...v0.10.2)
+
 ## 0.10.1 2017-06-30
 
 
 ### Fixed
 
 - Preserve step notification listeners when calling a transaction after passing extra step arguments (jcmfernandes in [#65](https://github.com/dry-rb/dry-transaction/pull/65))
+
+[Compare v0.10.0...v0.10.1](https://github.com/dry-rb/dry-transaction/compare/v0.10.0...v0.10.1)
 
 ## 0.10.0 2017-06-15
 
@@ -160,6 +176,8 @@ This release makes major changes to the dry-transaction API: transactions are no
 - [BREAKING] You can no longer extend existing transactions with `#prepend`, `#append`, `#insert`, or `#remove`. Since transactions will now be instances of your own classes, with their own different behaviors, there’s no predictable way to combine the behaviors of two different classes. If you need the ability to add or remove steps, you can create separate transactions for the different behaviours you need to offer, or build into your own transaction class a way to skip steps based on input or step arguments.
 - [BREAKING] Blocks in step definitions are no longer accepted. If you want to wrap a step with some local behavior, wrap it with an instance method (see above).
 - [BREAKING] There is no longer an option for configuring the result matcher block API - we now use `Dry::Transaction::ResultMatcher` by default. If you want to provide your own matcher, you can do this by overriding `#call` in your transaction classes and using your own matcher when a block is given.
+[Compare v0.9.0...v0.10.0](https://github.com/dry-rb/dry-transaction/compare/v0.9.0...v0.10.0)
+
 ## 0.9.0 2016-12-19
 
 
@@ -190,6 +208,8 @@ This release makes major changes to the dry-transaction API: transactions are no
 - Whole step object is passed to `StepFailure` upon failure, which provides more information to custom matchers (mrbongiolo in [#35](https://github.com/dry-rb/dry-transaction/pull/35))
 - `#call` argument order for step operations is now `#call(input, *args)`, not `#call(*args, input)` (timriley in [#48](https://github.com/dry-rb/dry-transaction/pull/48))
 - `Dry::Transaction::Sequence` renamed to `Dry::Transaction` (timriley in [#49](https://github.com/dry-rb/dry-transaction/pull/49))
+[Compare v0.8.0...v0.9.0](https://github.com/dry-rb/dry-transaction/compare/v0.8.0...v0.9.0)
+
 ## 0.8.0 2016-07-06
 
 
@@ -201,6 +221,8 @@ This release makes major changes to the dry-transaction API: transactions are no
 
 - Match block API is now provided by `dry-matcher` gem (timriley)
 - Matching behaviour is clearer: match cases are run in order, the first match case “wins” and is executed, and all subsequent cases are ignored. This ensures a single, deterministic return value from the match block - the output of the single “winning” match case. (timriley)
+[Compare v0.7.0...v0.8.0](https://github.com/dry-rb/dry-transaction/compare/v0.7.0...v0.8.0)
+
 ## 0.7.0 2016-06-06
 
 
@@ -216,6 +238,8 @@ This release makes major changes to the dry-transaction API: transactions are no
 ### Changed
 
 - Use dry-monads (e.g. `Dry::Monads::Either::Right`) instead of kleisli (`Kleisli::Either::Right`) (flash-gordon)
+[Compare v0.6.0...v0.7.0](https://github.com/dry-rb/dry-transaction/compare/v0.6.0...v0.7.0)
+
 ## 0.6.0 2016-04-06
 
 
@@ -226,23 +250,37 @@ This release makes major changes to the dry-transaction API: transactions are no
 - ## Internal
 - Change the step adapter API so more step-related information remains available at the time of the step being called (timriley)
 
+[Compare v0.5.0...v0.6.0](https://github.com/dry-rb/dry-transaction/compare/v0.5.0...v0.6.0)
+
 ## 0.5.0 2016-03-16
 
+
+[Compare v0.4.0...v0.5.0](https://github.com/dry-rb/dry-transaction/compare/v0.4.0...v0.5.0)
 
 ## 0.4.0 2015-12-26
 
 
+[Compare v0.3.2...v0.4.0](https://github.com/dry-rb/dry-transaction/compare/v0.3.2...v0.4.0)
+
 ## 0.3.2 2015-11-13
 
+
+[Compare v0.3.1...v0.3.2](https://github.com/dry-rb/dry-transaction/compare/v0.3.1...v0.3.2)
 
 ## 0.3.1 2015-11-12
 
 
+[Compare v0.3.0...v0.3.1](https://github.com/dry-rb/dry-transaction/compare/v0.3.0...v0.3.1)
+
 ## 0.3.0 2015-11-11
 
 
+[Compare v0.2.0...v0.3.0](https://github.com/dry-rb/dry-transaction/compare/v0.2.0...v0.3.0)
+
 ## 0.2.0 2015-11-02
 
+
+[Compare v0.1.0...v0.2.0](https://github.com/dry-rb/dry-transaction/compare/v0.1.0...v0.2.0)
 
 ## 0.1.0 2015-10-28
 
