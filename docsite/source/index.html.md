@@ -16,7 +16,7 @@ sections:
 ---
 
 ^WARNING
-After dry-transaction 1.0.0 release its active development [will be discontinued](https://github.com/dry-rb/dry-transaction/issues/127) in favor of dry-monads and its `Do` notation feature.
+Please see [this discussion](https://github.com/dry-rb/dry-transaction/issues/127) about the future of dry-transaction
 ^
 
 dry-transaction is a business transaction DSL. It provides a simple way to define a complex business transaction that includes processing over many steps and by many different objects. It makes error handling a primary concern by taking a “[Railway Oriented Programming](http://fsharpforfunandprofit.com/rop/)” approach to capturing and returning errors from any step in the transaction.
