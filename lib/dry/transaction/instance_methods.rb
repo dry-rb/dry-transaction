@@ -16,7 +16,7 @@ module Dry
 
       def initialize(steps: (self.class.steps), listeners: nil, **operations)
         @steps = steps.map { |step|
-          operation = resolve_operation(step, operations)
+          operation = resolve_operation(step, **operations)
           step.with(operation: operation)
         }
         @operations = operations
