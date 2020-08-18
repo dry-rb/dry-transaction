@@ -31,6 +31,9 @@ module Dry
       def call(*args, &block)
         if arity.zero?
           operation.(&block)
+        elsif args.last.is_a?(Hash)
+          *prefix, last = args
+          operation.(*prefix, **last, &block)
         else
           operation.(*args, &block)
         end
