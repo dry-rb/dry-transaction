@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'dry/monads/result'
-require 'dry/transaction/version'
-require 'dry/transaction/step_adapters'
-require 'dry/transaction/builder'
-require 'dry/transaction/errors'
+require "dry/monads/result"
+require "dry/transaction/version"
+require "dry/transaction/step_adapters"
+require "dry/transaction/builder"
+require "dry/transaction/errors"
 
 module Dry
   # Business transaction DSL
