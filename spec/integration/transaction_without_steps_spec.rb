@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Transactions steps without arguments' do
+RSpec.describe "Transactions steps without arguments" do
   let(:dependencies) { {} }
 
   before do
     Test::NotValidError = Class.new(StandardError)
-    Test::DB = [{ 'name' => 'Jane', 'email' => 'jane@doe.com' }]
+    Test::DB = [{ "name" => "Jane", "email" => "jane@doe.com" }]
     Test::Http = Class.new do
       def self.get
-        'pong'
+        "pong"
       end
 
       def self.post(value)
@@ -20,13 +20,13 @@ RSpec.describe 'Transactions steps without arguments' do
       register :fetch_data,     -> { Test::DB.delete_at(0) }, call: false
       register :call_outside,   -> { Test::Http.get }, call: false
       register :external_store, -> input { Test::Http.post(input) }
-      register :process,        -> input { { name: input['name'], email: input['email'] } }
-      register :validate,       -> input { input[:email].nil? ? raise(Test::NotValidError, 'email required') : input }
+      register :process,        -> input { { name: input["name"], email: input["email"] } }
+      register :validate,       -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       register :persist,        -> input { Test::DB << input and true }
     end
   end
 
-  context 'successful' do
+  context "successful" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
@@ -37,20 +37,20 @@ RSpec.describe 'Transactions steps without arguments' do
       end.new(**dependencies)
     }
 
-    it 'calls the operations' do
+    it "calls the operations" do
       transaction.call
-      expect(Test::DB).to include(name: 'Jane', email: 'jane@doe.com')
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
     end
 
-    it 'returns a success' do
+    it "returns a success" do
       expect(transaction.call()).to be_a Dry::Monads::Result::Success
     end
 
-    it 'wraps the result of the final operation' do
-      expect(transaction.call().value!).to eq(name: 'Jane', email: 'jane@doe.com')
+    it "wraps the result of the final operation" do
+      expect(transaction.call().value!).to eq(name: "Jane", email: "jane@doe.com")
     end
 
-    it 'supports matching on success' do
+    it "supports matching on success" do
       results = []
 
       transaction.call() do |m|
@@ -61,11 +61,11 @@ RSpec.describe 'Transactions steps without arguments' do
         m.failure {}
       end
 
-      expect(results.first).to eq 'success for jane@doe.com'
+      expect(results.first).to eq "success for jane@doe.com"
     end
   end
 
-  context 'using multiple tee step operators' do
+  context "using multiple tee step operators" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
@@ -77,13 +77,13 @@ RSpec.describe 'Transactions steps without arguments' do
       end.new(**dependencies)
     }
 
-    it 'calls the operations' do
+    it "calls the operations" do
       transaction.call
-      expect(Test::DB).to include(name: 'Jane', email: 'jane@doe.com')
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
     end
   end
 
-  context 'not needing arguments in the middle of the transaction' do
+  context "not needing arguments in the middle of the transaction" do
     let(:transaction) {
       Class.new do
         include Dry::Transaction(container: Test::Container)
@@ -93,11 +93,11 @@ RSpec.describe 'Transactions steps without arguments' do
         tee :external_store, with: :external_store
       end.new(**dependencies)
     }
-    let(:input) { { 'name' => 'Jane', 'email' => 'jane@doe.com' } }
+    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
 
-    it 'calls the operations' do
+    it "calls the operations" do
       transaction.call(input)
-      expect(Test::DB).to include(name: 'Jane', email: 'jane@doe.com')
+      expect(Test::DB).to include(name: "Jane", email: "jane@doe.com")
     end
   end
 end

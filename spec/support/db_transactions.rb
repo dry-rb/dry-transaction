@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-RSpec.shared_context 'db transactions' do
-  include_context 'database'
+RSpec.shared_context "db transactions" do
+  include_context "database"
 
   before do
     Test::Rollback = Class.new(StandardError)

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_context 'container' do
+RSpec.shared_context "container" do
   before do
     class Test::Container
       extend Dry::Container::Mixin

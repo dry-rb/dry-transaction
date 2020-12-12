@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe 'Custom step adapters' do
+RSpec.describe "Custom step adapters" do
   let(:transaction) {
     Class.new do
       include Dry::Transaction(container: Test::Container, step_adapters: Test::CustomStepAdapters)
@@ -18,8 +18,8 @@ RSpec.describe 'Custom step adapters' do
 
     module Test
       Container = {
-        jane?: -> input { input['name'] == 'Jane' },
-        process: -> input { { name: input['name'], email: input['email'] } },
+        jane?: -> input { input["name"] == "Jane" },
+        process: -> input { { name: input["name"], email: input["email"] } },
         persist: -> input { Test::DB << input and true },
         deliver: -> input { "Delivered email to #{input[:email]}" },
       }
@@ -35,9 +35,9 @@ RSpec.describe 'Custom step adapters' do
     end
   end
 
-  it 'supports custom step adapters' do
-    input = { 'name' => 'Jane', 'email' => 'jane@doe.com' }
+  it "supports custom step adapters" do
+    input = { "name" => "Jane", "email" => "jane@doe.com" }
     transaction.call(input)
-    expect(Test::QUEUE).to include('Delivered email to jane@doe.com')
+    expect(Test::QUEUE).to include("Delivered email to jane@doe.com")
   end
 end
