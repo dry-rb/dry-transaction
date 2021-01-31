@@ -1,4 +1,8 @@
 ---
+- version: 0.13.1
+  date: '2021-01-31'
+  changed:
+  - 'Resolve Ruby 2.7 deprecation warnings and support Ruby 3.0 (@robbl-as in PR #134)'
 - version: 0.13.0
   date: '2018-06-13'
   changed:
