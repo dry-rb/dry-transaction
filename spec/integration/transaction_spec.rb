@@ -496,6 +496,51 @@ RSpec.describe "Transactions" do
     end
   end
 
+  context "hash-like arguments" do
+    let(:sym_key_hash_class) {
+      Class.new(Hash) {
+        def initialize hash
+          hash.keys.each do |key|
+            hash[key.to_sym] = hash.delete(key)
+          end
+          super(hash)
+        end
+
+        def [](key)
+          super[key.to_sym]
+        end
+      }
+    }
+
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction
+
+        try :validate, with: :validate, catch: Test::NotValidError
+      end.new(**dependencies)
+    end
+
+    let(:dependencies) do
+      {
+        validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
+      }
+    end
+
+    let(:input) { sym_key_hash_class.new({ "name" => "Jane", "email" => "jane@doe.com" }) }
+
+    it "returns a success" do
+      expect(transaction.call(input)).to be_a Dry::Monads::Result::Success
+    end
+
+    it "wraps the result of the final operation" do
+      expect(transaction.call(input).value![:name]).to eq("Jane")
+    end
+
+    it "returns the original class type" do
+      expect(transaction.call(input).value!.class).to eq(sym_key_hash_class)
+    end
+  end
+
   context "invalid steps" do
     context "non-callable step" do
       context "with container" do
