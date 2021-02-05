@@ -31,12 +31,18 @@ module Dry
       def call(*args, &block)
         if arity.zero?
           operation.(&block)
-        elsif args.last.instance_of?(Hash) && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
+        elsif ruby_27_last_arg_hash?(args)
           *prefix, last = args
           operation.(*prefix, **last, &block)
         else
           operation.(*args, &block)
         end
+      end
+
+      private
+
+      def ruby_27_last_arg_hash?(args)
+        args.last.instance_of?(Hash) && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
       end
     end
   end

@@ -499,7 +499,7 @@ RSpec.describe "Transactions" do
   context "hash-like arguments" do
     let(:sym_key_hash_class) {
       Class.new(Hash) {
-        def initialize hash
+        def initialize(hash)
           hash.keys.each do |key|
             hash[key.to_sym] = hash.delete(key)
           end
@@ -522,11 +522,11 @@ RSpec.describe "Transactions" do
 
     let(:dependencies) do
       {
-        validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
+        validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       }
     end
 
-    let(:input) { sym_key_hash_class.new({ "name" => "Jane", "email" => "jane@doe.com" }) }
+    let(:input) { sym_key_hash_class.new({"name" => "Jane", "email" => "jane@doe.com"}) }
 
     it "returns a success" do
       expect(transaction.call(input)).to be_a Dry::Monads::Result::Success
