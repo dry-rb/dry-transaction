@@ -41,6 +41,13 @@ module Dry
 
       private
 
+      # Ruby 2.7 gives a deprecation warning about passing a hash of parameters as the last argument
+      # to a method. Ruby 3.0 outright disallows it. This checks for that condition, but explicitly
+      # uses instance_of? rather than is_a? or kind_of?, because Hash like objects, specifically
+      # HashWithIndifferentAccess objects are provided by Rails as controller parameters, and often
+      # passed to dry-rb validators.
+      # In this case, it's better to leave the object as it's existing type, rather than implicitly
+      # convert it in to a hash with the double-splat (**) operator.
       def ruby_27_last_arg_hash?(args)
         args.last.instance_of?(Hash) && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
       end
