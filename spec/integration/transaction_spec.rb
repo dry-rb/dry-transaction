@@ -532,6 +532,10 @@ RSpec.describe "Transactions" do
       expect(transaction.call(input)).to be_a Dry::Monads::Result::Success
     end
 
+    it "returns a failure without deprication warning" do
+      expect(transaction.call({})).to be_a Dry::Monads::Result::Failure
+    end
+
     it "wraps the result of the final operation" do
       expect(transaction.call(input).value![:name]).to eq("Jane")
     end

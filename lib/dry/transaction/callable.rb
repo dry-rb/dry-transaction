@@ -49,7 +49,8 @@ module Dry
       # In this case, it's better to leave the object as it's existing type, rather than implicitly
       # convert it in to a hash with the double-splat (**) operator.
       def ruby_27_last_arg_hash?(args)
-        args.last.instance_of?(Hash) && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
+        kwargs = args.last
+        kwargs.instance_of?(Hash) && !kwargs.empty? && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
       end
     end
   end
