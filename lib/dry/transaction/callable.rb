@@ -50,7 +50,9 @@ module Dry
       # convert it in to a hash with the double-splat (**) operator.
       def ruby_27_last_arg_hash?(args)
         kwargs = args.last
-        kwargs.instance_of?(Hash) && !kwargs.empty? && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
+        kwargs.instance_of?(Hash) &&
+          !kwargs.empty? &&
+          Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
       end
     end
   end
