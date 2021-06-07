@@ -532,7 +532,7 @@ RSpec.describe "Transactions" do
       expect(transaction.call(input)).to be_a Dry::Monads::Result::Success
     end
 
-    it "returns a failure without deprication warning" do
+    it "returns a failure without deprecation warning" do
       expect(transaction.call({})).to be_a Dry::Monads::Result::Failure
     end
 
