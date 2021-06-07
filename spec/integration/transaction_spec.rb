@@ -9,7 +9,7 @@ RSpec.describe "Transactions" do
 
   before do
     container.instance_exec do
-      register :process,  -> input { { name: input["name"], email: input["email"] } }
+      register :process,  -> input { {name: input["name"], email: input["email"]} }
       register :verify,   -> input { Success(input) }
       register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       register :persist,  -> input { self[:database] << input and true }
@@ -26,7 +26,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
       end.new(**dependencies)
     }
-    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     it "calls the operations" do
       transaction.call(input)
@@ -68,7 +68,7 @@ RSpec.describe "Transactions" do
     before do
       class Test::ContainerNames
         extend Dry::Container::Mixin
-        register :process_step,  -> input { { name: input["name"], email: input["email"] } }
+        register :process_step,  -> input { {name: input["name"], email: input["email"]} }
         register :verify_step,   -> input { Dry::Monads::Success(input) }
         register :persist_step,  -> input { Test::DB << input and true }
       end
@@ -101,7 +101,7 @@ RSpec.describe "Transactions" do
     }
 
     let(:dependencies) {
-      { verify_step: -> input { Success(input.merge(foo: :bar)) } }
+      {verify_step: -> input { Success(input.merge(foo: :bar)) }}
     }
 
     it "calls injected operations" do
@@ -176,7 +176,7 @@ RSpec.describe "Transactions" do
     end
 
     let(:dependencies) do
-      { process: -> input { Failure(input) } }
+      {process: -> input { Failure(input) }}
     end
 
     # FIXME: needs a better description
@@ -201,14 +201,14 @@ RSpec.describe "Transactions" do
 
     let(:dependencies) do
       {
-        process: -> input { { name: input["name"], email: input["email"] } },
+        process: -> input { {name: input["name"], email: input["email"]} },
         verify: -> input { Success(input) },
         validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input },
         persist: -> input { database << input and true }
       }
     end
 
-    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     it "calls the injected operations" do
       transaction.call(input)
@@ -230,13 +230,13 @@ RSpec.describe "Transactions" do
 
     let(:dependencies) do
       {
-        process: -> input { { name: input["name"], email: input["email"] } },
+        process: -> input { {name: input["name"], email: input["email"]} },
         verify: -> input { Success(input) },
         validate: -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       }
     end
 
-    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     it "raises an exception" do
       expect { transaction }.to raise_error(Dry::Transaction::MissingStepError)
@@ -312,7 +312,7 @@ RSpec.describe "Transactions" do
 
     it "executes succesfully" do
       transaction_class.new.call("name" => "Jane", "email" => "jane@doe.com")
-      expect(database).to include([["name", "Jane"], ["email", "jane@doe.com"]])
+      expect(database).to include([%w[name Jane], %w[email jane@doe.com]])
     end
 
     it "allows replacement steps to be injected" do
@@ -333,7 +333,7 @@ RSpec.describe "Transactions" do
         tee :persist, with: :persist
       end.new(**dependencies)
     }
-    let(:input) { { "name" => "Jane" } }
+    let(:input) { {"name" => "Jane"} }
 
     it "does not run subsequent operations" do
       transaction.call(input)
@@ -382,7 +382,7 @@ RSpec.describe "Transactions" do
       transaction.call(input) do |m|
         m.success {}
 
-        m.failure :some_other_step do |value|
+        m.failure :some_other_step do |_value|
           results << "Some other step failure"
         end
 
@@ -396,14 +396,14 @@ RSpec.describe "Transactions" do
   end
 
   context "failed in a raw step" do
-    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     before do
       class Test::ContainerRaw
         extend Dry::Container::Mixin
         extend Dry::Monads::Result::Mixin
-        register :process_step,  -> input { { name: input["name"], email: input["email"] } }
-        register :verify_step,   -> input { Failure("raw failure") }
+        register :process_step,  -> input { {name: input["name"], email: input["email"]} }
+        register :verify_step,   -> _input { Failure("raw failure") }
         register :persist_step,  -> input { self[:database] << input and true }
       end
     end
@@ -445,7 +445,7 @@ RSpec.describe "Transactions" do
   end
 
   context "non-confirming raw step result" do
-    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     let(:transaction) {
       Class.new do
@@ -459,8 +459,8 @@ RSpec.describe "Transactions" do
     before do
       class Test::ContainerRaw
         extend Dry::Container::Mixin
-        register :process,  -> input { { name: input["name"], email: input["email"] } }
-        register :verify,   -> input { "failure" }
+        register :process,  -> input { {name: input["name"], email: input["email"]} }
+        register :verify,   -> _input { "failure" }
         register :persist,  -> input { Test::DB << input and true }
       end
     end
@@ -471,14 +471,14 @@ RSpec.describe "Transactions" do
   end
 
   context "keyword arguments" do
-    let(:input) { { name: "jane", age: 20 } }
+    let(:input) { {name: "jane", age: 20} }
 
     let(:upcaser) do
       Class.new {
         include Dry::Monads::Result::Mixin
 
         def call(name: "John", **rest)
-          Success({ name: name[0].upcase + name[1..-1], **rest })
+          Success({name: name[0].upcase + name[1..-1], **rest})
         end
       }.new
     end
@@ -530,6 +530,10 @@ RSpec.describe "Transactions" do
 
     it "returns a success" do
       expect(transaction.call(input)).to be_a Dry::Monads::Result::Success
+    end
+
+    it "returns a failure without deprecation warning" do
+      expect(transaction.call({})).to be_a Dry::Monads::Result::Failure
     end
 
     it "wraps the result of the final operation" do
