@@ -14,8 +14,7 @@ module Dry
         end
       end
 
-      attr_reader :operation
-      attr_reader :arity
+      attr_reader :operation, :arity
 
       def initialize(operation)
         @operation = case operation

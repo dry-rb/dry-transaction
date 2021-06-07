@@ -17,7 +17,7 @@ end
 
 group :development, :test do
   gem "bundler"
-  gem "rake", "~> 11.2", ">= 11.2.2"
+  gem "rake", ">= 12.3.3"
   gem "rspec"
   gem "yard"
 end
