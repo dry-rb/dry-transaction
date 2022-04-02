@@ -11,7 +11,7 @@
 [![CI Status](https://github.com/dry-rb/dry-transaction/workflows/ci/badge.svg)][actions]
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f2c8f3f2e96a477faee00109cfb2090d)][codacy]
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/f2c8f3f2e96a477faee00109cfb2090d)][codacy]
-[![Inline docs](http://inch-ci.org/github/dry-rb/dry-transaction.svg?branch=master)][inchpages]
+[![Inline docs](http://inch-ci.org/github/dry-rb/dry-transaction.svg?branch=main)][inchpages]
 
 ## Links
 
