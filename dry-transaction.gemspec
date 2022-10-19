@@ -30,8 +30,8 @@ Gem::Specification.new do |spec|
 
   # to update dependencies edit project.yml
   spec.add_runtime_dependency "dry-container", ">= 0.2.8"
-  spec.add_runtime_dependency "dry-events", ">= 0.1.0"
+  spec.add_runtime_dependency "dry-events", ">= 0.4.0"
   spec.add_runtime_dependency "dry-matcher", ">= 0.7.0"
-  spec.add_runtime_dependency "dry-monads", ">= 0.4.0"
+  spec.add_runtime_dependency "dry-monads", ">= 0.5.0"
 
 end
