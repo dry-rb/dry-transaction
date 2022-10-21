@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'dry/monads/result'
-require 'dry/events/publisher'
+require 'dry/monads'
+require 'dry/events'
 require 'dry/transaction/step_failure'
 require 'dry/transaction/step_adapter'
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "dry/monads/result"
+require "dry/monads"
 require "dry/transaction/version"
 require "dry/transaction/step_adapters"
 require "dry/transaction/builder"
