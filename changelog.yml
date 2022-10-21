@@ -1,9 +1,18 @@
 ---
+- version: unreleased
+  summary: 
+  date: 
+  fixed: 
+  added: 
+  changed:
+  - 'Updated to work with latest dry-events and dry-monads using Zeitwerk for auto-loading
+    (see #142) (@kzaitsev)'
 - version: 0.13.3
   summary: 
   date: '2021-06-07'
   fixed:
-  - 'Fix deprecation warning on Ruby 3.0 when there are empty hash-like args (via #137) (@bestwebua)'
+  - 'Fix deprecation warning on Ruby 3.0 when there are empty hash-like args (via
+    #137) (@bestwebua)'
   added: 
   changed: 
 - version: 0.13.2
