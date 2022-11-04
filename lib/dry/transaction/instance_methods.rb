@@ -14,7 +14,7 @@ module Dry
       attr_reader :listeners
       attr_reader :stack
 
-      def initialize(steps: (self.class.steps), listeners: nil, **operations)
+      def initialize(*args, steps: (self.class.steps), listeners: nil, **operations)
         @steps = steps.map { |step|
           operation = resolve_operation(step, **operations)
           step.with(operation: operation)
@@ -22,6 +22,32 @@ module Dry
         @operations = operations
         @stack = Stack.new(@steps)
         subscribe(listeners) unless listeners.nil?
+
+        next_super_method = method(__method__).super_method
+        super_initialize = nil
+
+        loop do
+          if next_super_method.owner.name =~ /Dry::Transaction/
+            next_super_method = next_super_method.super_method
+          else
+            super_initialize = next_super_method
+            break
+          end
+        end
+
+        if super_initialize && super_initialize.parameters.empty?
+          super()
+        elsif super_initialize
+          super_kwarg_names = super_initialize.parameters.each_with_object([]) { |(type, name), names|
+            names << name if [:key, :keyreq].include?(type)
+          }
+
+          super_kwargs = operations.each_with_object({}) { |(key, val), kwargs|
+            kwargs[key] = val if super_kwarg_names.include?(key)
+          }
+
+          super(*args, **super_kwargs)
+        end
       end
 
       def call(input = nil, &block)
