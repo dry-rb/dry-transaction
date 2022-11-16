@@ -1,295 +1,301 @@
 ---
+- version: 0.15.0
+  summary:
+  date: 2022-11-16
+  changed:
+    - "Dependencies were bumped to exclude dry-container (@flash-gordon)"
 - version: 0.14.0
   summary:
   date: 2022-10-21
   fixed:
   added:
   changed:
-  - 'Updated to work with latest dry-events and dry-monads using Zeitwerk for auto-loading
-    (see #142) (@kzaitsev)'
+    - "Updated to work with latest dry-events and dry-monads using Zeitwerk for auto-loading
+      (see #142) (@kzaitsev)"
 - version: 0.13.3
   summary:
-  date: '2021-06-07'
+  date: "2021-06-07"
   fixed:
-  - 'Fix deprecation warning on Ruby 3.0 when there are empty hash-like args (via
-    #137) (@bestwebua)'
+    - "Fix deprecation warning on Ruby 3.0 when there are empty hash-like args (via
+      #137) (@bestwebua)"
   added:
   changed:
 - version: 0.13.2
-  date: '2021-02-08'
+  date: "2021-02-08"
   fixed:
-  - 'Re-allow Hash-like parameters to be passed to steps, e.g. `HashWithIndifferentAccess`
-    and other `Hash` subclasses (this was broken with the Ruby 2.7/3.0 fixes in 0.13.1)
-    (@trammel in #136)'
+    - "Re-allow Hash-like parameters to be passed to steps, e.g. `HashWithIndifferentAccess`
+      and other `Hash` subclasses (this was broken with the Ruby 2.7/3.0 fixes in 0.13.1)
+      (@trammel in #136)"
 - version: 0.13.1
-  date: '2021-01-31'
+  date: "2021-01-31"
   changed:
-  - 'Resolve Ruby 2.7 deprecation warnings and support Ruby 3.0 (@robbl-as in PR #134)'
+    - "Resolve Ruby 2.7 deprecation warnings and support Ruby 3.0 (@robbl-as in PR #134)"
 - version: 0.13.0
-  date: '2018-06-13'
+  date: "2018-06-13"
   changed:
-  - Internal step operations (steps backed by instance methods) can now be replaced
-    via constructor arguments. Using instance methods to wrap external step operations
-    now only works if the step is defined using the `with:` option (timriley in [#109][pr109])
+    - Internal step operations (steps backed by instance methods) can now be replaced
+      via constructor arguments. Using instance methods to wrap external step operations
+      now only works if the step is defined using the `with:` option (timriley in [#109][pr109])
 - version: 0.12.1
-  date: '2018-06-05'
+  date: "2018-06-05"
   fixed:
-  - Support result matching on step failures nested within around steps (flash-gordon
-    in [#106][pr106])
+    - Support result matching on step failures nested within around steps (flash-gordon
+      in [#106][pr106])
 - version: 0.12.0
-  date: '2018-05-16'
+  date: "2018-05-16"
   changed:
-  - Switch to `Dry::Monads::Result` API (away from `Either` API deprecated in dry-monads
-    1.0 betas) (Morozzzko in [#104][pr104])
+    - Switch to `Dry::Monads::Result` API (away from `Either` API deprecated in dry-monads
+      1.0 betas) (Morozzzko in [#104][pr104])
 - version: 0.11.2
-  date: '2018-05-15'
+  date: "2018-05-15"
   changed:
-  - Use `Dry::Monads::Result` instead of the deprecated `Dry::Monads::Either` in the
-    `check` step adapter (PavelTkachenko in [#103][pr103])
+    - Use `Dry::Monads::Result` instead of the deprecated `Dry::Monads::Either` in the
+      `check` step adapter (PavelTkachenko in [#103][pr103])
 - version: 0.11.1
-  date: '2018-03-15'
+  date: "2018-03-15"
   added:
-  - Include `operation_name:` in options passed to step adapters. This is helpful
-    for 3rd party step adapters that need the operation's name to fetch it from the
-    container again later. (timriley in [#94][pr94])
+    - Include `operation_name:` in options passed to step adapters. This is helpful
+      for 3rd party step adapters that need the operation's name to fetch it from the
+      container again later. (timriley in [#94][pr94])
 - version: 0.11.0
-  date: '2018-02-19'
+  date: "2018-02-19"
   added:
-  - 'Around steps, which allow control of the execution of subsequently called steps.
-    If you know how middleware works in rack or how around callbacks can be used in
-    RSpec, it''s the same. A typical example of usage would be for DB transactions
-    (now first class support!) or controlling side effects: rolling back the changes,
-    cleaning garbage produced by a failed transaction, etc. See a more detailed explanation
-    of how this works [in the PR][pr85] (flash-gordon in [#85][pr85])'
-  - Broadcast when a step has started by sending the event `step_called` (mihairadulescu
-    in [#82][pr82])
-  - Add new step `check` that returns `Success` or `Failure` base on conditions (semenovDL
-    in [#84][pr84])
-  - Support for transaction steps without input values (GustavoCaso and timriley in
-    [#69][pr69])
+    - "Around steps, which allow control of the execution of subsequently called steps.
+      If you know how middleware works in rack or how around callbacks can be used in
+      RSpec, it's the same. A typical example of usage would be for DB transactions
+      (now first class support!) or controlling side effects: rolling back the changes,
+      cleaning garbage produced by a failed transaction, etc. See a more detailed explanation
+      of how this works [in the PR][pr85] (flash-gordon in [#85][pr85])"
+    - Broadcast when a step has started by sending the event `step_called` (mihairadulescu
+      in [#82][pr82])
+    - Add new step `check` that returns `Success` or `Failure` base on conditions (semenovDL
+      in [#84][pr84])
+    - Support for transaction steps without input values (GustavoCaso and timriley in
+      [#69][pr69])
   changed:
-  - "[BREAKING] Steps no longer broadcast events with their step name followed by
-    `_success` or `_failure`. Now, more generic names are used for the broadcast events.
-    Before each step runs, a `step` event is broadcast, with the step name and its
-    arguments. After a step runs, a `step_succeeded` or `step_failed` event is broadcast,
-    also with the step name, the arguments and the return value (GustavoCaso in [#83][pr83])"
-  - "[BREAKING] Pub/sub support is now handled using [dry-events][dry-events] instead
-    of wisper. Subscriber objects should now respond to `#on_step`, `#on_step_succeeded`,
-    or `#on_step_failed` to receive broadcast events (GustavoCaso in [#90][pr90])"
-  - "[BREAKING] The step adapter API has been changed in order to support around steps,
-    although, the changes are not significant. Previously, an adapter received a `step`
-    and a list of arguments for calling the operation. The list was passed as `*args`
-    then you were needed to call `call_operation` on `step` and provide the list.
-    From now on an adapter gets an `operation`, its `options`, and `args` (_without_
-    `*`). `operation` is an ordinary callable object so a typical call is as simple
-    as `operation.(*args)`, that's it. If you want to turn your adapter into an around-like
-    one you need to add `&block` parameter to the list of `call` arguments (e.g. `def
-    call(operation, options, args, &block)`). `block` is responsible for calling the
-    subsequent steps thus you can check or transform the return value and make some
-    decisions based on it. Note capturing the block in the list of arguments is mandatory,
-    a simple `yield` won't work, there are reasons, believe us. Check out the sources
-    of [`around.rb`](https://github.com/dry-rb/dry-transaction/blob/master/lib/dry/transaction/step_adapters/around.rb)
-    for reference, it's dead simple (flash-gordon in [#85][pr85])"
-  - Usages of the `Either` monad was updated with `Result` and its constructors. See
-    [the changes](https://github.com/dry-rb/dry-monads/blob/master/CHANGELOG.md#v040-2017-11-11)
-    in `dry-monads` for more details (flash-gordon in [#81][pr81])
-  - Minimal Ruby version is 2.2 (flash-gordon in [#72][pr72])
+    - "[BREAKING] Steps no longer broadcast events with their step name followed by
+      `_success` or `_failure`. Now, more generic names are used for the broadcast events.
+      Before each step runs, a `step` event is broadcast, with the step name and its
+      arguments. After a step runs, a `step_succeeded` or `step_failed` event is broadcast,
+      also with the step name, the arguments and the return value (GustavoCaso in [#83][pr83])"
+    - "[BREAKING] Pub/sub support is now handled using [dry-events][dry-events] instead
+      of wisper. Subscriber objects should now respond to `#on_step`, `#on_step_succeeded`,
+      or `#on_step_failed` to receive broadcast events (GustavoCaso in [#90][pr90])"
+    - "[BREAKING] The step adapter API has been changed in order to support around steps,
+      although, the changes are not significant. Previously, an adapter received a `step`
+      and a list of arguments for calling the operation. The list was passed as `*args`
+      then you were needed to call `call_operation` on `step` and provide the list.
+      From now on an adapter gets an `operation`, its `options`, and `args` (_without_
+      `*`). `operation` is an ordinary callable object so a typical call is as simple
+      as `operation.(*args)`, that's it. If you want to turn your adapter into an around-like
+      one you need to add `&block` parameter to the list of `call` arguments (e.g. `def
+      call(operation, options, args, &block)`). `block` is responsible for calling the
+      subsequent steps thus you can check or transform the return value and make some
+      decisions based on it. Note capturing the block in the list of arguments is mandatory,
+      a simple `yield` won't work, there are reasons, believe us. Check out the sources
+      of [`around.rb`](https://github.com/dry-rb/dry-transaction/blob/master/lib/dry/transaction/step_adapters/around.rb)
+      for reference, it's dead simple (flash-gordon in [#85][pr85])"
+    - Usages of the `Either` monad was updated with `Result` and its constructors. See
+      [the changes](https://github.com/dry-rb/dry-monads/blob/master/CHANGELOG.md#v040-2017-11-11)
+      in `dry-monads` for more details (flash-gordon in [#81][pr81])
+    - Minimal Ruby version is 2.2 (flash-gordon in [#72][pr72])
   fixed:
-  - Pass arguments to a step with keyword arguments with default values (flash-gordon
-    in [#74][pr74])
-  - Steps can be wrapped with private methods (semenovDL in [#70][pr70])
-  - Improved error message on missing transaction step (Morozzzko in [#79][pr79])
+    - Pass arguments to a step with keyword arguments with default values (flash-gordon
+      in [#74][pr74])
+    - Steps can be wrapped with private methods (semenovDL in [#70][pr70])
+    - Improved error message on missing transaction step (Morozzzko in [#79][pr79])
 - version: 0.10.2
-  date: '2017-07-10'
+  date: "2017-07-10"
   fixed:
-  - Only resolve an operation object from the container if the container reports that
-    the key is present. This prevents exceptions from being raised when using dry-container
-    and defining a transaction that includes steps both container-based and local
-    method steps (jonolsson in [#64][pr64])
+    - Only resolve an operation object from the container if the container reports that
+      the key is present. This prevents exceptions from being raised when using dry-container
+      and defining a transaction that includes steps both container-based and local
+      method steps (jonolsson in [#64][pr64])
 - version: 0.10.1
-  date: '2017-06-30'
+  date: "2017-06-30"
   fixed:
-  - Preserve step notification listeners when calling a transaction after passing
-    extra step arguments (jcmfernandes in [#65](https://github.com/dry-rb/dry-transaction/pull/65))
+    - Preserve step notification listeners when calling a transaction after passing
+      extra step arguments (jcmfernandes in [#65](https://github.com/dry-rb/dry-transaction/pull/65))
 - version: 0.10.0
-  date: '2017-06-15'
-  summary: 'This release makes major changes to the dry-transaction API: transactions
+  date: "2017-06-15"
+  summary:
+    "This release makes major changes to the dry-transaction API: transactions
     are now defined within your own class, support instance methods for defining or
-    wrapping steps, and operation containers are now optional.'
+    wrapping steps, and operation containers are now optional."
   added:
-  - |-
-    Added `Dry::Transaction::Operation` convenience mixin. This gives easy access to `Right` and `Left` result builders within your operation objects, and also enables dry-matcher's block-based result matching API for when the operations are called individually. (timriley in [#58](https://github.com/dry-rb/dry-transaction/pull/58))
+    - |-
+      Added `Dry::Transaction::Operation` convenience mixin. This gives easy access to `Right` and `Left` result builders within your operation objects, and also enables dry-matcher's block-based result matching API for when the operations are called individually. (timriley in [#58](https://github.com/dry-rb/dry-transaction/pull/58))
 
-        ```ruby
-        class MyOperation
-          include Dry::Transaction::Operation
+          ```ruby
+          class MyOperation
+            include Dry::Transaction::Operation
 
-          def call(input)
-            Right(input)
-          end
-        end
-
-        my_op = MyOperation.new
-        my_op.("hello") do |m|
-          m.success do |v|
-            "Success: #{v}
-          end
-          m.failure do |v|
-            "Failure: #{v}"
-          end
-        end
-        # => "Success: hello"
-  changed:
-  - |-
-    [BREAKING] Transactions are now defined within your own classes using a mixin & class-level API for step definitions (GustavoCaso & timriley in [#58](https://github.com/dry-rb/dry-transaction/pull/58))
-
-        ```ruby
-        class CreateUser
-          include Dry::Transaction(container: Container)
-
-          step :process, with: "operations.process"
-          step :validate, with: "operations.validate"
-          step :persist, with: "operations.persist"
-        end
-
-        create_user = CreateUser.new
-        create_user.call("name" => "Jane Doe")
-        ```
-
-      Instance methods can wrap operations by calling `super`:
-
-        ```ruby
-        class CreateUser
-          include Dry::Transaction(container: Container)
-
-          step :process, with: "operations.process"
-          step :validate, with: "operations.validate"
-          step :persist, with: "operations.persist"
-
-          def process(input)
-            adjusted_input = do_something_with(input)
-            super(adjusted_input)
-          end
-        end
-        ```
-
-      Substitute operations can be injected when initializing objects (helpful for testing):
-
-        ```ruby
-        create_user = CreateUser.new(process: substitute_process_operation)
-        ```
-  - |-
-    Transactions can be defined without an operations container, using instance methods only.
-
-        ```ruby
-        class CreateUser
-          include Dry::Transaction
-
-          step :process
-          step :validate
-
-          def process(input)
-            input = do_something_with(input)
-            Right(input)
-          end
-
-          def validate(input)
-            if input[:email].include?("@")
+            def call(input)
               Right(input)
-            else
-              Left(:not_valid)
             end
           end
-        end
-        ```
-  - "[BREAKING] You can no longer extend existing transactions with `#prepend`, `#append`,
-    `#insert`, or `#remove`. Since transactions will now be instances of your own
-    classes, with their own different behaviors, there’s no predictable way to combine
-    the behaviors of two different classes. If you need the ability to add or remove
-    steps, you can create separate transactions for the different behaviours you need
-    to offer, or build into your own transaction class a way to skip steps based on
-    input or step arguments."
-  - "[BREAKING] Blocks in step definitions are no longer accepted. If you want to
-    wrap a step with some local behavior, wrap it with an instance method (see above)."
-  - "[BREAKING] There is no longer an option for configuring the result matcher block
-    API - we now use `Dry::Transaction::ResultMatcher` by default. If you want to
-    provide your own matcher, you can do this by overriding `#call` in your transaction
-    classes and using your own matcher when a block is given."
-- version: 0.9.0
-  date: '2016-12-19'
-  added:
-  - |-
-    Procs (or any callable objects) can be passed as a step's `with:` option instead of a container identifier string (AMHOL in [#44](https://github.com/dry-rb/dry-transaction/pull/44))
 
-        ```ruby
-        Dry.Transaction(container: MyContainer) do
-          step :some_step, with: "operations.some_thing"
-          step :another, with: -> input {
-            # your code here
-          }
-        end
-        ```
-  - |-
-    Support for passing blocks to step adapters (am-kantox in [#36](https://github.com/dry-rb/dry-transaction/pull/36))
-
-        ```ruby
-        Dry.Transaction(container: MyContainer) do
-          my_custom_step :some_step do
-            # this code is captured as a block and passed to the step adapter
+          my_op = MyOperation.new
+          my_op.("hello") do |m|
+            m.success do |v|
+              "Success: #{v}
+            end
+            m.failure do |v|
+              "Failure: #{v}"
+            end
           end
-        end
-        ```
+          # => "Success: hello"
   changed:
-  - Whole step object is passed to `StepFailure` upon failure, which provides more
-    information to custom matchers (mrbongiolo in [#35](https://github.com/dry-rb/dry-transaction/pull/35))
-  - "`#call` argument order for step operations is now `#call(input, *args)`, not
-    `#call(*args, input)` (timriley in [#48](https://github.com/dry-rb/dry-transaction/pull/48))"
-  - "`Dry::Transaction::Sequence` renamed to `Dry::Transaction` (timriley in [#49](https://github.com/dry-rb/dry-transaction/pull/49))"
+    - |-
+      [BREAKING] Transactions are now defined within your own classes using a mixin & class-level API for step definitions (GustavoCaso & timriley in [#58](https://github.com/dry-rb/dry-transaction/pull/58))
+
+          ```ruby
+          class CreateUser
+            include Dry::Transaction(container: Container)
+
+            step :process, with: "operations.process"
+            step :validate, with: "operations.validate"
+            step :persist, with: "operations.persist"
+          end
+
+          create_user = CreateUser.new
+          create_user.call("name" => "Jane Doe")
+          ```
+
+        Instance methods can wrap operations by calling `super`:
+
+          ```ruby
+          class CreateUser
+            include Dry::Transaction(container: Container)
+
+            step :process, with: "operations.process"
+            step :validate, with: "operations.validate"
+            step :persist, with: "operations.persist"
+
+            def process(input)
+              adjusted_input = do_something_with(input)
+              super(adjusted_input)
+            end
+          end
+          ```
+
+        Substitute operations can be injected when initializing objects (helpful for testing):
+
+          ```ruby
+          create_user = CreateUser.new(process: substitute_process_operation)
+          ```
+    - |-
+      Transactions can be defined without an operations container, using instance methods only.
+
+          ```ruby
+          class CreateUser
+            include Dry::Transaction
+
+            step :process
+            step :validate
+
+            def process(input)
+              input = do_something_with(input)
+              Right(input)
+            end
+
+            def validate(input)
+              if input[:email].include?("@")
+                Right(input)
+              else
+                Left(:not_valid)
+              end
+            end
+          end
+          ```
+    - "[BREAKING] You can no longer extend existing transactions with `#prepend`, `#append`,
+      `#insert`, or `#remove`. Since transactions will now be instances of your own
+      classes, with their own different behaviors, there’s no predictable way to combine
+      the behaviors of two different classes. If you need the ability to add or remove
+      steps, you can create separate transactions for the different behaviours you need
+      to offer, or build into your own transaction class a way to skip steps based on
+      input or step arguments."
+    - "[BREAKING] Blocks in step definitions are no longer accepted. If you want to
+      wrap a step with some local behavior, wrap it with an instance method (see above)."
+    - "[BREAKING] There is no longer an option for configuring the result matcher block
+      API - we now use `Dry::Transaction::ResultMatcher` by default. If you want to
+      provide your own matcher, you can do this by overriding `#call` in your transaction
+      classes and using your own matcher when a block is given."
+- version: 0.9.0
+  date: "2016-12-19"
+  added:
+    - |-
+      Procs (or any callable objects) can be passed as a step's `with:` option instead of a container identifier string (AMHOL in [#44](https://github.com/dry-rb/dry-transaction/pull/44))
+
+          ```ruby
+          Dry.Transaction(container: MyContainer) do
+            step :some_step, with: "operations.some_thing"
+            step :another, with: -> input {
+              # your code here
+            }
+          end
+          ```
+    - |-
+      Support for passing blocks to step adapters (am-kantox in [#36](https://github.com/dry-rb/dry-transaction/pull/36))
+
+          ```ruby
+          Dry.Transaction(container: MyContainer) do
+            my_custom_step :some_step do
+              # this code is captured as a block and passed to the step adapter
+            end
+          end
+          ```
+  changed:
+    - Whole step object is passed to `StepFailure` upon failure, which provides more
+      information to custom matchers (mrbongiolo in [#35](https://github.com/dry-rb/dry-transaction/pull/35))
+    - "`#call` argument order for step operations is now `#call(input, *args)`, not
+      `#call(*args, input)` (timriley in [#48](https://github.com/dry-rb/dry-transaction/pull/48))"
+    - "`Dry::Transaction::Sequence` renamed to `Dry::Transaction` (timriley in [#49](https://github.com/dry-rb/dry-transaction/pull/49))"
 - version: 0.8.0
-  date: '2016-07-06'
+  date: "2016-07-06"
   changed:
-  - Match block API is now provided by `dry-matcher` gem (timriley)
-  - 'Matching behaviour is clearer: match cases are run in order, the first match
-    case “wins” and is executed, and all subsequent cases are ignored. This ensures
-    a single, deterministic return value from the match block - the output of the
-    single “winning” match case. (timriley)'
+    - Match block API is now provided by `dry-matcher` gem (timriley)
+    - "Matching behaviour is clearer: match cases are run in order, the first match
+      case “wins” and is executed, and all subsequent cases are ignored. This ensures
+      a single, deterministic return value from the match block - the output of the
+      single “winning” match case. (timriley)"
   added:
-  - Provide your own matcher object via a `matcher:` option passed to `Dry.Transaction`
-    (timriley)
+    - Provide your own matcher object via a `matcher:` option passed to `Dry.Transaction`
+      (timriley)
 - version: 0.7.0
-  date: '2016-06-06'
+  date: "2016-06-06"
   added:
-  - "`try` steps support a `:raise` option, so a caught exception can be re-raised
-    as a different (more domain-specific) exception (mrbongiolo)"
+    - "`try` steps support a `:raise` option, so a caught exception can be re-raised
+      as a different (more domain-specific) exception (mrbongiolo)"
   changed:
-  - Use dry-monads (e.g. `Dry::Monads::Either::Right`) instead of kleisli (`Kleisli::Either::Right`)
-    (flash-gordon)
+    - Use dry-monads (e.g. `Dry::Monads::Either::Right`) instead of kleisli (`Kleisli::Either::Right`)
+      (flash-gordon)
   fixed:
-  - Add `#respond_to_missing?` to `StepFailure` wrapper class so it can more faithfully
-    represent the failure object it wraps (flash-gordon)
-  - Stop the DSL processing from conflicting with ActiveSupport's `Object#try` monkey-patch
-    (joevandyk)
+    - Add `#respond_to_missing?` to `StepFailure` wrapper class so it can more faithfully
+      represent the failure object it wraps (flash-gordon)
+    - Stop the DSL processing from conflicting with ActiveSupport's `Object#try` monkey-patch
+      (joevandyk)
 - version: 0.6.0
-  date: '2016-04-06'
+  date: "2016-04-06"
   added:
-  - Allow custom step adapters to be supplied via a container of adapters being passed
-    as a `step_adapters:` option to `Dry.Transaction` (timriley)
-  - Raise a meaningful error if a `step` step returns a non-`Either` object (davidpelaez)
-  - "## Internal"
-  - Change the step adapter API so more step-related information remains available
-    at the time of the step being called (timriley)
+    - Allow custom step adapters to be supplied via a container of adapters being passed
+      as a `step_adapters:` option to `Dry.Transaction` (timriley)
+    - Raise a meaningful error if a `step` step returns a non-`Either` object (davidpelaez)
+    - "## Internal"
+    - Change the step adapter API so more step-related information remains available
+      at the time of the step being called (timriley)
 - version: 0.5.0
-  date: '2016-03-16'
+  date: "2016-03-16"
 - version: 0.4.0
-  date: '2015-12-26'
+  date: "2015-12-26"
 - version: 0.3.2
-  date: '2015-11-13'
+  date: "2015-11-13"
 - version: 0.3.1
-  date: '2015-11-12'
+  date: "2015-11-12"
 - version: 0.3.0
-  date: '2015-11-11'
+  date: "2015-11-11"
 - version: 0.2.0
-  date: '2015-11-02'
+  date: "2015-11-02"
 - version: 0.1.0
-  date: '2015-10-28'
+  date: "2015-10-28"
   summary: Initial release.
