@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'dry/transaction/step'
-require 'dry/transaction/dsl'
-require 'dry/transaction/instance_methods'
-require 'dry/transaction/operation_resolver'
+require "dry/transaction/step"
+require "dry/transaction/dsl"
+require "dry/transaction/instance_methods"
+require "dry/transaction/operation_resolver"
 
 module Dry
   module Transaction
@@ -11,7 +11,8 @@ module Dry
       attr_reader :dsl_mod
       attr_reader :resolver_mod
 
-      def initialize(container: nil, step_adapters:)
+      def initialize(step_adapters:, container: nil)
+        super()
         @dsl_mod = DSL.new(step_adapters: step_adapters)
         @resolver_mod = OperationResolver.new(container)
       end

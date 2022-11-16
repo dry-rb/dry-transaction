@@ -5,7 +5,7 @@ RSpec.shared_context "database" do
 
   before do
     Test::NotValidError = Class.new(StandardError)
-    Test::DB = []
+    Test::DB = Array.new
 
     Test::Container.register(:database, Test::DB)
   end

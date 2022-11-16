@@ -4,6 +4,7 @@ module Dry
   module Transaction
     class DSL < Module
       def initialize(step_adapters:)
+        super()
         @step_adapters = step_adapters
 
         define_steps
@@ -11,7 +12,7 @@ module Dry
       end
 
       def inspect
-        "Dry::Transaction::DSL(#{@step_adapters.keys.sort.join(', ')})"
+        "Dry::Transaction::DSL(#{@step_adapters.keys.sort.join(", ")})"
       end
 
       private
@@ -35,7 +36,7 @@ module Dry
                 name: step_name,
                 operation_name: operation_name,
                 operation: nil, # operations are resolved only when transactions are instantiated
-                options: options,
+                options: options
               )
             end
           end

@@ -5,8 +5,8 @@ RSpec.describe "publishing step events" do
     Class.new do
       extend Dry::Core::Container::Mixin
 
-      register :process, -> input { { name: input["name"] } }
-      register :verify,  -> input { input[:name].to_s != "" ? Dry::Monads.Success(input) : Dry::Monads.Failure("no name") }
+      register :process, -> input { {name: input["name"]} }
+      register :verify,  -> input { input[:name].to_s == "" ? Dry::Monads.Failure("no name") : Dry::Monads.Success(input) }
       register :persist, -> input { Test::DB << input and true }
     end
   }
@@ -36,17 +36,17 @@ RSpec.describe "publishing step events" do
       end
 
       def on_step_succeeded(event)
-        success << { step_name: event[:step_name], args: event[:args] }
+        success << {step_name: event[:step_name], args: event[:args]}
       end
 
       def on_step_failed(event)
-        failed << { step_name: event[:step_name], args: event[:args], value: event[:value] }
+        failed << {step_name: event[:step_name], args: event[:args], value: event[:value]}
       end
     end.new
   end
 
   before do
-    Test::DB = []
+    Test::DB = Array.new
     Test::Container = container
   end
 
@@ -59,9 +59,9 @@ RSpec.describe "publishing step events" do
       transaction.call("name" => "Jane")
 
       expected_result = [
-        { step_name: :process, args: [{ "name" => "Jane" }] },
-        { step_name: :verify, args: [{ name: "Jane" }] },
-        { step_name: :persist, args: [{ name: "Jane" }] }
+        {step_name: :process, args: [{"name" => "Jane"}]},
+        {step_name: :verify, args: [{name: "Jane"}]},
+        {step_name: :persist, args: [{name: "Jane"}]}
       ]
 
       expect(subscriber.success).to eq expected_result
@@ -70,8 +70,8 @@ RSpec.describe "publishing step events" do
     specify "subsriber receives success events for passing steps, a failure event for the failing step, and no subsequent events" do
       transaction.call("name" => "")
 
-      expect(subscriber.success).to eq [{ step_name: :process, args: [{ "name" => "" }] }]
-      expect(subscriber.failed).to eq [{ step_name: :verify, args: [{ name: "" }], value: "no name" }]
+      expect(subscriber.success).to eq [{step_name: :process, args: [{"name" => ""}]}]
+      expect(subscriber.failed).to eq [{step_name: :verify, args: [{name: ""}], value: "no name"}]
     end
   end
 
@@ -83,13 +83,13 @@ RSpec.describe "publishing step events" do
     specify "subscriber receives success event for the specified step" do
       transaction.call("name" => "Jane")
 
-      expect(subscriber.success).to eq [{ step_name: :verify, args: [{ name: "Jane" }] }]
+      expect(subscriber.success).to eq [{step_name: :verify, args: [{name: "Jane"}]}]
     end
 
     specify "subscriber receives failure event for the specified step" do
       transaction.call("name" => "")
 
-      expect(subscriber.failed).to eq [{ step_name: :verify, args: [{ name: "" }], value: "no name" }]
+      expect(subscriber.failed).to eq [{step_name: :verify, args: [{name: ""}], value: "no name"}]
     end
   end
 
@@ -102,7 +102,7 @@ RSpec.describe "publishing step events" do
       Class.new do
         extend Dry::Core::Container::Mixin
 
-        register :process, -> input { { name: input["name"] } }
+        register :process, -> input { {name: input["name"]} }
         register :verify,  -> input, name { input[:name].to_s == name ? Dry::Monads.Success(input) : Dry::Monads.Failure("wrong name") }
         register :persist, -> input { Test::DB << input and true }
       end
@@ -111,13 +111,13 @@ RSpec.describe "publishing step events" do
     specify "subscriber receives success event for the specified step" do
       transaction.with_step_args(verify: ["Jane"]).call("name" => "Jane")
 
-      expect(subscriber.success).to eq [{ step_name: :verify, args: [{ name: "Jane" }, "Jane"] }]
+      expect(subscriber.success).to eq [{step_name: :verify, args: [{name: "Jane"}, "Jane"]}]
     end
 
     specify "subscriber receives failure event for the specified step" do
       transaction.with_step_args(verify: ["Jade"]).call("name" => "")
 
-      expect(subscriber.failed).to eq [{ step_name: :verify, args: [{ name: "" }, "Jade"], value: "wrong name" }]
+      expect(subscriber.failed).to eq [{step_name: :verify, args: [{name: ""}, "Jade"], value: "wrong name"}]
     end
   end
 end

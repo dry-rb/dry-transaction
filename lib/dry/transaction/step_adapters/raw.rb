@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'dry/monads/result'
-require 'dry/transaction/errors'
-require 'dry/transaction/step_adapters/around'
+require "dry/monads/result"
+require "dry/transaction/errors"
+require "dry/transaction/step_adapters/around"
 
 module Dry
   module Transaction

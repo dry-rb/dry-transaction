@@ -11,7 +11,7 @@ module Dry
           result = operation.(*args, &block)
 
           unless result.is_a?(Dry::Monads::Result)
-            raise InvalidResultError.new(options[:step_name])
+            raise InvalidResultError, options[:step_name]
           end
 
           result

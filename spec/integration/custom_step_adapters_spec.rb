@@ -13,16 +13,16 @@ RSpec.describe "Custom step adapters" do
   }
 
   before do
-    Test::DB = []
-    Test::QUEUE = []
+    Test::DB = Array.new
+    Test::QUEUE = Array.new
 
     module Test
       Container = {
         jane?: -> input { input["name"] == "Jane" },
-        process: -> input { { name: input["name"], email: input["email"] } },
+        process: -> input { {name: input["name"], email: input["email"]} },
         persist: -> input { Test::DB << input and true },
-        deliver: -> input { "Delivered email to #{input[:email]}" },
-      }
+        deliver: -> input { "Delivered email to #{input[:email]}" }
+      }.freeze
 
       class CustomStepAdapters < Dry::Transaction::StepAdapters
         extend Dry::Monads[:result]
@@ -36,7 +36,7 @@ RSpec.describe "Custom step adapters" do
   end
 
   it "supports custom step adapters" do
-    input = { "name" => "Jane", "email" => "jane@doe.com" }
+    input = {"name" => "Jane", "email" => "jane@doe.com"}
     transaction.call(input)
     expect(Test::QUEUE).to include("Delivered email to jane@doe.com")
   end

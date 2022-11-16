@@ -39,7 +39,7 @@ RSpec.describe "around steps" do
     end
   end
 
-  let(:input) { { user: { name: "Jane" }, account: { balance: 0 } } }
+  let(:input) { {user: {name: "Jane"}, account: {balance: 0}} }
 
   it "starts a transaction" do
     called = false
@@ -88,7 +88,7 @@ RSpec.describe "around steps" do
   end
 
   it "supports matching on nested failures" do
-    invalid_input = input.merge(account: { balance: -10 })
+    invalid_input = input.merge(account: {balance: -10})
 
     failed_input = nil
 

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'dry/transaction/result_matcher'
-require 'dry/transaction/stack'
+require "dry/transaction/result_matcher"
+require "dry/transaction/stack"
 
 module Dry
   module Transaction
@@ -13,7 +13,7 @@ module Dry
       attr_reader :listeners
       attr_reader :stack
 
-      def initialize(steps: (self.class.steps), listeners: nil, **operations)
+      def initialize(steps: self.class.steps, listeners: nil, **operations)
         @steps = steps.map { |step|
           operation = resolve_operation(step, **operations)
           step.with(operation: operation)
@@ -77,12 +77,16 @@ module Dry
         super unless step
 
         operation = operations[step.name]
-        raise NotImplementedError, "no operation +#{step.operation_name}+ defined for step +#{step.name}+" unless operation
+        unless operation
+          raise NotImplementedError,
+                "no operation +#{step.operation_name}+ defined for step +#{step.name}+"
+        end
 
         operation.(*args, &block)
       end
 
       def resolve_operation(step, **operations)
+        # rubocop:disable Lint/DuplicateBranch
         if step.internal? && operations[step.name]
           operations[step.name]
         elsif methods.include?(step.name) || private_methods.include?(step.name)
@@ -90,10 +94,11 @@ module Dry
         elsif operations[step.name].respond_to?(:call)
           operations[step.name]
         elsif operations[step.name]
-          raise InvalidStepError.new(step.name)
+          raise InvalidStepError, step.name
         else
-          raise MissingStepError.new(step.name)
+          raise MissingStepError, step.name
         end
+        # rubocop:enable Lint/DuplicateBranch
       end
 
       def assert_valid_step_args(step_args)

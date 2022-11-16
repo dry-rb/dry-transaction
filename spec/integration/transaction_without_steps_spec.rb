@@ -5,7 +5,7 @@ RSpec.describe "Transactions steps without arguments" do
 
   before do
     Test::NotValidError = Class.new(StandardError)
-    Test::DB = [{ "name" => "Jane", "email" => "jane@doe.com" }]
+    Test::DB.replace([{"name" => "Jane", "email" => "jane@doe.com"}])
     Test::Http = Class.new do
       def self.get
         "pong"
@@ -20,7 +20,7 @@ RSpec.describe "Transactions steps without arguments" do
       register :fetch_data,     -> { Test::DB.delete_at(0) }, call: false
       register :call_outside,   -> { Test::Http.get }, call: false
       register :external_store, -> input { Test::Http.post(input) }
-      register :process,        -> input { { name: input["name"], email: input["email"] } }
+      register :process,        -> input { {name: input["name"], email: input["email"]} }
       register :validate,       -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       register :persist,        -> input { Test::DB << input and true }
     end
@@ -43,17 +43,17 @@ RSpec.describe "Transactions steps without arguments" do
     end
 
     it "returns a success" do
-      expect(transaction.call()).to be_a Dry::Monads::Result::Success
+      expect(transaction.call).to be_a Dry::Monads::Result::Success
     end
 
     it "wraps the result of the final operation" do
-      expect(transaction.call().value!).to eq(name: "Jane", email: "jane@doe.com")
+      expect(transaction.call.value!).to eq(name: "Jane", email: "jane@doe.com")
     end
 
     it "supports matching on success" do
       results = []
 
-      transaction.call() do |m|
+      transaction.call do |m|
         m.success do |value|
           results << "success for #{value[:email]}"
         end
@@ -93,7 +93,7 @@ RSpec.describe "Transactions steps without arguments" do
         tee :external_store, with: :external_store
       end.new(**dependencies)
     }
-    let(:input) { { "name" => "Jane", "email" => "jane@doe.com" } }
+    let(:input) { {"name" => "Jane", "email" => "jane@doe.com"} }
 
     it "calls the operations" do
       transaction.call(input)

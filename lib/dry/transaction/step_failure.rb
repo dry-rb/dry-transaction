@@ -10,12 +10,14 @@ module Dry
 
       # @api private
       def self.call(step, value)
+        # rubocop:disable Style/CaseEquality
         if self === value
           value
         else
           yield
           new(step, value)
         end
+        # rubocop:enable Style/CaseEquality
       end
 
       def initialize(step, value)

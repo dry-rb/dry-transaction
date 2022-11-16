@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'bundler/setup'
+require "bundler/setup"
 
-require 'pry'
-require 'byebug'
-require 'dry-transaction'
-require 'dry-container'
+require "pry"
+require "byebug"
+require "dry-transaction"
+require "dry-container"
 
 Pry.start

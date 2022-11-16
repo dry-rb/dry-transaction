@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'dry/transaction/step_failure'
-require 'dry/transaction/step_adapter'
+require "dry/transaction/step_failure"
+require "dry/transaction/step_adapter"
 
 module Dry
   module Transaction
@@ -22,12 +22,15 @@ module Dry
       attr_reader :operation_name
       attr_reader :call_args
 
-      def initialize(adapter:, name:, operation_name:, operation: nil, options:, call_args: [])
-        @adapter = StepAdapter[adapter, operation, { **options, step_name: name, operation_name: operation_name }]
+      # rubocop:disable Metrics/ParameterLists
+      def initialize(adapter:, name:, operation_name:, options:, operation: nil, call_args: [])
+        @adapter = StepAdapter[adapter, operation,
+                               {**options, step_name: name, operation_name: operation_name}]
         @name = name
         @operation_name = operation_name
         @call_args = call_args
       end
+      # rubocop:enable Metrics/ParameterLists
 
       def with(operation: UNDEFINED, call_args: UNDEFINED)
         return self if operation == UNDEFINED && call_args == UNDEFINED
@@ -41,7 +44,7 @@ module Dry
           operation_name: operation_name,
           operation: new_operation,
           options: adapter.options,
-          call_args: new_call_args,
+          call_args: new_call_args
         )
       end
 

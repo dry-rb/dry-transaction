@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'dry/transaction/errors'
+require "dry/transaction/errors"
 
 module Dry
   module Transaction
@@ -11,7 +11,7 @@ module Dry
 
         def call(operation, options, args)
           unless options[:catch]
-            raise MissingCatchListError.new(options[:step_name])
+            raise MissingCatchListError, options[:step_name]
           end
 
           result = operation.(*args)
