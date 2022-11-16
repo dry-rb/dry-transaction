@@ -3,7 +3,7 @@
 RSpec.describe "around steps" do
   include_context "db transactions"
 
-  include Dry::Monads::Result::Mixin
+  include Dry::Monads[:result]
 
   before do
     container.instance_exec do

@@ -36,7 +36,7 @@ You can also define a transaction that relies upon operation objects in a contai
 The container will be checked for the operations using `#key?`, and the operations will be resolved from the container via `#[]`. For this example, we’ll use [dry-container](/gems/dry-container):
 
 ```ruby
-require "dry/container"
+require "dry/core"
 require "dry/transaction"
 require "dry/transaction/operation"
 
@@ -59,7 +59,7 @@ module Users
 end
 
 class Container
-  extend Dry::Container::Mixin
+  extend Dry::Core::Container::Mixin
 
   namespace "users" do
     register "validate" do

@@ -5,7 +5,7 @@ module Dry
     class StepAdapters
       # @api private
       class Tee
-        include Dry::Monads::Result::Mixin
+        include Dry::Monads[:result]
 
         def call(operation, _options, args)
           operation.(*args)

@@ -5,7 +5,7 @@ gemspec:
   email: ["tim@icelab.com.au"]
   summary: "Business Transaction Flow DSL"
   runtime_dependencies:
-    - [dry-container, ">= 0.2.8"]
-    - [dry-events, ">= 0.1.0"]
-    - [dry-matcher, ">= 0.7.0"]
-    - [dry-monads, ">= 0.4.0"]
+    - [dry-core, "~> 1.0"]
+    - [dry-events, "~> 1.0"]
+    - [dry-matcher, "~> 0.10"]
+    - [dry-monads, "~> 1.6"]

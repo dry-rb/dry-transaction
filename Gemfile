@@ -8,7 +8,6 @@ gemspec
 
 group :test do
   gem "pry-byebug", platform: :mri
-  gem "dry-container"
 end
 
 group :tools do
@@ -17,7 +16,6 @@ end
 
 group :development, :test do
   gem "bundler"
-  gem "rake", ">= 12.3.3"
   gem "rspec"
   gem "yard"
 end

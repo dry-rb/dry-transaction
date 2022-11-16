@@ -3,7 +3,7 @@
 RSpec.describe "Transactions" do
   include_context "database"
 
-  include Dry::Monads::Result::Mixin
+  include Dry::Monads[:result]
 
   let(:dependencies) { {} }
 
@@ -67,7 +67,7 @@ RSpec.describe "Transactions" do
   context "different step names" do
     before do
       class Test::ContainerNames
-        extend Dry::Container::Mixin
+        extend Dry::Core::Container::Mixin
         register :process_step,  -> input { {name: input["name"], email: input["email"]} }
         register :verify_step,   -> input { Dry::Monads::Success(input) }
         register :persist_step,  -> input { Test::DB << input and true }
@@ -400,8 +400,8 @@ RSpec.describe "Transactions" do
 
     before do
       class Test::ContainerRaw
-        extend Dry::Container::Mixin
-        extend Dry::Monads::Result::Mixin
+        extend Dry::Core::Container::Mixin
+        extend Dry::Monads[:result]
         register :process_step,  -> input { {name: input["name"], email: input["email"]} }
         register :verify_step,   -> _input { Failure("raw failure") }
         register :persist_step,  -> input { self[:database] << input and true }
@@ -458,7 +458,7 @@ RSpec.describe "Transactions" do
 
     before do
       class Test::ContainerRaw
-        extend Dry::Container::Mixin
+        extend Dry::Core::Container::Mixin
         register :process,  -> input { {name: input["name"], email: input["email"]} }
         register :verify,   -> _input { "failure" }
         register :persist,  -> input { Test::DB << input and true }
@@ -475,7 +475,7 @@ RSpec.describe "Transactions" do
 
     let(:upcaser) do
       Class.new {
-        include Dry::Monads::Result::Mixin
+        include Dry::Monads[:result]
 
         def call(name: "John", **rest)
           Success({name: name[0].upcase + name[1..-1], **rest})
@@ -559,7 +559,7 @@ RSpec.describe "Transactions" do
 
         before do
           class Test::ContainerRaw
-            extend Dry::Container::Mixin
+            extend Dry::Core::Container::Mixin
 
             register :not_a_proc, "definitely not a proc"
           end
@@ -605,7 +605,7 @@ RSpec.describe "Transactions" do
 
         before do
           class Test::ContainerRaw
-            extend Dry::Container::Mixin
+            extend Dry::Core::Container::Mixin
 
             register :noop, -> input { Success(input) }
           end

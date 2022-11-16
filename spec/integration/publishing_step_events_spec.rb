@@ -3,7 +3,7 @@
 RSpec.describe "publishing step events" do
   let(:container) {
     Class.new do
-      extend Dry::Container::Mixin
+      extend Dry::Core::Container::Mixin
 
       register :process, -> input { { name: input["name"] } }
       register :verify,  -> input { input[:name].to_s != "" ? Dry::Monads.Success(input) : Dry::Monads.Failure("no name") }
@@ -100,7 +100,7 @@ RSpec.describe "publishing step events" do
 
     let(:container) {
       Class.new do
-        extend Dry::Container::Mixin
+        extend Dry::Core::Container::Mixin
 
         register :process, -> input { { name: input["name"] } }
         register :verify,  -> input, name { input[:name].to_s == name ? Dry::Monads.Success(input) : Dry::Monads.Failure("wrong name") }

@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-require 'dry-container'
-
 module Dry
   module Transaction
     class StepAdapters
-      extend Dry::Container::Mixin
+      extend Dry::Core::Container::Mixin
     end
   end
 end

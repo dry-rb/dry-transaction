@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
+require "dry/core"
+require "dry/events"
 require "dry/monads"
+require "dry/matcher"
 require "dry/transaction/version"
 require "dry/transaction/step_adapters"
 require "dry/transaction/builder"

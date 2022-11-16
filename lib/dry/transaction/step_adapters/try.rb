@@ -7,7 +7,7 @@ module Dry
     class StepAdapters
       # @api private
       class Try
-        include Dry::Monads::Result::Mixin
+        include Dry::Monads[:result]
 
         def call(operation, options, args)
           unless options[:catch]

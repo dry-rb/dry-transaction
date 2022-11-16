@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
-require 'dry/monads/result'
 require 'dry/transaction/result_matcher'
 require 'dry/transaction/stack'
 
 module Dry
   module Transaction
     module InstanceMethods
-      include Dry::Monads::Result::Mixin
+      include Dry::Monads[:result]
 
       attr_reader :steps
       attr_reader :operations

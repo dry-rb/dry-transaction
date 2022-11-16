@@ -1,14 +1,11 @@
 # frozen_string_literal: true
 
-require 'dry/monads/result'
-require 'dry/transaction/errors'
-
 module Dry
   module Transaction
     class StepAdapters
       # @api private
       class Around
-        include Dry::Monads::Result::Mixin
+        include Dry::Monads[:result]
 
         def call(operation, options, args, &block)
           result = operation.(*args, &block)

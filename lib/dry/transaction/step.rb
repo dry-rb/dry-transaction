@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'dry/monads'
-require 'dry/events'
 require 'dry/transaction/step_failure'
 require 'dry/transaction/step_adapter'
 
@@ -13,7 +11,7 @@ module Dry
       RETURN = -> x { x }
 
       include Dry::Events::Publisher[name || object_id]
-      include Dry::Monads::Result::Mixin
+      include Dry::Monads[:result]
 
       register_event(:step)
       register_event(:step_succeeded)

@@ -16,7 +16,7 @@ RSpec.describe "Transactions steps without arguments" do
       end
     end
     class Test::Container
-      extend Dry::Container::Mixin
+      extend Dry::Core::Container::Mixin
       register :fetch_data,     -> { Test::DB.delete_at(0) }, call: false
       register :call_outside,   -> { Test::Http.get }, call: false
       register :external_store, -> input { Test::Http.post(input) }
