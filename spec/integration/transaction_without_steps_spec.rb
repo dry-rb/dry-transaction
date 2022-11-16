@@ -5,7 +5,7 @@ RSpec.describe "Transactions steps without arguments" do
 
   before do
     Test::NotValidError = Class.new(StandardError)
-    Test::DB.replace([{"name" => "Jane", "email" => "jane@doe.com"}])
+    Test::DB = [{"name" => "Jane", "email" => "jane@doe.com"}].dup
     Test::Http = Class.new do
       def self.get
         "pong"
