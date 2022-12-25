@@ -1,8 +1,8 @@
 # This is a config synced from dry-rb/template-gem repo
 
 AllCops:
-  TargetRubyVersion: 2.7
-  NewCops: enable
+  TargetRubyVersion: 3.0
+  NewCops: disable
   Exclude:
     - benchmarks/*.rb
     - spec/support/coverage.rb
@@ -153,6 +153,9 @@ Style/LambdaCall:
   Enabled: false
 
 Style/ParallelAssignment:
+  Enabled: false
+
+Style/RaiseArgs:
   Enabled: false
 
 Style/StabbyLambdaParentheses:
