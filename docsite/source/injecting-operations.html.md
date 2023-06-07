@@ -27,8 +27,8 @@ class CreateUser
   end
 end
 
-prepare = -> input { Success(input.merge(name: "#{input[:name]}!!")) }
-create  = -> user  { Failure([:could_not_create, user]) }
+prepare = -> input { Dry::Monads.Success(input.merge(name: "#{input[:name]}!!")) }
+create  = -> user  { Dry::Monads.Failure([:could_not_create, user]) }
 
 create_user = CreateUser.new(prepare: prepare, create: create)
 
