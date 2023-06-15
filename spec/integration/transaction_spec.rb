@@ -13,6 +13,7 @@ RSpec.describe "Transactions" do
       register :verify,   -> input { Success(input) }
       register :validate, -> input { input[:email].nil? ? raise(Test::NotValidError, "email required") : input }
       register :persist,  -> input { self[:database] << input and true }
+      register :keyword,  -> (input:) { Success(input) }
     end
   end
 
@@ -158,6 +159,28 @@ RSpec.describe "Transactions" do
       transaction.call("name" => "Jane", "email" => "jane@doe.com")
 
       expect(database).to include(name: "Jane", email: "jane@doe.com", greeting: "hello!")
+    end
+  end
+
+  context "wrapping operations with keyword parameters" do
+    let(:transaction) do
+      Class.new do
+        include Dry::Transaction(container: Test::Container)
+
+        step :keyword, with: :keyword
+
+        def keyword(input)
+          super(input: input)
+        end
+      end
+
+      it "passes the keyword parameter correctly" do
+        x = Object.new
+
+        result = transaction.call(x)
+
+        expect(result).to eq Success(x)
+      end
     end
   end
 

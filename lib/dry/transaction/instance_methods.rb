@@ -72,7 +72,7 @@ module Dry
         steps.any? { |step| step.name == name }
       end
 
-      def method_missing(name, *args, &block)
+      def method_missing(name, *args, **kwargs, &block)
         step = steps.detect { |s| s.name == name }
         super unless step
 
@@ -82,7 +82,7 @@ module Dry
                 "no operation +#{step.operation_name}+ defined for step +#{step.name}+"
         end
 
-        operation.(*args, &block)
+        operation.(*args, **kwargs, &block)
       end
 
       def resolve_operation(step, **operations)
