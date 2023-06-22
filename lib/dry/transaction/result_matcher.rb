@@ -10,9 +10,9 @@ module Dry
         resolve: -> result { result.value! }
       ),
       failure: Dry::Matcher::Case.new(
-        match: -> result, step_name = nil {
-          if step_name
-            result.failure? && result.failure.step.name == step_name
+        match: -> result, *step_names {
+          if step_names.any?
+            result.failure? && step_names.include?(result.failure.step.name)
           else
             result.failure?
           end
