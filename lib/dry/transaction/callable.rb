@@ -30,7 +30,7 @@ module Dry
       def call(*args, &block)
         if arity.zero?
           operation.(&block)
-        elsif ruby_27_last_arg_hash?(args)
+        elsif last_arg_hash?(args)
           *prefix, last = args
           operation.(*prefix, **last, &block)
         else
@@ -47,11 +47,9 @@ module Dry
       # passed to dry-rb validators.
       # In this case, it's better to leave the object as it's existing type, rather than implicitly
       # convert it in to a hash with the double-splat (**) operator.
-      def ruby_27_last_arg_hash?(args)
+      def last_arg_hash?(args)
         kwargs = args.last
-        kwargs.instance_of?(Hash) &&
-          !kwargs.empty? &&
-          Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.0")
+        kwargs.instance_of?(Hash) && !kwargs.empty?
       end
     end
   end
