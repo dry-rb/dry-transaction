@@ -7,5 +7,5 @@ gemspec:
   runtime_dependencies:
     - [dry-core, "~> 1.0"]
     - [dry-events, "~> 1.0"]
-    - [dry-matcher, "~> 0.10"]
+    - [dry-matcher, "~> 1.0"]
     - [dry-monads, "~> 1.6"]
