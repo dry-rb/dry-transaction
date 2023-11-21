@@ -86,7 +86,6 @@ module Dry
       end
 
       def resolve_operation(step, **operations)
-        # rubocop:disable Lint/DuplicateBranch
         if step.internal? && operations[step.name]
           operations[step.name]
         elsif methods.include?(step.name) || private_methods.include?(step.name)
@@ -98,7 +97,6 @@ module Dry
         else
           raise MissingStepError, step.name
         end
-        # rubocop:enable Lint/DuplicateBranch
       end
 
       def assert_valid_step_args(step_args)
