@@ -1,8 +1,9 @@
 <!--- this file is synced from dry-rb/template-gem project -->
+
 [gem]: https://rubygems.org/gems/dry-transaction
 [actions]: https://github.com/dry-rb/dry-transaction/actions
 
-# dry-transaction [![Gem Version](https://badge.fury.io/rb/dry-transaction.svg)][gem] [![CI Status](https://github.com/dry-rb/dry-transaction/workflows/ci/badge.svg)][actions]
+# dry-transaction [![Gem Version](https://badge.fury.io/rb/dry-transaction.svg)][gem] [![CI Status](https://github.com/dry-rb/dry-transaction/workflows/CI/badge.svg)][actions]
 
 ## Links
 
@@ -14,7 +15,7 @@
 
 This library officially supports the following Ruby versions:
 
-* MRI `>= 3.0.0`
+* MRI `>= 3.0`
 * jruby `>= 9.4` (not tested on CI)
 
 ## License
