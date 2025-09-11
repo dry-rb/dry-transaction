@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# this file is synced from dry-rb/template-gem project
+# This file is synced from hanakai-rb/repo-sync. To update it, edit repo-sync.yml.
 
 lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
@@ -8,8 +8,8 @@ require "dry/transaction/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "dry-transaction"
-  spec.authors       = ["Tim Riley"]
-  spec.email         = ["tim@icelab.com.au"]
+  spec.authors       = ["Hanakai team"]
+  spec.email         = ["info@hanakai.org"]
   spec.license       = "MIT"
   spec.version       = Dry::Transaction::VERSION.dup
 
@@ -25,13 +25,17 @@ Gem::Specification.new do |spec|
   spec.metadata["changelog_uri"]     = "https://github.com/dry-rb/dry-transaction/blob/main/CHANGELOG.md"
   spec.metadata["source_code_uri"]   = "https://github.com/dry-rb/dry-transaction"
   spec.metadata["bug_tracker_uri"]   = "https://github.com/dry-rb/dry-transaction/issues"
+  spec.metadata["funding_uri"]       = "https://github.com/sponsors/hanami"
 
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.1.0"
 
-  # to update dependencies edit project.yml
   spec.add_runtime_dependency "dry-core", "~> 1.0"
   spec.add_runtime_dependency "dry-events", "~> 1.0"
   spec.add_runtime_dependency "dry-matcher", "~> 1.0"
   spec.add_runtime_dependency "dry-monads", "~> 1.6"
-
+  spec.add_development_dependency "bundler"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  
 end
+
