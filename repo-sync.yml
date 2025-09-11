@@ -1,0 +1,19 @@
+name:
+  gem: dry-transaction
+  constant: Dry::Transaction
+github_org: dry-rb
+gemspec:
+  authors: ["Hanakai team"]
+  email: ["info@hanakai.org"]
+  summary: "Business Transaction Flow DSL"
+  homepage: "https://dry-rb.org/gems/dry-transaction"
+  required_ruby_version: ">= 3.1.0"
+  development_dependencies:
+    - bundler
+    - rake
+    - rspec
+  runtime_dependencies:
+    - [dry-core, "~> 1.0"]
+    - [dry-events, "~> 1.0"]
+    - [dry-matcher, "~> 1.0"]
+    - [dry-monads, "~> 1.6"]
