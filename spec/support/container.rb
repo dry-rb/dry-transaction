@@ -2,9 +2,11 @@
 
 RSpec.shared_context "container" do
   before do
-    class Test::Container
-      extend Dry::Core::Container::Mixin
-      extend Dry::Monads[:result]
+    module Test
+      class Container
+        extend Dry::Core::Container::Mixin
+        extend Dry::Monads[:result]
+      end
     end
   end
 

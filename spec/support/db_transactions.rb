@@ -20,11 +20,11 @@ RSpec.shared_context "db transactions" do
         yield.tap do
           self.committed = true
         end
-      rescue StandardError => e
+      rescue StandardError => exception
         self.rolled_back = true
         clear
 
-        raise e
+        raise exception
       ensure
         self.in_transaction = false
       end
