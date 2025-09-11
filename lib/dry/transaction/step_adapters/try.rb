@@ -17,8 +17,8 @@ module Dry
           result = operation.(*args)
           Success(result)
         rescue *Array(options[:catch]) => exception
-          e = options[:raise].new(exception.message) if options[:raise]
-          Failure(e)
+          exception = options[:raise].new(exception.message) if options[:raise]
+          Failure(exception)
         end
       end
 
