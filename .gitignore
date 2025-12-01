@@ -5,4 +5,5 @@ Gemfile.lock
 /spec/examples.txt
 /pkg
 tmp/
+/.rubocop-*
 .bundle
