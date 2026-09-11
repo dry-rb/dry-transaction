@@ -79,7 +79,7 @@ module Dry
         operation = operations[step.name]
         unless operation
           raise NotImplementedError,
-                "no operation +#{step.operation_name}+ defined for step +#{step.name}+"
+            "no operation +#{step.operation_name}+ defined for step +#{step.name}+"
         end
 
         operation.(*args, &block)

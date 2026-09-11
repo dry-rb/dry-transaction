@@ -24,7 +24,7 @@ module Dry
 
       def initialize(adapter:, name:, operation_name:, options:, operation: nil, call_args: [])
         @adapter = StepAdapter[adapter, operation,
-                               {**options, step_name: name, operation_name: operation_name}]
+          {**options, step_name: name, operation_name: operation_name}]
         @name = name
         @operation_name = operation_name
         @call_args = call_args
