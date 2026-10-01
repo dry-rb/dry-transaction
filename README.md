@@ -2,7 +2,7 @@
 
 [actions]: https://github.com/dry-rb/dry-transaction/actions
 [chat]: https://discord.gg/naQApPAsZB
-[forum]: https://discourse.hanamirb.org
+[forum]: https://discourse.hanakai.org
 [rubygem]: https://rubygems.org/gems/dry-transaction
 
 # dry-transaction [![Gem Version](https://badge.fury.io/rb/dry-transaction.svg)][rubygem] [![CI Status](https://github.com/dry-rb/dry-transaction/workflows/CI/badge.svg)][actions]
